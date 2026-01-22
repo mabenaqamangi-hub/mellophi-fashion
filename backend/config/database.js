@@ -8,8 +8,10 @@ let sequelize;
 // Check if DATABASE_URL is provided (common in Heroku/Render)
 if (process.env.DATABASE_URL) {
     console.log('📊 Using DATABASE_URL for connection');
+    // Detect dialect from URL (postgres:// or mysql://)
+    const dialect = process.env.DATABASE_URL.startsWith('postgres') ? 'postgres' : 'mysql';
     sequelize = new Sequelize(process.env.DATABASE_URL, {
-        dialect: 'mysql',
+        dialect: dialect,
         logging: process.env.NODE_ENV === 'development' ? console.log : false,
         pool: {
             max: 5,
@@ -49,13 +51,13 @@ if (process.env.DATABASE_URL) {
 // Test connection
 sequelize.authenticate()
     .then(() => {
-        console.log('✅ MySQL Database Connected Successfully');
+        console.log('✅ Database Connected Successfully');
         console.log(`   Database: ${sequelize.config.database}`);
-        console.log(`   Host: ${sequelize.config.host}`);
+        console.log(`   Dialect: ${sequelize.getDialect()}`);
     })
     .catch(err => {
-        console.error('❌ MySQL Connection Error:', err.message);
-        console.error('   Check your database credentials in .env file');
+        console.error('❌ Database Connection Error:', err.message);
+        console.error('   Check your database credentials');
     });
 
 module.exports = sequelize;
