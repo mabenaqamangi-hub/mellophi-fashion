@@ -150,7 +150,12 @@
     </div>
 
     <script>
-        const API_URL = 'http://localhost:5000/api';
+        // Detect environment and use correct API URL
+        const isDevelopment = window.location.hostname === 'localhost' || 
+                             window.location.hostname === '127.0.0.1';
+        const API_URL = isDevelopment 
+            ? 'http://localhost:5000/api'
+            : 'https://mellophi-fashion.onrender.com/api';
 
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
