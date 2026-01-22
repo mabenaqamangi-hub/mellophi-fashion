@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - Mellophi Fashion</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', Arial, sans-serif;
+            background: linear-gradient(135deg, #F5EBE0 0%, #E8D5C4 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-container {
+            background: white;
+            padding: 50px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 450px;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .login-header h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2.5rem;
+            color: #2C2416;
+            margin-bottom: 10px;
+        }
+
+        .login-header p {
+            color: #5C5447;
+            font-size: 0.95rem;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #2C2416;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #E8D5C4;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #D4AF7A;
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 15px;
+            background: #D4AF7A;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-login:hover {
+            background: #C19A6B;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(212, 175, 122, 0.3);
+        }
+
+        .error-message {
+            background: #FFE5E5;
+            color: #D32F2F;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+            font-size: 0.9rem;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .back-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .back-link a {
+            color: #5C5447;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .back-link a:hover {
+            color: #D4AF7A;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-header">
+            <h1>MELLOPHI</h1>
+            <p>Admin Dashboard Login</p>
+        </div>
+
+        <div id="errorMessage" class="error-message"></div>
+
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required placeholder="admin@mellophifashion.com">
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required placeholder="••••••••">
+            </div>
+
+            <button type="submit" class="btn-login">Login to Dashboard</button>
+        </form>
+
+        <div class="back-link">
+            <a href="../index.html">← Back to Website</a>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:5000/api';
+
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const errorMessage = document.getElementById('errorMessage');
+
+            try {
+                const response = await fetch(`${API_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    if (data.user.isAdmin) {
+                        // Store token
+                        localStorage.setItem('adminToken', data.token);
+                        localStorage.setItem('adminUser', JSON.stringify(data.user));
+                        
+                        // Redirect to dashboard
+                        window.location.href = 'dashboard.html';
+                    } else {
+                        errorMessage.textContent = 'Access denied. Admin privileges required.';
+                        errorMessage.classList.add('show');
+                    }
+                } else {
+                    errorMessage.textContent = data.message || 'Login failed';
+                    errorMessage.classList.add('show');
+                }
+            } catch (error) {
+                errorMessage.textContent = 'Connection error. Please ensure the backend server is running.';
+                errorMessage.classList.add('show');
+            }
+        });
+    </script>
+</body>
+</html>

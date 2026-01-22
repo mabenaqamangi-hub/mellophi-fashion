@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Details - Mellophi Fashion</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/product.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header class="sticky-header">
+        <div class="container">
+            <nav class="navbar">
+                <div class="logo">
+                    <h1><a href="index.html">MELLOPHI FASHION</a></h1>
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="shop.html">Shop</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                </ul>
+                <div class="nav-icons">
+                    <button class="icon-btn" id="wishlist-btn">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                        </svg>
+                        <span class="badge" id="wishlist-count">0</span>
+                    </button>
+                    <button class="icon-btn" id="cart-btn">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="9" cy="21" r="1"></circle>
+                            <circle cx="20" cy="21" r="1"></circle>
+                            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                        </svg>
+                        <span class="badge" id="cart-count">0</span>
+                    </button>
+                    <button class="mobile-toggle" id="mobile-toggle">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </button>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Product Section -->
+    <section class="product-section">
+        <div class="container">
+            <div class="breadcrumb">
+                <a href="index.html">Home</a> / <a href="shop.html">Shop</a> / <span id="product-breadcrumb">Product</span>
+            </div>
+
+            <div class="product-layout">
+                <!-- Product Images -->
+                <div class="product-images">
+                    <div class="main-image">
+                        <img id="main-product-image" src="images/PRODUCTS/A1 front.png" alt="Product">
+                        <button class="wishlist-btn-large" id="wishlist-product">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    
+                    <div class="product-thumbnails" id="thumbnails-container">
+                        <!-- Thumbnails will be dynamically loaded (front, back, other-colours) -->
+                    </div>
+                </div>
+
+                <!-- Product Info -->
+                <div class="product-details">
+                    <h1 class="product-title" id="product-title">Dress</h1>
+                    <div class="product-rating">
+                        <div class="stars">
+                            <span>★★★★★</span>
+                        </div>
+                        <span class="review-count">(24 reviews)</span>
+                    </div>
+                    <p class="product-price-large" id="product-price">R 450.00</p>
+                    
+                    <div class="stock-status">
+                        <span class="in-stock">✓ In Stock</span>
+                    </div>
+                    
+                    <div class="product-description">
+                        <p id="product-desc">
+                            Best dress
+                        </p>
+                    </div>
+
+                    <!-- Size Guide Information -->
+                    <div class="product-size-guide" id="product-size-guide-section" style="display: block; border: 2px solid red; padding: 15px; margin: 20px 0;">
+                        <h4 style="color: red;">📏 Size Guide Section (Testing)</h4>
+                        <div class="size-guide-content" id="product-size-guide-content">
+                            <p style="color: red; font-weight: bold;">If you can see this red text, the HTML is working. JavaScript should replace this content.</p>
+                        </div>
+                    </div>
+
+                    <!-- Color Selection -->
+                    <div class="product-option">
+                        <h4>Color: <span id="selected-color">Nude</span></h4>
+                        <div class="color-options">
+                            <button class="color-option-btn active" data-color="Nude" style="background: #E8D5C4;"></button>
+                            <button class="color-option-btn" data-color="Beige" style="background: #D4BBA8;"></button>
+                            <button class="color-option-btn" data-color="Cream" style="background: #F5EBE0;"></button>
+                            <button class="color-option-btn" data-color="Sand" style="background: #C9B39C;"></button>
+                        </div>
+                    </div>
+
+                    <!-- Size Selection -->
+                    <div class="product-option">
+                        <div class="size-header">
+                            <h4>Size: <span id="selected-size">Select Size</span></h4>
+                            <button type="button" id="toggleSizeGuide" class="size-guide-link" style="background: none; border: none; color: #d4a574; text-decoration: underline; cursor: pointer; font-size: inherit; padding: 0;">View Size Guide</button>
+                        </div>
+                        <div class="size-options">
+                            <button type="button" class="size-option-btn" data-size="XS">XS</button>
+                            <button type="button" class="size-option-btn" data-size="S">S</button>
+                            <button type="button" class="size-option-btn" data-size="M">M</button>
+                            <button type="button" class="size-option-btn" data-size="L">L</button>
+                            <button type="button" class="size-option-btn" data-size="XL">XL</button>
+                        </div>
+                    </div>
+
+                    <!-- Quantity -->
+                    <div class="product-option">
+                        <h4>Quantity</h4>
+                        <div class="quantity-selector">
+                            <button class="qty-btn" id="decrease-qty">-</button>
+                            <input type="number" id="quantity" value="1" min="1" max="10">
+                            <button class="qty-btn" id="increase-qty">+</button>
+                        </div>
+                    </div>
+
+                    <!-- Add to Cart -->
+                    <div class="product-actions">
+                        <button class="btn-add-to-cart" id="add-to-cart-btn">
+                            Add to Cart
+                        </button>
+                        <button class="btn-buy-now" id="buy-now-btn">
+                            Buy Now
+                        </button>
+                    </div>
+
+                    <!-- Product Features -->
+                    <div class="product-features">
+                        <div class="feature">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                            </svg>
+                            <span>Premium Quality</span>
+                        </div>
+                        <div class="feature">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <path d="M12 6v6l4 2"></path>
+                            </svg>
+                            <span>Fast Delivery</span>
+                        </div>
+                        <div class="feature">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                                <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                            </svg>
+                            <span>Easy Returns</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Product Tabs -->
+            <div class="product-tabs">
+                <div class="tab-buttons">
+                    <button class="tab-btn active" data-tab="reviews">Reviews (24)</button>
+                </div>
+
+                <div class="tab-content">
+                    <div class="tab-pane active" id="reviews">
+                        <h3>Customer Reviews</h3>
+                        <div class="reviews-summary">
+                            <div class="rating-overview">
+                                <span class="big-rating">4.8</span>
+                                <div class="stars">★★★★★</div>
+                                <p>Based on 24 reviews</p>
+                            </div>
+                        </div>
+
+                        <div class="review-list">
+                            <div class="review-item">
+                                <div class="review-header">
+                                    <strong>M.</strong>
+                                    <div class="stars">★★★★★</div>
+                                </div>
+                                <p class="review-text">Absolutely love This! The  color is perfect and the quality is amazing. So soft and comfortable.</p>
+                                <span class="review-date">2 weeks ago</span>
+                            </div>
+
+                            <div class="review-item">
+                                <div class="review-header">
+                                    <strong>Thandi K.</strong>
+                                    <div class="stars">★★★★★</div>
+                                </div>
+                                <p class="review-text">Perfect fit! Exactly what I was looking for. The  aesthetic is so beautiful and versatile.</p>
+                                <span class="review-date">1 month ago</span>
+                            </div>
+
+                            <div class="review-item">
+                                <div class="review-header">
+                                    <strong>Lisa P.</strong>
+                                    <div class="stars">★★★★☆</div>
+                                </div>
+                                <p class="review-text">Great quality Dress. Love the color and feel. Would recommend sizing down if you want a more fitted look.</p>
+                                <span class="review-date">1 month ago</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>MELLOPHI</h3>
+                    <p>Affordable luxury in  tones</p>
+                    <div class="social-links">
+                        <a href="#" aria-label="Instagram">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h4>Shop</h4>
+                    <ul>
+                        <li><a href="shop.html">All Products</a></li>
+                        <li><a href="shop.html?category=new">New Arrivals</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Help</h4>
+                    <ul>
+                        <li><a href="contact.html">Contact Us</a></li>
+                        <li><a href="returns.html">Returns & Exchanges</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Newsletter</h4>
+                    <p>Get 10% off your first order</p>
+                    <form class="newsletter-form">
+                        <input type="email" placeholder="Your email" required>
+                        <button type="submit" class="btn-primary">Subscribe</button>
+                    </form>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Mellophi Fashion. All rights reserved.</p>
+                <div class="footer-links">
+                    <a href="privacy.html">Privacy Policy</a>
+                    <a href="terms.html">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/main.js?v=2.2"></script>
+    <script src="js/product.js?v=2.2"></script>
+</body>
+</html>

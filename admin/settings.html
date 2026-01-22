@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Settings - Mellophi Fashion</title>
+    <link rel="stylesheet" href="admin-styles.css">
+    <style>
+        .settings-container {
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .settings-section {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .settings-section h2 {
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+            font-size: 1.5rem;
+        }
+
+        .settings-section p {
+            color: #7f8c8d;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        .form-group small {
+            display: block;
+            color: #7f8c8d;
+            margin-top: 0.25rem;
+            font-size: 0.875rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .btn-save {
+            background: #3498db;
+            color: white;
+            padding: 0.75rem 2rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .btn-save:hover {
+            background: #2980b9;
+        }
+
+        .btn-secondary {
+            background: #95a5a6;
+            color: white;
+            padding: 0.75rem 2rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-left: 1rem;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .bank-details-display {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+        }
+
+        .bank-details-display h4 {
+            margin-bottom: 1rem;
+            color: #2c3e50;
+        }
+
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .detail-item:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .detail-value {
+            color: #6c757d;
+        }
+
+        .copy-btn {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 0.25rem 0.75rem;
+            border-radius: 4px;
+            font-size: 0.875rem;
+            cursor: pointer;
+            margin-left: 0.5rem;
+        }
+
+        .copy-btn:hover {
+            background: #5a6268;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="settings-container">
+        <h1 style="margin-bottom: 2rem; color: #2c3e50;">Payment Settings</h1>
+
+        <!-- Bank Account Details -->
+        <div class="settings-section">
+            <h2>💳 Bank Account Details</h2>
+            <p>Configure your bank account details for receiving EFT payments from customers</p>
+
+            <form id="bankDetailsForm">
+                <div class="form-group">
+                    <label for="bankName">Bank Name *</label>
+                    <select id="bankName" required>
+                        <option value="">Select Bank</option>
+                        <option value="ABSA">ABSA</option>
+                        <option value="Standard Bank">Standard Bank</option>
+                        <option value="FNB">FNB (First National Bank)</option>
+                        <option value="Nedbank">Nedbank</option>
+                        <option value="Capitec">Capitec Bank</option>
+                        <option value="African Bank">African Bank</option>
+                        <option value="Discovery Bank">Discovery Bank</option>
+                        <option value="TymeBank">TymeBank</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="accountHolder">Account Holder Name *</label>
+                        <input type="text" id="accountHolder" placeholder="MELLOPHI FASHION" required>
+                        <small>Full name as it appears on the account</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="accountType">Account Type *</label>
+                        <select id="accountType" required>
+                            <option value="">Select Type</option>
+                            <option value="Current">Current Account</option>
+                            <option value="Savings">Savings Account</option>
+                            <option value="Business">Business Account</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="accountNumber">Account Number *</label>
+                        <input type="text" id="accountNumber" placeholder="1234567890" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="branchCode">Branch Code *</label>
+                        <input type="text" id="branchCode" placeholder="123456" required>
+                        <small>6-digit branch code</small>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="swiftCode">SWIFT/BIC Code (Optional)</label>
+                    <input type="text" id="swiftCode" placeholder="ABSAZAJJ">
+                    <small>Required only for international payments</small>
+                </div>
+
+                <button type="submit" class="btn-save">Save Bank Details</button>
+            </form>
+
+            <!-- Display Saved Bank Details -->
+            <div id="savedBankDetails" class="bank-details-display" style="display: none;">
+                <h4>Your Banking Details (Share with customers for EFT)</h4>
+                <div class="detail-item">
+                    <span class="detail-label">Bank:</span>
+                    <span class="detail-value" id="displayBankName">-</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Account Holder:</span>
+                    <span class="detail-value" id="displayAccountHolder">-</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Account Type:</span>
+                    <span class="detail-value" id="displayAccountType">-</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Account Number:</span>
+                    <span class="detail-value">
+                        <span id="displayAccountNumber">-</span>
+                        <button class="copy-btn" onclick="copyToClipboard('accountNumber')">Copy</button>
+                    </span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Branch Code:</span>
+                    <span class="detail-value">
+                        <span id="displayBranchCode">-</span>
+                        <button class="copy-btn" onclick="copyToClipboard('branchCode')">Copy</button>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- PayGate Settings -->
+        <div class="settings-section">
+            <h2>🔐 PayGate Integration</h2>
+            <p>Your PayGate merchant account is configured and active</p>
+
+            <div class="alert alert-info">
+                <strong>ℹ️ Current Status:</strong> PayGate is configured and ready to accept payments
+            </div>
+
+            <div class="bank-details-display">
+                <h4>PayGate Merchant Details</h4>
+                <div class="detail-item">
+                    <span class="detail-label">Merchant ID:</span>
+                    <span class="detail-value">12975260</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Status:</span>
+                    <span class="detail-value" style="color: #28a745;">✓ Active</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Supported Methods:</span>
+                    <span class="detail-value">Cards, EFT, Instant EFT</span>
+                </div>
+            </div>
+
+            <form id="paygateForm" style="margin-top: 1.5rem;">
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="enablePaygate" checked>
+                        Enable PayGate for card payments
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="enableEft" checked>
+                        Enable manual EFT payments
+                    </label>
+                </div>
+
+                <button type="submit" class="btn-save">Update PayGate Settings</button>
+            </form>
+        </div>
+
+        <!-- Business Information -->
+        <div class="settings-section">
+            <h2>🏢 Business Information</h2>
+            <p>This information will appear on invoices and customer communications</p>
+
+            <form id="businessForm">
+                <div class="form-group">
+                    <label for="businessName">Business Name *</label>
+                    <input type="text" id="businessName" value="MELLOPHI FASHION" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="businessEmail">Business Email *</label>
+                    <input type="email" id="businessEmail" placeholder="mellophifashion@gmail.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="businessPhone">Business Phone *</label>
+                    <input type="tel" id="businessPhone" placeholder="+27 XX XXX XXXX" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="businessAddress">Business Address</label>
+                    <textarea id="businessAddress" rows="3" placeholder="Street address, City, Province, Postal Code"></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="vatNumber">VAT Number (Optional)</label>
+                        <input type="text" id="vatNumber" placeholder="4XXXXXXXXX">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="regNumber">Registration Number (Optional)</label>
+                        <input type="text" id="regNumber" placeholder="Company Reg No.">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-save">Save Business Info</button>
+            </form>
+        </div>
+
+        <div style="text-align: center; margin: 2rem 0;">
+            <a href="dashboard.html" class="btn-secondary">Back to Dashboard</a>
+        </div>
+    </div>
+
+    <script>
+        // Load saved data on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadBankDetails();
+            loadBusinessInfo();
+            
+            // Pre-fill with MELLOPHI bank details if not already saved
+            if (!localStorage.getItem('mellophiBankDetails')) {
+                setDefaultBankDetails();
+            }
+        });
+
+        // Set default MELLOPHI bank details
+        function setDefaultBankDetails() {
+            const defaultDetails = {
+                bankName: 'Standard Bank',
+                accountHolder: 'PPP INNOVATIONS (PTY) LTD',
+                accountType: 'Current',
+                accountNumber: '610202367',
+                branchCode: '1545',
+                swiftCode: ''
+            };
+            
+            // Fill form with default values
+            document.getElementById('bankName').value = defaultDetails.bankName;
+            document.getElementById('accountHolder').value = defaultDetails.accountHolder;
+            document.getElementById('accountType').value = defaultDetails.accountType;
+            document.getElementById('accountNumber').value = defaultDetails.accountNumber;
+            document.getElementById('branchCode').value = defaultDetails.branchCode;
+            
+            // Save to localStorage
+            localStorage.setItem('mellophiBankDetails', JSON.stringify(defaultDetails));
+            
+            // Display
+            displayBankDetails(defaultDetails);
+        }
+
+        // Bank Details Form
+        document.getElementById('bankDetailsForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const bankDetails = {
+                bankName: document.getElementById('bankName').value,
+                accountHolder: document.getElementById('accountHolder').value,
+                accountType: document.getElementById('accountType').value,
+                accountNumber: document.getElementById('accountNumber').value,
+                branchCode: document.getElementById('branchCode').value,
+                swiftCode: document.getElementById('swiftCode').value
+            };
+
+            // Save to localStorage
+            localStorage.setItem('mellophiBankDetails', JSON.stringify(bankDetails));
+
+            // Display saved details
+            displayBankDetails(bankDetails);
+
+            alert('✅ Bank details saved successfully!');
+        });
+
+        // PayGate Form
+        document.getElementById('paygateForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const settings = {
+                enablePaygate: document.getElementById('enablePaygate').checked,
+                enableEft: document.getElementById('enableEft').checked
+            };
+
+            localStorage.setItem('mellophiPaymentSettings', JSON.stringify(settings));
+            alert('✅ Payment settings updated successfully!');
+        });
+
+        // Business Form
+        document.getElementById('businessForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const businessInfo = {
+                businessName: document.getElementById('businessName').value,
+                businessEmail: document.getElementById('businessEmail').value,
+                businessPhone: document.getElementById('businessPhone').value,
+                businessAddress: document.getElementById('businessAddress').value,
+                vatNumber: document.getElementById('vatNumber').value,
+                regNumber: document.getElementById('regNumber').value
+            };
+
+            localStorage.setItem('mellophiBusinessInfo', JSON.stringify(businessInfo));
+            alert('✅ Business information saved successfully!');
+        });
+
+        // Load Bank Details
+        function loadBankDetails() {
+            const saved = localStorage.getItem('mellophiBankDetails');
+            if (saved) {
+                const details = JSON.parse(saved);
+                
+                // Fill form
+                document.getElementById('bankName').value = details.bankName;
+                document.getElementById('accountHolder').value = details.accountHolder;
+                document.getElementById('accountType').value = details.accountType;
+                document.getElementById('accountNumber').value = details.accountNumber;
+                document.getElementById('branchCode').value = details.branchCode;
+                document.getElementById('swiftCode').value = details.swiftCode || '';
+
+                // Display
+                displayBankDetails(details);
+            }
+        }
+
+        // Display Bank Details
+        function displayBankDetails(details) {
+            document.getElementById('displayBankName').textContent = details.bankName;
+            document.getElementById('displayAccountHolder').textContent = details.accountHolder;
+            document.getElementById('displayAccountType').textContent = details.accountType;
+            document.getElementById('displayAccountNumber').textContent = details.accountNumber;
+            document.getElementById('displayBranchCode').textContent = details.branchCode;
+            document.getElementById('savedBankDetails').style.display = 'block';
+        }
+
+        // Load Business Info
+        function loadBusinessInfo() {
+            const saved = localStorage.getItem('mellophiBusinessInfo');
+            if (saved) {
+                const info = JSON.parse(saved);
+                document.getElementById('businessName').value = info.businessName || '';
+                document.getElementById('businessEmail').value = info.businessEmail || '';
+                document.getElementById('businessPhone').value = info.businessPhone || '';
+                document.getElementById('businessAddress').value = info.businessAddress || '';
+                document.getElementById('vatNumber').value = info.vatNumber || '';
+                document.getElementById('regNumber').value = info.regNumber || '';
+            }
+
+            const paymentSettings = localStorage.getItem('mellophiPaymentSettings');
+            if (paymentSettings) {
+                const settings = JSON.parse(paymentSettings);
+                document.getElementById('enablePaygate').checked = settings.enablePaygate;
+                document.getElementById('enableEft').checked = settings.enableEft;
+            }
+        }
+
+        // Copy to Clipboard
+        function copyToClipboard(field) {
+            let text = '';
+            if (field === 'accountNumber') {
+                text = document.getElementById('displayAccountNumber').textContent;
+            } else if (field === 'branchCode') {
+                text = document.getElementById('displayBranchCode').textContent;
+            }
+
+            navigator.clipboard.writeText(text).then(() => {
+                alert('✓ Copied to clipboard!');
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mellophi Fashion - Soft. Stylish. Confident.</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header class="sticky-header">
+        <div class="container">
+            <nav class="navbar">
+                <div class="logo">
+                    <h1>MELLOPHI FASHION</h1>
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="index.html" class="active">Home</a></li>
+                    <li><a href="shop.html">Shop</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                </ul>
+                <div class="nav-icons">
+                    <button class="icon-btn" id="wishlist-btn">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                        </svg>
+                        <span class="badge" id="wishlist-count">0</span>
+                    </button>
+                    <button class="icon-btn" id="cart-btn">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="9" cy="21" r="1"></circle>
+                            <circle cx="20" cy="21" r="1"></circle>
+                            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                        </svg>
+                        <span class="badge" id="cart-count">0</span>
+                    </button>
+                    <button class="mobile-toggle" id="mobile-toggle">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </button>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Discount Banner -->
+    <div class="discount-banner">
+        <p>✨ New Customer? Get 15% off your first order with code:Dress1</p>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-slideshow">
+            <div class="overlay"></div>
+            <div class="carousel-3d">
+                <div class="carousel-item" style="--position: 0">
+                    <img src="images/PRODUCTS/A1 front.png" alt="Collection 1">
+                </div>
+                <div class="carousel-item" style="--position: 1">
+                    <img src="images/PRODUCTS/A2 front.png" alt="Collection 2">
+                </div>
+                <div class="carousel-item" style="--position: 2">
+                    <img src="images/PRODUCTS/C1 front.png" alt="Collection 3">
+                </div>
+                <div class="carousel-item" style="--position: 3">
+                    <img src="images/PRODUCTS/C3 front.png" alt="Collection 4">
+                </div>
+                <div class="carousel-item" style="--position: 4">
+                    <img src="images/PRODUCTS/B2 front.png" alt="Collection 5">
+                </div>
+                <div class="carousel-item" style="--position: 5">
+                    <img src="images/PRODUCTS/B3 front.png" alt="Collection 6">
+                </div>
+                <div class="carousel-item" style="--position: 6">
+                    <img src="images/PRODUCTS/D1 front.png" alt="Collection 7">
+                </div>
+                <div class="carousel-item" style="--position: 7">
+                    <img src="images/PRODUCTS/C2 front.png" alt="Collection 8">
+                </div>
+            </div>
+            <div class="slide-controls">
+                <button class="prev">&#8249;</button>
+                <button class="next">&#8250;</button>
+            </div>
+        </div>
+        <div class="hero-slogan">
+            <p>Defining Style, Inspiring Confidence</p>
+        </div>
+    </section>
+
+    <!-- New Arrivals -->
+    <section class="section new-arrivals">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">New Arrivals</h2>
+                <p class="section-subtitle">Fresh styles for your wardrobe</p>
+            </div>
+            <div class="product-grid">
+                <div class="product-card" data-product-id="A1">
+                    <div class="product-image">
+                        <img src="images/PRODUCTS/A1 front.png" alt="A1 — Casual Summer Dress">
+                        <button class="wishlist-btn">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                            </svg>
+                        </button>
+                        <div class="quick-view">
+                            <button onclick="openQuickView('A1')" class="btn-secondary" style="border: none; cursor: pointer;">Quick View</button>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-name">A1 — Casual Summer Dress</h3>
+                        <p class="product-price">R 380.00</p>
+                        <div class="product-colors">
+                            <span class="color-dot" style="background: #d6c5b7" title="Sand"></span>
+                            <span class="color-dot" style="background: #9aa27a" title="Olive"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="product-card" data-product-id="C1">
+                    <div class="product-image">
+                        <img src="images/PRODUCTS/C1 front.png" alt="C1 — Everyday Top">
+                        <button class="wishlist-btn">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                            </svg>
+                        </button>
+                        <div class="quick-view">
+                            <button onclick="openQuickView('C1')" class="btn-secondary" style="border: none; cursor: pointer;">Quick View</button>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-name">C1 — Everyday Top</h3>
+                        <p class="product-price">R 220.00</p>
+                    </div>
+                </div>
+
+                <div class="product-card" data-product-id="B1">
+                    <div class="product-image">
+                        <img src="images/PRODUCTS/B1 front.png" alt="B1 — Elegant Linen Dress">
+                        <button class="wishlist-btn">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                            </svg>
+                        </button>
+                        <div class="quick-view">
+                            <button onclick="openQuickView('B1')" class="btn-secondary" style="border: none; cursor: pointer;">Quick View</button>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-name">B1 — Elegant Linen Dress</h3>
+                        <p class="product-price">R 380.00</p>
+                    </div>
+                </div>
+
+                <div class="product-card" data-product-id="D1">
+                    <div class="product-image">
+                        <img src="images/PRODUCTS/D1 front.png" alt="D1 — Chic Co-ord Set">
+                        <button class="wishlist-btn">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                            </svg>
+                        </button>
+                        <div class="quick-view">
+                            <button onclick="openQuickView('D1')" class="btn-secondary" style="border: none; cursor: pointer;">Quick View</button>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-name">D1 — Chic Co-ord Set</h3>
+                        <p class="product-price">R 300.00</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Best Sellers Carousel -->
+    <section class="section best-sellers">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Best Sellers</h2>
+                <p class="section-subtitle">Our most-loved  pieces</p>
+            </div>
+            <div class="carousel-container">
+                <button class="carousel-btn prev-btn" id="prev-btn">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M15 18l-6-6 6-6"/>
+                    </svg>
+                </button>
+                <div class="carousel">
+                    <div class="carousel-track" id="carousel-track">
+                        <div class="product-card" data-product-id="A3">
+                            <div class="product-image">
+                                <img src="images/PRODUCTS/A3 front.png" alt="A3 — Summer Dress">
+                                <button class="wishlist-btn">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                                    </svg>
+                                </button>
+                                <div class="best-seller-badge">Best Seller</div>
+                            </div>
+                            <div class="product-info">
+                                <h3 class="product-name">A3 — Summer Dress</h3>
+                                <p class="product-price">R 400.00</p>
+                            </div>
+                        </div>
+                        <div class="product-card" data-product-id="C2">
+                            <div class="product-image">
+                                <img src="images/PRODUCTS/C2 front.png" alt="C2 — Ribbed Tee">
+                                <button class="wishlist-btn">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                                    </svg>
+                                </button>
+                                <div class="best-seller-badge">Best Seller</div>
+                            </div>
+                            <div class="product-info">
+                                <h3 class="product-name">C2 — Ribbed Tee</h3>
+                                <p class="product-price">R 220.00</p>
+                            </div>
+                        </div>
+                        <div class="product-card" data-product-id="B2">
+                            <div class="product-image">
+                                <img src="images/PRODUCTS/B2 front.png" alt="B2 — Formal Dress">
+                                <button class="wishlist-btn">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                                    </svg>
+                                </button>
+                                <div class="best-seller-badge">Best Seller</div>
+                            </div>
+                            <div class="product-info">
+                                <h3 class="product-name">B2 — Formal Dress</h3>
+                                <p class="product-price">R 400.00</p>
+                            </div>
+                        </div>
+                        <div class="product-card" data-product-id="A4">
+                            <div class="product-image">
+                                <img src="images/PRODUCTS/A4 front.png" alt="A4 — Casual Dress">
+                                <button class="wishlist-btn">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                                    </svg>
+                                </button>
+                                <div class="best-seller-badge">Best Seller</div>
+                            </div>
+                            <div class="product-info">
+                                <h3 class="product-name">A4 — Casual Dress</h3>
+                                <p class="product-price">R 380.00</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button class="carousel-btn next-btn" id="next-btn">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 18l6-6-6-6"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Shop the Look -->
+    <section class="section shop-the-look">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Shop the Look</h2>
+                <p class="section-subtitle">Complete your aesthetic</p>
+            </div>
+            <div class="look-grid">
+                <div class="look-card">
+                    <div class="look-image">
+                        <img src="images/PRODUCTS/A6 front.png" alt="Casual Ensemble">
+                    </div>
+                    <div class="look-items">
+                        <p class="look-title">Casual Comfort</p>
+                        <ul>
+                            <li>Black dress - R450</li>
+                           
+                        </ul>
+                        <a href="shop.html" class="btn-secondary">Shop Now</a>
+                    </div>
+                </div>
+                <div class="look-card">
+                    <div class="look-image">
+                        <img src="images/products/A4 front.png" alt="Elegant Outfit">
+                    </div>
+                    <div class="look-items">
+                        <p class="look-title">Elegant Evening</p>
+                        <ul>
+                            <li>black floral Dress - R420</li>
+                            
+                        </ul>
+                        <a href="shop.html" class="btn-secondary">Shop Now</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Instagram Feed -->
+    <section class="section instagram-feed">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">@mellophi_fashion</h2>
+                <p class="section-subtitle">Follow us for daily style inspiration</p>
+            </div>
+            <div class="instagram-grid">
+                <a href="https://www.instagram.com/mellophi_fashion?utm_source=qr" target="_blank" class="instagram-item">
+                    <img src="images/PRODUCTS/A1 front.png" alt="Instagram post">
+                    <div class="instagram-overlay">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
+                            <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                        </svg>
+                    </div>
+                </a>
+                <a href="https://www.instagram.com/mellophi_fashion?utm_source=qr" target="_blank" class="instagram-item">
+                    <img src="images/PRODUCTS/C1 front.png" alt="Instagram post">
+                    <div class="instagram-overlay">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
+                            <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                        </svg>
+                    </div>
+                </a>
+                <a href="https://www.instagram.com/mellophi_fashion?utm_source=qr" target="_blank" class="instagram-item">
+                    <img src="images/PRODUCTS/B1 front.png" alt="Instagram post">
+                    <div class="instagram-overlay">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
+                            <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                        </svg>
+                    </div>
+                </a>
+                <a href="https://www.instagram.com/mellophi_fashion?utm_source=qr" target="_blank" class="instagram-item">
+                    <img src="images/PRODUCTS/D1 front.png" alt="Instagram post">
+                    <div class="instagram-overlay">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
+                            <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                        </svg>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quick View Modal -->
+    <div id="quickViewModal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 900px; max-height: 90vh; overflow-y: auto;">
+            <span class="modal-close" onclick="closeQuickView()">&times;</span>
+            <div class="quick-view-content" style="display: flex; gap: 30px; flex-wrap: wrap;">
+                <!-- Product Image (Right Side) -->
+                <div class="qv-image-section" style="flex: 1; min-width: 300px;">
+                    <img id="qv-product-image" src="" alt="" style="width: 100%; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                </div>
+                
+                <!-- Product Details (Left Side) -->
+                <div class="qv-details-section" style="flex: 1; min-width: 300px;">
+                    <h2 id="qv-product-title" style="font-family: 'Cormorant Garamond', serif; font-size: 2rem; margin-bottom: 10px; color: #2C2416;"></h2>
+                    <p id="qv-product-price" style="font-size: 1.5rem; color: #d4a574; font-weight: 600; margin-bottom: 20px;"></p>
+                    <p id="qv-product-description" style="color: #666; margin-bottom: 25px; line-height: 1.6;"></p>
+                    
+                    <!-- Colors -->
+                    <div id="qv-colors-section" style="margin-bottom: 20px;">
+                        <h4 style="margin-bottom: 10px; color: #333;">Color:</h4>
+                        <div id="qv-color-options" style="display: flex; gap: 10px; flex-wrap: wrap;"></div>
+                    </div>
+                    
+                    <!-- Sizes with Size Guide -->
+                    <div style="margin-bottom: 20px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <h4 style="color: #333; margin: 0;">Size:</h4>
+                            <button id="qv-size-guide-btn" onclick="toggleSizeGuide()" style="background: none; border: none; color: #d4a574; text-decoration: underline; cursor: pointer; font-size: 0.95rem; padding: 0;">
+                                📏 View Size Guide
+                            </button>
+                        </div>
+                        <div id="qv-size-options" style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 15px;"></div>
+                        
+                        <!-- Size Guide Table (Hidden by default) -->
+                        <div id="qv-size-guide-table" style="display: none; margin-top: 20px; padding: 15px; background: #f9f6f3; border-radius: 8px; border: 1px solid #e0d5c7;">
+                            <h4 style="margin: 0 0 15px 0; color: #2C2416; font-size: 1.1rem;">Size Guide</h4>
+                            <div style="overflow-x: auto;">
+                                <table id="qv-size-guide-content" style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
+                                    <!-- Size guide will be populated here -->
+                                </table>
+                            </div>
+                            <p id="qv-size-guide-notes" style="margin-top: 10px; font-size: 0.85rem; color: #666; font-style: italic;"></p>
+                        </div>
+                    </div>
+                    
+                    <!-- Quantity -->
+                    <div style="margin-bottom: 20px;">
+                        <h4 style="margin-bottom: 10px; color: #333;">Quantity:</h4>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <button onclick="decreaseQty()" style="width: 40px; height: 40px; border: 1px solid #ddd; background: white; cursor: pointer; font-size: 1.2rem; border-radius: 5px;">-</button>
+                            <input type="number" id="qv-quantity" value="1" min="1" style="width: 60px; height: 40px; text-align: center; border: 1px solid #ddd; border-radius: 5px; font-size: 1rem;">
+                            <button onclick="increaseQty()" style="width: 40px; height: 40px; border: 1px solid #ddd; background: white; cursor: pointer; font-size: 1.2rem; border-radius: 5px;">+</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Actions -->
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <button onclick="addToCartFromQV()" style="flex: 1; min-width: 150px; padding: 15px 30px; background: #d4a574; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: 600; font-size: 1rem; transition: all 0.3s;">
+                            Add to Cart
+                        </button>
+                        <button onclick="viewFullProduct()" style="flex: 1; min-width: 150px; padding: 15px 30px; background: white; color: #d4a574; border: 2px solid #d4a574; border-radius: 5px; cursor: pointer; font-weight: 600; font-size: 1rem; transition: all 0.3s;">
+                            View Full Details
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>MELLOPHI FASHION</h3>
+                    <p>Affordable luxury in nude tones</p>
+                    <div class="social-links">
+                        <a href="https://www.instagram.com/mellophi_fashion?utm_source=qr" target="_blank" aria-label="Instagram">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                            </svg>
+                        </a>
+                        <a href="https://www.facebook.com/share/1CN6chMwrR/?mibextid=wwXIfr" target="_blank" aria-label="Facebook">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                            </svg>
+                        </a>
+                        <a href="https://www.tiktok.com/@mellophifashion" target="_blank" aria-label="TikTok">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h4>Shop</h4>
+                    <ul>
+                        <li><a href="shop.html">All Products</a></li>
+                        <li><a href="shop.html?category=new">New Arrivals</a></li>
+                        <li><a href="shop.html?category=bestsellers">Best Sellers</a></li>
+                        <li><a href="shop.html?category=sale">Sale</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Help</h4>
+                    <ul>
+                        <li><a href="shipping.html">Shipping Info</a></li>
+                        <li><a href="returns.html">Returns & Exchanges</a></li>
+                        <li><a href="contact.html">Contact Us</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Newsletter</h4>
+                    <p>Get 10% off your first order</p>
+                    <form class="newsletter-form" id="newsletter-form">
+                        <input type="email" placeholder="Your email" required>
+                        <button type="submit" class="btn-primary">Subscribe</button>
+                    </form>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Mellophi Fashion. All rights reserved.</p>
+                <div class="footer-links">
+                    <a href="privacy.html">Privacy Policy</a>
+                    <a href="terms.html">Terms of Service</a>
+                    <a href="refund.html">Refund Policy</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/main.js?v=2.2"></script>
+</body>
+</html>

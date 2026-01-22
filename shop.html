@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shop - Mellophi Fashion</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/shop.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script src="js/config.js"></script>
+</head>
+<body>
+    <!-- Header -->
+    <header class="sticky-header">
+        <div class="container">
+            <nav class="navbar">
+                <div class="logo">
+                    <h1><a href="index.html">MELLOPHI FASHION</a></h1>
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="shop.html" class="active">Shop</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                </ul>
+                <div class="nav-icons">
+                    <button class="icon-btn" id="wishlist-btn">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                        </svg>
+                        <span class="badge" id="wishlist-count">0</span>
+                    </button>
+                    <button class="icon-btn" id="cart-btn">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="9" cy="21" r="1"></circle>
+                            <circle cx="20" cy="21" r="1"></circle>
+                            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                        </svg>
+                        <span class="badge" id="cart-count">0</span>
+                    </button>
+                    <button class="mobile-toggle" id="mobile-toggle">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </button>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Shop Header -->
+    <section class="shop-header">
+        <div class="container">
+            <h1 class="page-title">Shop Collection</h1>
+            <p class="page-subtitle">Discover our latest fashion essentials</p>
+        </div>
+    </section>
+
+    <!-- Shop Content -->
+    <section class="shop-section">
+        <div class="container">
+            <div class="shop-layout">
+                <!-- Filters Sidebar -->
+                <aside class="filters-sidebar">
+                    <div class="filter-header">
+                        <h3>Filters</h3>
+                        <button class="filter-reset" id="reset-filters">Clear All</button>
+                    </div>
+
+                    <!-- Category Filter -->
+                    <div class="filter-group">
+                        <h4 class="filter-title">Category</h4>
+                        <div class="filter-options">
+                            <label class="filter-option">
+                                <input type="checkbox" name="category" value="all" checked>
+                                <span>All Items</span>
+                            </label>
+                            <label class="filter-option">
+                                <input type="checkbox" name="category" value="dresses">
+                                <span>Dresses</span>
+                            </label>
+                            <label class="filter-option">
+                                <input type="checkbox" name="category" value="tops">
+                                <span>Tops</span>
+                            </label>
+                            <label class="filter-option">
+                                <input type="checkbox" name="category" value="skirts">
+                                <span>Skirts</span>
+                            </label>
+                            <label class="filter-option">
+                                <input type="checkbox" name="category" value="shorts-top-set">
+                                <span>Co-ord Sets</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Color Filter -->
+                    <div class="filter-group">
+                        <h4 class="filter-title">Color</h4>
+                        <div class="filter-options color-filter">
+                            <label class="color-option">
+                                <input type="checkbox" name="color" value="beige">
+                                <span class="color-swatch" style="background: #D4BBA8;"></span>
+                                <span>Beige</span>
+                            </label>
+                            <label class="color-option">
+                                <input type="checkbox" name="color" value="cream">
+                                <span class="color-swatch" style="background: #F5EBE0;"></span>
+                                <span>Cream</span>
+                            </label>
+                            <label class="color-option">
+                                <input type="checkbox" name="color" value="sand">
+                                <span class="color-swatch" style="background: #D4BBA8;"></span>
+                                <span>Sand</span>
+                            </label>
+                            <label class="color-option">
+                                <input type="checkbox" name="color" value="taupe">
+                                <span class="color-swatch" style="background: #B8A08E;"></span>
+                                <span>Taupe</span>
+                            </label>
+                            <label class="color-option">
+                                <input type="checkbox" name="color" value="champagne">
+                                <span class="color-swatch" style="background: #D4AF7A;"></span>
+                                <span>Champagne</span>
+                            </label>
+                            <label class="color-option">
+                                <input type="checkbox" name="color" value="white">
+                                <span class="color-swatch" style="background: #ffffff; border: 1px solid #ddd;"></span>
+                                <span>White</span>
+                            </label>
+                            <label class="color-option">
+                                <input type="checkbox" name="color" value="olive">
+                                <span class="color-swatch" style="background: #9aa27a;"></span>
+                                <span>Olive</span>
+                            </label>
+                            <label class="color-option">
+                                <input type="checkbox" name="color" value="navy">
+                                <span class="color-swatch" style="background: #2b3a67;"></span>
+                                <span>Navy</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Size Filter -->
+                    <div class="filter-group">
+                        <h4 class="filter-title">Size</h4>
+                        <div class="filter-options size-filter">
+                            <label class="size-option">
+                                <input type="checkbox" name="size" value="xs">
+                                <span>XS</span>
+                            </label>
+                            <label class="size-option">
+                                <input type="checkbox" name="size" value="s">
+                                <span>S</span>
+                            </label>
+                            <label class="size-option">
+                                <input type="checkbox" name="size" value="m">
+                                <span>M</span>
+                            </label>
+                            <label class="size-option">
+                                <input type="checkbox" name="size" value="l">
+                                <span>L</span>
+                            </label>
+                            <label class="size-option">
+                                <input type="checkbox" name="size" value="xl">
+                                <span>XL</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Price Filter -->
+                    <div class="filter-group">
+                        <h4 class="filter-title">Price Range</h4>
+                        <div class="price-range">
+                            <input type="range" id="price-slider" min="0" max="1000" value="1000" step="50">
+                            <div class="price-values">
+                                <span>R 0</span>
+                                <span id="max-price">R 1000</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Mobile Filter Toggle -->
+                    <button class="mobile-filter-toggle" id="mobile-filter-toggle">
+                        Filters
+                    </button>
+                </aside>
+
+                <!-- Products Grid -->
+                <div class="products-container">
+                    <div class="shop-toolbar">
+                        <p class="results-count"><span id="product-count">24</span> products</p>
+                        <div class="sort-options">
+                            <label for="sort-select">Sort by:</label>
+                            <select id="sort-select">
+                                <option value="featured">Featured</option>
+                                <option value="price-low">Price: Low to High</option>
+                                <option value="price-high">Price: High to Low</option>
+                                <option value="newest">Newest</option>
+                                <option value="popular">Most Popular</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="product-grid" id="products-grid">
+                        <!-- Products will be dynamically loaded -->
+                    </div>
+
+                    <div class="load-more">
+                        <button class="btn-secondary" id="load-more-btn">Load More</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quick View Modal -->
+    <div id="quickViewModal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 900px; max-height: 90vh; overflow-y: auto;">
+            <span class="modal-close" onclick="closeQuickView()">&times;</span>
+            <div class="quick-view-content" style="display: flex; gap: 30px; flex-wrap: wrap;">
+                <!-- Product Image (Right Side) -->
+                <div class="qv-image-section" style="flex: 1; min-width: 300px;">
+                    <img id="qv-product-image" src="" alt="" style="width: 100%; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                </div>
+                
+                <!-- Product Details (Left Side) -->
+                <div class="qv-details-section" style="flex: 1; min-width: 300px;">
+                    <h2 id="qv-product-title" style="font-family: 'Cormorant Garamond', serif; font-size: 2rem; margin-bottom: 10px; color: #2C2416;"></h2>
+                    <p id="qv-product-price" style="font-size: 1.5rem; color: #d4a574; font-weight: 600; margin-bottom: 20px;"></p>
+                    <p id="qv-product-description" style="color: #666; margin-bottom: 25px; line-height: 1.6;"></p>
+                    
+                    <!-- Colors -->
+                    <div id="qv-colors-section" style="margin-bottom: 20px;">
+                        <h4 style="margin-bottom: 10px; color: #333;">Color:</h4>
+                        <div id="qv-color-options" style="display: flex; gap: 10px; flex-wrap: wrap;"></div>
+                    </div>
+                    
+                    <!-- Sizes with Size Guide -->
+                    <div style="margin-bottom: 20px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <h4 style="color: #333; margin: 0;">Size:</h4>
+                            <button id="qv-size-guide-btn" onclick="toggleSizeGuide()" style="background: none; border: none; color: #d4a574; text-decoration: underline; cursor: pointer; font-size: 0.95rem; padding: 0;">
+                                📏 View Size Guide
+                            </button>
+                        </div>
+                        <div id="qv-size-options" style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 15px;"></div>
+                        
+                        <!-- Size Guide Table (Hidden by default) -->
+                        <div id="qv-size-guide-table" style="display: none; margin-top: 20px; padding: 15px; background: #f9f6f3; border-radius: 8px; border: 1px solid #e0d5c7;">
+                            <h4 style="margin: 0 0 15px 0; color: #2C2416; font-size: 1.1rem;">Size Guide</h4>
+                            <div style="overflow-x: auto;">
+                                <table id="qv-size-guide-content" style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
+                                    <!-- Size guide will be populated here -->
+                                </table>
+                            </div>
+                            <p id="qv-size-guide-notes" style="margin-top: 10px; font-size: 0.85rem; color: #666; font-style: italic;"></p>
+                        </div>
+                    </div>
+                    
+                    <!-- Quantity -->
+                    <div style="margin-bottom: 20px;">
+                        <h4 style="margin-bottom: 10px; color: #333;">Quantity:</h4>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <button onclick="decreaseQty()" style="width: 40px; height: 40px; border: 1px solid #ddd; background: white; cursor: pointer; font-size: 1.2rem; border-radius: 5px;">-</button>
+                            <input type="number" id="qv-quantity" value="1" min="1" style="width: 60px; height: 40px; text-align: center; border: 1px solid #ddd; border-radius: 5px; font-size: 1rem;">
+                            <button onclick="increaseQty()" style="width: 40px; height: 40px; border: 1px solid #ddd; background: white; cursor: pointer; font-size: 1.2rem; border-radius: 5px;">+</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Actions -->
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <button onclick="addToCartFromQV()" style="flex: 1; min-width: 150px; padding: 15px 30px; background: #d4a574; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: 600; font-size: 1rem; transition: all 0.3s;">
+                            Add to Cart
+                        </button>
+                        <button onclick="viewFullProduct()" style="flex: 1; min-width: 150px; padding: 15px 30px; background: white; color: #d4a574; border: 2px solid #d4a574; border-radius: 5px; cursor: pointer; font-weight: 600; font-size: 1rem; transition: all 0.3s;">
+                            View Full Details
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>MELLOPHI</h3>
+                    <p>Affordable luxury fashion</p>
+                    <div class="social-links">
+                        <a href="#" aria-label="Instagram">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                            </svg>
+                        </a>
+                        <a href="#" aria-label="Facebook">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h4>Shop</h4>
+                    <ul>
+                        <li><a href="shop.html">All Products</a></li>
+                        <li><a href="shop.html?category=new">New Arrivals</a></li>
+                        <li><a href="shop.html?category=bestsellers">Best Sellers</a></li>
+                        <li><a href="shop.html?category=sale">Sale</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Help</h4>
+                    <ul>
+                        <li><a href="shipping.html">Shipping Info</a></li>
+                        <li><a href="returns.html">Returns & Exchanges</a></li>
+                        <li><a href="contact.html">Contact Us</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Newsletter</h4>
+                    <p>Get 10% off your first order</p>
+                    <form class="newsletter-form">
+                        <input type="email" placeholder="Your email" required>
+                        <button type="submit" class="btn-primary">Subscribe</button>
+                    </form>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Mellophi Fashion. All rights reserved.</p>
+                <div class="footer-links">
+                    <a href="privacy.html">Privacy Policy</a>
+                    <a href="terms.html">Terms of Service</a>
+                    <a href="refund.html">Refund Policy</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/main.js?v=2.2"></script>
+    <script src="js/shop.js?v=2.2"></script>
+</body>
+</html>

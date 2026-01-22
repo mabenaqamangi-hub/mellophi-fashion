@@ -1,0 +1,2105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Mellophi Fashion</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script src="../js/config.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: #f5f5f5;
+            display: flex;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background: linear-gradient(135deg, #2c2416 0%, #3d3426 100%);
+            color: white;
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            padding: 30px 0;
+        }
+        
+        .sidebar-header {
+            padding: 0 25px 30px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .sidebar-header h2 {
+            font-family: 'Cormorant Garamond', serif;
+            color: #d4af7a;
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+        }
+        
+        .sidebar-header p {
+            color: #999;
+            font-size: 0.9rem;
+        }
+        
+        .nav-menu {
+            padding: 30px 0;
+        }
+        
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 15px 25px;
+            color: #ccc;
+            text-decoration: none;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .nav-item:hover {
+            background: rgba(212, 175, 122, 0.1);
+            color: #d4af7a;
+        }
+        
+        .nav-item.active {
+            background: rgba(212, 175, 122, 0.2);
+            color: #d4af7a;
+            border-left: 3px solid #d4af7a;
+        }
+        
+        .nav-item span {
+            margin-right: 15px;
+            font-size: 1.2rem;
+        }
+        
+        /* Main Content */
+        .main-content {
+            margin-left: 260px;
+            flex: 1;
+            padding: 30px;
+        }
+        
+        .page-header {
+            margin-bottom: 30px;
+        }
+        
+        .page-header h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2.5rem;
+            color: #2c2416;
+            margin-bottom: 10px;
+        }
+        
+        .page-header p {
+            color: #666;
+        }
+        
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .stat-card h3 {
+            color: #666;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 10px;
+        }
+        
+        .stat-card .value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #2c2416;
+        }
+        
+        .stat-card .change {
+            font-size: 0.85rem;
+            color: #27ae60;
+            margin-top: 5px;
+        }
+        
+        /* Content Card */
+        .content-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        
+        .card-header h2 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.8rem;
+            color: #2c2416;
+        }
+        
+        /* Buttons */
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Montserrat', sans-serif;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #d4af7a 0%, #c9a876 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #c9a876 0%, #b89865 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(212, 175, 122, 0.3);
+        }
+        
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+        
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+        
+        .btn-danger {
+            background: #ff6b6b;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #ff5252;
+        }
+        
+        .btn-sm {
+            padding: 8px 16px;
+            font-size: 0.9rem;
+        }
+        
+        /* Table */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .data-table thead {
+            background: #f8f8f8;
+        }
+        
+        .data-table th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            color: #2c2416;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        
+        .data-table td {
+            padding: 15px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .data-table tr:hover {
+            background: #fafafa;
+        }
+        
+        .product-thumb {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        
+        .badge-success {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .badge-warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .badge-danger {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            margin-bottom: 25px;
+        }
+        
+        .modal-header h2 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2rem;
+            color: #2c2416;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c2416;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1rem;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #d4af7a;
+        }
+        
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        .form-group-inline {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .checkbox-group {
+            display: flex;
+            gap: 20px;
+            margin-top: 10px;
+        }
+        
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+        
+        .checkbox-label input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: #d4af7a;
+        }
+        
+        .modal-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        .modal-actions .btn {
+            flex: 1;
+        }
+        
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+        
+        .empty-state svg {
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+        
+        /* Hide pages by default */
+        .page {
+            display: none;
+        }
+        
+        .page.active {
+            display: block;
+        }
+        
+        /* Notification Animations */
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes slideOut {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2>MELLOPHI</h2>
+            <p>Admin Dashboard</p>
+        </div>
+        <nav class="nav-menu">
+            <a class="nav-item active" onclick="showPage('dashboard')">
+                <span>📊</span> Dashboard
+            </a>
+            <a class="nav-item" onclick="showPage('products')">
+                <span>👗</span> Products
+            </a>
+            <a class="nav-item" onclick="showPage('orders')">
+                <span>📦</span> Orders
+            </a>
+            <a class="nav-item" onclick="window.location.href='../index.html'">
+                <span>🏠</span> View Website
+            </a>
+            <a class="nav-item" onclick="logout()">
+                <span>🚪</span> Logout
+            </a>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Dashboard Page -->
+        <div id="dashboard" class="page active">
+            <div class="page-header">
+                <h1>Dashboard</h1>
+                <p>Overview of your store performance</p>
+            </div>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>Total Products</h3>
+                    <div class="value" id="totalProducts">0</div>
+                    <div class="change">📦 In Stock</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Total Orders</h3>
+                    <div class="value" id="totalOrders">0</div>
+                    <div class="change">📈 +12% from last month</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Revenue</h3>
+                    <div class="value" id="totalRevenue">R 0.00</div>
+                    <div class="change">💰 This month</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Low Stock Items</h3>
+                    <div class="value" id="lowStock">0</div>
+                    <div class="change">⚠️ Needs attention</div>
+                </div>
+            </div>
+            
+            <div class="content-card">
+                <div class="card-header">
+                    <h2>Recent Orders</h2>
+                    <button class="btn btn-secondary btn-sm" onclick="showPage('orders')">View All</button>
+                </div>
+                <div id="recentOrdersList">
+                    <div class="loading">Loading orders...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Products Page -->
+        <div id="products" class="page">
+            <div class="page-header">
+                <h1>Products</h1>
+                <p>Manage your product catalog</p>
+            </div>
+            
+            <div class="content-card">
+                <div class="card-header">
+                    <h2>All Products</h2>
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn btn-secondary btn-sm" onclick="addSampleProducts()">+ Add Sample Products</button>
+                        <button class="btn btn-primary" onclick="openAddProductModal()">+ Add Product</button>
+                    </div>
+                </div>
+                <div id="productsTable">
+                    <div class="loading">Loading products...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Orders Page -->
+        <div id="orders" class="page">
+            <div class="page-header">
+                <h1>Orders</h1>
+                <p>View and manage customer orders</p>
+            </div>
+            
+            <div class="content-card">
+                <div class="card-header">
+                    <h2>All Orders</h2>
+                </div>
+                <div id="ordersTable">
+                    <div class="loading">Loading orders...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Size Guide Editor Modal -->
+    <div id="sizeGuideModal" class="modal">
+        <div class="modal-content" style="max-width: 900px;">
+            <div class="modal-header" style="background: linear-gradient(135deg, #d4a574 0%, #c9945f 100%); color: white; padding: 20px; border-radius: 8px 8px 0 0;">
+                <h2 style="margin: 0; font-size: 1.5rem;">📏 Size Guide Editor</h2>
+                <p style="margin: 5px 0 0 0; opacity: 0.9; font-size: 0.9rem;">Create and manage size measurements for this product</p>
+            </div>
+            <div style="padding: 25px;">
+                <!-- Measurement Unit Selection -->
+                <div style="margin-bottom: 25px; padding: 15px; background: #f9f6f3; border-radius: 8px; border-left: 4px solid #d4a574;">
+                    <label style="display: block; margin-bottom: 10px; font-weight: 600; color: #5C4F44;">📐 Measurement Unit:</label>
+                    <select id="sizeGuideUnit" style="padding: 10px 15px; border: 2px solid #d4a574; border-radius: 5px; font-size: 1rem; width: 200px; cursor: pointer;">
+                        <option value="cm">Centimeters (cm)</option>
+                        <option value="inches">Inches (in)</option>
+                    </select>
+                </div>
+                
+                <!-- Size Entry Form -->
+                <div style="margin-bottom: 25px; padding: 20px; background: #f9f9f9; border-radius: 8px; border: 2px dashed #d4a574;">
+                    <h3 style="margin-top: 0; color: #5C4F44; font-size: 1.1rem;">➕ Add Size Information</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 15px;">
+                        <div>
+                            <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #5C4F44; font-size: 0.9rem;">Size Label *</label>
+                            <input type="text" id="newSizeLabel" placeholder="XS, S, M, L..." 
+                                style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 5px; font-size: 1rem; transition: border-color 0.3s;"
+                                onfocus="this.style.borderColor='#d4a574'" onblur="this.style.borderColor='#ddd'">
+                        </div>
+                        <div>
+                            <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #5C4F44; font-size: 0.9rem;">Bust</label>
+                            <input type="text" id="newSizeBust" placeholder="84-88" 
+                                style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 5px; font-size: 1rem; transition: border-color 0.3s;"
+                                onfocus="this.style.borderColor='#d4a574'" onblur="this.style.borderColor='#ddd'">
+                        </div>
+                        <div>
+                            <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #5C4F44; font-size: 0.9rem;">Waist</label>
+                            <input type="text" id="newSizeWaist" placeholder="66-70" 
+                                style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 5px; font-size: 1rem; transition: border-color 0.3s;"
+                                onfocus="this.style.borderColor='#d4a574'" onblur="this.style.borderColor='#ddd'">
+                        </div>
+                        <div>
+                            <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #5C4F44; font-size: 0.9rem;">Hips</label>
+                            <input type="text" id="newSizeHips" placeholder="90-94" 
+                                style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 5px; font-size: 1rem; transition: border-color 0.3s;"
+                                onfocus="this.style.borderColor='#d4a574'" onblur="this.style.borderColor='#ddd'">
+                        </div>
+                        <div>
+                            <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #5C4F44; font-size: 0.9rem;">Length</label>
+                            <input type="text" id="newSizeLength" placeholder="95" 
+                                style="width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 5px; font-size: 1rem; transition: border-color 0.3s;"
+                                onfocus="this.style.borderColor='#d4a574'" onblur="this.style.borderColor='#ddd'">
+                        </div>
+                    </div>
+                    <button type="button" onclick="addSizeFromForm()" class="btn" 
+                        style="background: #28a745; color: white; padding: 12px 25px; border: none; border-radius: 5px; cursor: pointer; font-weight: 600; transition: all 0.3s; box-shadow: 0 2px 5px rgba(40, 167, 69, 0.3); font-size: 1rem;">
+                        ✅ Add This Size
+                    </button>
+                    <small style="display: block; margin-top: 10px; color: #666;">💡 Fill in the form above and click "Add This Size" to add it to your size guide</small>
+                </div>
+                
+                <!-- Size Guide Display List -->
+                <div style="margin-bottom: 25px;">
+                    <h3 style="margin-bottom: 15px; color: #5C4F44; font-size: 1.1rem;">📋 Current Size Guide</h3>
+                    <div id="sizeGuideList" style="display: flex; flex-direction: column; gap: 10px;">
+                        <!-- Size cards will be added dynamically -->
+                        <div id="emptyStateMessage" style="padding: 40px; text-align: center; background: #fafafa; border-radius: 8px; border: 2px dashed #ddd;">
+                            <div style="font-size: 2.5rem; margin-bottom: 10px;">📏</div>
+                            <div style="color: #999; font-size: 1rem;">No sizes added yet</div>
+                            <div style="color: #999; font-size: 0.9rem; margin-top: 5px;">Use the form above to add your first size</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Additional Notes -->
+                <div style="margin-top: 25px;">
+                    <label style="display: block; margin-bottom: 10px; font-weight: 600; color: #5C4F44;">📝 Additional Notes (Optional):</label>
+                    <textarea id="sizeGuideNotes" placeholder="Example: All measurements are approximate. Model is 175cm wearing size S. Size up for looser fit..." style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 5px; min-height: 90px; font-size: 0.95rem; font-family: inherit; transition: border-color 0.3s;" onfocus="this.style.borderColor='#d4a574'" onblur="this.style.borderColor='#ddd'"></textarea>
+                    <small style="color: #666; display: block; margin-top: 5px;">💡 Tip: Add helpful sizing information for your customers</small>
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="modal-actions" style="margin-top: 25px; display: flex; gap: 15px; justify-content: flex-end; padding-top: 20px; border-top: 2px solid #f0f0f0;">
+                    <button type="button" class="btn btn-secondary" onclick="closeSizeGuideModal()" style="padding: 12px 30px; background: #6c757d; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: 600; transition: all 0.3s;">
+                        ✖ Cancel
+                    </button>
+                    <button type="button" class="btn btn-primary" onclick="saveSizeGuide()" style="padding: 12px 30px; background: #d4a574; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: 600; transition: all 0.3s; box-shadow: 0 2px 5px rgba(212, 165, 116, 0.4);">
+                        ✅ Save & Update
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Product Modal -->
+    <div id="productModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Add New Product</h2>
+            </div>
+            <form id="productForm" novalidate onsubmit="return false;">
+                <div class="form-group">
+                    <label for="productId">Product ID *</label>
+                    <input type="text" id="productId" required placeholder="e.g., A1, B2, C3">
+                </div>
+                
+                <div class="form-group">
+                    <label for="name">Product Name *</label>
+                    <input type="text" id="name" required placeholder="Enter product name">
+                </div>
+                
+                <div class="form-group-inline">
+                    <div class="form-group">
+                        <label for="category">Category *</label>
+                        <select id="category" required>
+                            <option value="">Select category</option>
+                            <option value="dress">Dress</option>
+                            <option value="top">Top</option>
+                            <option value="bottom">Bottom</option>
+                            <option value="set">Co-ord Set</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="price">Price (R) *</label>
+                        <input type="number" id="price" step="0.01" required placeholder="0.00">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <textarea id="description" placeholder="Enter product description"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="images">Product Images *</label>
+                    
+                    <!-- Image Category Tabs -->
+                    <div class="image-upload-tabs" style="display: flex; gap: 10px; margin-bottom: 15px; border-bottom: 2px solid #e0e0e0;">
+                        <button type="button" class="image-tab-btn active" data-category="front" style="padding: 10px 20px; border: none; background: none; border-bottom: 3px solid transparent; cursor: pointer; font-weight: 500; color: #666; transition: all 0.3s;">
+                            📸 Front Image
+                        </button>
+                        <button type="button" class="image-tab-btn" data-category="back" style="padding: 10px 20px; border: none; background: none; border-bottom: 3px solid transparent; cursor: pointer; font-weight: 500; color: #666; transition: all 0.3s;">
+                            🔄 Back Image
+                        </button>
+                        <button type="button" class="image-tab-btn" data-category="colors" style="padding: 10px 20px; border: none; background: none; border-bottom: 3px solid transparent; cursor: pointer; font-weight: 500; color: #666; transition: all 0.3s;">
+                            🎨 Other Colours Image
+                        </button>
+                    </div>
+                    
+                    <div id="imageDropZone" style="border: 2px dashed #d4a574; border-radius: 10px; padding: 40px; text-align: center; background: #f9f6f3; transition: all 0.3s; cursor: pointer;">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#d4a574" stroke-width="2" style="margin: 0 auto 15px; display: block; pointer-events: none;">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                            <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                            <polyline points="21 15 16 10 5 21"></polyline>
+                        </svg>
+                        <span id="dropZoneTitle" style="margin: 0 0 10px; color: #666; font-size: 1.1rem; pointer-events: none; display: block;">Click or Drag & Drop Front Image</span>
+                        <span style="margin: 0; color: #999; font-size: 0.9rem; pointer-events: none; display: block;">JPG, PNG, GIF, or WEBP files (ONE image only)</span>
+                        <button type="button" onclick="document.getElementById('imageUploadInput').click(); return false;" style="margin-top: 15px; padding: 10px 20px; background: #d4a574; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: 500;">Browse Files</button>
+                    </div>
+                    <!-- File input INSIDE modal to prevent backdrop clicks -->
+                    <input type="file" id="imageUploadInput" accept="image/*" style="display: none;">
+                    <input type="hidden" id="images">
+                    <div id="selectedImagesPreview" style="display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap;"></div>
+                    
+                    <!-- Color Options Section (shown only for Other Colours tab) -->
+                    <div id="colorOptionsSection" style="display: none; margin-top: 20px; padding: 20px; background: #f9f6f3; border-radius: 10px; border: 1px solid #e0e0e0;">
+                        <label style="display: block; margin-bottom: 10px; font-weight: 500; color: #333;">🎨 Available Colour Options</label>
+                        <small style="color: #666; display: block; margin-bottom: 15px;">Add the colours visible in the "Other Colours" image (e.g., beige, yellow, green). Customers will select from these options when ordering.</small>
+                        <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                            <input type="text" id="colorInput" placeholder="Enter colour name (e.g., Beige)" style="flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 5px;" onkeypress="if(event.key==='Enter'){event.preventDefault();addColorOption();}">
+                            <button type="button" onclick="addColorOption()" style="padding: 10px 20px; background: #d4a574; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: 500;">Add Colour</button>
+                        </div>
+                        <div id="colorChips" style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 15px;"></div>
+                    </div>
+                    <div id="uploadProgress" style="display: none; margin-top: 10px;">
+                        <div style="background: #e0e0e0; border-radius: 10px; overflow: hidden; height: 8px;">
+                            <div id="uploadProgressBar" style="background: #d4a574; height: 100%; width: 0%; transition: width 0.3s;"></div>
+                        </div>
+                        <p id="uploadStatus" style="margin: 5px 0 0; font-size: 0.9rem; color: #666;"></p>
+                    </div>
+                    <small style="color: #666; margin-top: 10px; display: block;">
+                        💡 <strong>Tip:</strong> Upload ONE image per category. For "Other Colours", upload a single image showing all colour variations, then add the colour names below.
+                    </small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="sizeGuide">Size Guide</label>
+                    <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                        <button type="button" onclick="showSizeGuideEditor()" class="btn" style="background: #d4a574; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: 600; box-shadow: 0 2px 5px rgba(212, 165, 116, 0.3); transition: all 0.3s;">
+                            ✏️ Edit Size Guide
+                        </button>
+                    </div>
+                    <textarea id="sizeGuide" placeholder="Size guide data (JSON format)" rows="3" style="display: none;"></textarea>
+                    <div id="sizeGuidePreview" style="margin-top: 10px; padding: 15px; background: #f9f6f3; border-radius: 8px; min-height: 80px; border: 2px solid #e0d5c7;">
+                        <em style="color: #999;">📏 No size guide added yet. Click "Edit Size Guide" to add measurements.</em>
+                    </div>
+                    <small style="color: #666; display: block; margin-top: 8px;">
+                        💡 <strong>Tip:</strong> Click the button above to add size measurements (Bust, Waist, Hips, Length) for each size.
+                    </small>
+                </div>
+                
+                <div class="form-group-inline">
+                    <div class="form-group">
+                        <label for="sizes">Sizes (comma-separated)</label>
+                        <input type="text" id="sizes" placeholder="S, M, L, XL">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="stock">Stock Quantity *</label>
+                        <input type="number" id="stock" required value="0">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Product Tags</label>
+                    <div class="checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="isFeatured">
+                            <span>Featured</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="isNewArrival">
+                            <span>New Arrival</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="isBestSeller">
+                            <span>Best Seller</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeProductModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Product</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const dashboardApiUrl = window.API_URL || 'http://localhost:5000/api';
+        let currentEditingProduct = null;
+        let selectedImages = [];
+        let currentImageCategory = 'front'; // Track which category we're uploading to
+        let categorizedImages = {
+            front: [],
+            back: [],
+            colors: []
+        };
+        let productColors = []; // Store color options for Other Colours image
+        let isUploadingImage = false; // Prevent modal close during upload
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Dashboard initializing...');
+            
+            // Catch any page unload attempts
+            window.addEventListener('beforeunload', function(e) {
+                const modal = document.getElementById('productModal');
+                if (modal && modal.classList.contains('active')) {
+                    console.warn('⚠️ Page trying to unload with modal open!');
+                    e.preventDefault();
+                    e.returnValue = 'You have unsaved changes. Are you sure you want to leave?';
+                    return e.returnValue;
+                }
+            });
+            
+            loadDashboardStats();
+            loadProducts();
+            loadOrders();
+            initializeImageUpload();
+            initializeImageTabs();
+            initializeFormHandler();
+        });
+        
+        // Initialize image category tabs
+        function initializeImageTabs() {
+            const tabBtns = document.querySelectorAll('.image-tab-btn');
+            const dropZoneTitle = document.getElementById('dropZoneTitle');
+            const colorOptionsSection = document.getElementById('colorOptionsSection');
+            
+            tabBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // Update active tab
+                    tabBtns.forEach(b => {
+                        b.style.borderBottomColor = 'transparent';
+                        b.style.color = '#666';
+                    });
+                    this.style.borderBottomColor = '#d4a574';
+                    this.style.color = '#d4a574';
+                    
+                    // Update current category
+                    currentImageCategory = this.dataset.category;
+                    
+                    // Update drop zone title
+                    const titles = {
+                        'front': 'Click or Drag & Drop Front Image',
+                        'back': 'Click or Drag & Drop Back Image',
+                        'colors': 'Click or Drag & Drop Other Colours Image'
+                    };
+                    if (dropZoneTitle) {
+                        dropZoneTitle.textContent = titles[currentImageCategory];
+                    }
+                    
+                    // Show/hide color options section
+                    if (colorOptionsSection) {
+                        colorOptionsSection.style.display = currentImageCategory === 'colors' ? 'block' : 'none';
+                    }
+                    
+                    // Update preview display
+                    updateImagePreview();
+                });
+            });
+            
+            // Set initial active state
+            if (tabBtns.length > 0) {
+                tabBtns[0].style.borderBottomColor = '#d4a574';
+                tabBtns[0].style.color = '#d4a574';
+            }
+        }
+        
+        // Color management functions
+        function addColorOption() {
+            const colorInput = document.getElementById('colorInput');
+            const colorName = colorInput.value.trim();
+            
+            if (!colorName) {
+                alert('Please enter a colour name');
+                return;
+            }
+            
+            if (productColors.includes(colorName)) {
+                alert('This colour has already been added');
+                return;
+            }
+            
+            productColors.push(colorName);
+            colorInput.value = '';
+            updateColorChips();
+        }
+        
+        function removeColorOption(colorName) {
+            productColors = productColors.filter(c => c !== colorName);
+            updateColorChips();
+        }
+        
+        function updateColorChips() {
+            const colorChips = document.getElementById('colorChips');
+            if (!colorChips) return;
+            
+            if (productColors.length === 0) {
+                colorChips.innerHTML = '<small style=\"color: #999;\">No colours added yet. Add colours that match what\'s shown in the image.</small>';
+                return;
+            }
+            
+            colorChips.innerHTML = productColors.map(color => `
+                <div style=\"display: inline-flex; align-items: center; gap: 8px; padding: 8px 12px; background: white; border: 1px solid #d4a574; border-radius: 20px; font-size: 0.9rem;\">
+                    <span>${color}</span>
+                    <button type=\"button\" onclick=\"removeColorOption('${color}')\" style=\"background: none; border: none; color: #e74c3c; cursor: pointer; font-weight: bold; padding: 0; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center;\">\u00d7</button>
+                </div>
+            `).join('');
+        }
+        
+        function initializeFormHandler() {
+            const form = document.getElementById('productForm');
+            if (!form) {
+                console.error('Product form not found!');
+                return;
+            }
+            
+            // Block ALL form submissions
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                e.stopImmediatePropagation();
+                console.log('=== FORM SUBMIT TRIGGERED ===');
+                console.log('Current editing product:', currentEditingProduct);
+                console.log('Categorized images:', categorizedImages);
+                
+                // Get images from the comma-separated input
+                const imagesValue = document.getElementById('images').value.trim();
+                console.log('Images value from hidden input:', imagesValue);
+                const imagesArray = imagesValue ? imagesValue.split(',').map(s => s.trim()).filter(s => s) : [];
+                console.log('Images array:', imagesArray);
+                
+                if (imagesArray.length === 0) {
+                    const totalImages = categorizedImages.front.length + categorizedImages.back.length + categorizedImages.colors.length;
+                    console.error('❌ No images found! Total in categories:', totalImages);
+                    alert('⚠️ Please upload at least one product image.\n\n' +
+                          'Current images:\n' +
+                          `• Front View: ${categorizedImages.front.length}\n` +
+                          `• Back View: ${categorizedImages.back.length}\n` +
+                          `• Other Colors: ${categorizedImages.colors.length}\n\n` +
+                          'Click the upload area and wait for "✅ uploaded successfully" message.');
+                    return false;
+                }
+                
+                // Validate required fields
+                const productId = document.getElementById('productId').value.trim();
+                const name = document.getElementById('name').value.trim();
+                const price = document.getElementById('price').value.trim();
+                const stock = document.getElementById('stock').value.trim();
+                
+                if (!productId || !name || !price || !stock) {
+                    alert('⚠️ Please fill in all required fields:\n• Product ID\n• Product Name\n• Price\n• Stock');
+                    return false;
+                }
+                
+                // Parse size guide if it's a JSON string
+                let sizeGuideData = document.getElementById('sizeGuide').value;
+                console.log('📏 Size Guide Textarea Value:', sizeGuideData);
+                if (sizeGuideData) {
+                    try {
+                        sizeGuideData = JSON.parse(sizeGuideData);
+                        console.log('📏 Size Guide Parsed:', sizeGuideData);
+                    } catch (e) {
+                        // If not JSON, keep as string (for backwards compatibility)
+                        console.log('⚠️ Size Guide not JSON, keeping as string');
+                    }
+                } else {
+                    console.log('⚠️ Size Guide textarea is EMPTY!');
+                }
+                
+                const productData = {
+                    productId: productId,
+                    name: name,
+                    category: document.getElementById('category').value,
+                    price: parseFloat(price),
+                    description: document.getElementById('description').value,
+                    images: imagesArray,
+                    colors: productColors, // Add the colors array
+                    sizes: document.getElementById('sizes').value.split(',').map(s => s.trim()).filter(s => s),
+                    sizeGuide: sizeGuideData,
+                    stock: parseInt(stock),
+                    isFeatured: document.getElementById('isFeatured').checked,
+                    isNewArrival: document.getElementById('isNewArrival').checked,
+                    isBestSeller: document.getElementById('isBestSeller').checked
+                };
+                
+                console.log('✅ Product data to submit:', productData);
+                console.log('📏 Size Guide in product data:', productData.sizeGuide);
+                
+                try {
+                    // Use the form's productId value, not the old one
+                    // URL encode product IDs to handle special characters like /
+                    const encodedOldId = currentEditingProduct ? encodeURIComponent(currentEditingProduct.productId) : '';
+                    const encodedNewId = encodeURIComponent(productId);
+                    const url = currentEditingProduct 
+                        ? `${dashboardApiUrl}/products/${encodedOldId}?newId=${encodedNewId}`
+                        : `${dashboardApiUrl}/products`;
+                    const method = currentEditingProduct ? 'PUT' : 'POST';
+                    
+                    console.log('Submitting to:', url, 'Method:', method);
+                    
+                    const response = await fetch(url, {
+                        method: method,
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(productData)
+                    });
+                    
+                    console.log('Response status:', response.status);
+                    
+                    if (!response.ok) {
+                        throw new Error(`Server returned ${response.status}: ${response.statusText}`);
+                    }
+                    
+                    const result = await response.json();
+                    console.log('✅ Response data:', result);
+                    
+                    if (result.success) {
+                        const message = currentEditingProduct ? 
+                            '✅ Product updated successfully!\n\nImages have been saved and will display on the front end.' : 
+                            '✅ Product added successfully!\n\nYour product with all images is now live on the website.';
+                        alert(message);
+                        closeProductModal();
+                        loadProducts();
+                        loadDashboardStats();
+                    } else {
+                        const errorDetails = result.error || result.message || 'Unknown error';
+                        console.error('❌ Server error:', errorDetails);
+                        alert('❌ Error saving product:\n\n' + errorDetails + '\n\nPlease check the console for more details.');
+                    }
+                } catch (error) {
+                    console.error('❌ Error saving product:', error);
+                    alert('❌ Error saving product:\n\n' + error.message + '\n\nPossible causes:\n• Backend server is not running\n• Network connection issue\n• Invalid product data\n\nCheck the console for details.');
+                }
+            });
+            
+            console.log('Form handler initialized');
+        }
+
+        // Navigation
+        function showPage(pageName) {
+            console.log('📄 showPage called:', pageName, new Error().stack);
+            document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            
+            document.getElementById(pageName).classList.add('active');
+            event.target.closest('.nav-item').classList.add('active');
+        }
+
+        // Dashboard Stats
+        async function loadDashboardStats() {
+            try {
+                const [productsRes, ordersRes] = await Promise.all([
+                    fetch(`${dashboardApiUrl}/products`),
+                    fetch(`${dashboardApiUrl}/orders`)
+                ]);
+                
+                const products = await productsRes.json();
+                const orders = await ordersRes.json();
+                
+                document.getElementById('totalProducts').textContent = products.count || 0;
+                document.getElementById('totalOrders').textContent = orders.count || 0;
+                
+                const revenue = orders.data?.reduce((sum, order) => sum + parseFloat(order.total || 0), 0) || 0;
+                document.getElementById('totalRevenue').textContent = `R ${revenue.toFixed(2)}`;
+                
+                const lowStockCount = products.data?.filter(p => p.stock < 5).length || 0;
+                document.getElementById('lowStock').textContent = lowStockCount;
+                
+                // Load recent orders
+                loadRecentOrders(orders.data?.slice(0, 5) || []);
+            } catch (error) {
+                console.error('Error loading dashboard stats:', error);
+            }
+        }
+
+        function loadRecentOrders(orders) {
+            const container = document.getElementById('recentOrdersList');
+            
+            if (orders.length === 0) {
+                container.innerHTML = '<div class="empty-state">No orders yet</div>';
+                return;
+            }
+            
+            container.innerHTML = `
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Customer</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${orders.map(order => `
+                            <tr>
+                                <td>#${order.id}</td>
+                                <td>${order.customerInfo?.name || 'N/A'}</td>
+                                <td>R ${parseFloat(order.total || 0).toFixed(2)}</td>
+                                <td><span class="badge badge-warning">${order.orderStatus || 'Pending'}</span></td>
+                                <td>${new Date(order.createdAt).toLocaleDateString()}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+        }
+
+        // Products Management
+        async function loadProducts() {
+            const container = document.getElementById('productsTable');
+            container.innerHTML = '<div class="loading">Loading products...</div>';
+            
+            try {
+                const response = await fetch(`${dashboardApiUrl}/products`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const result = await response.json();
+                console.log('Products loaded:', result);
+                
+                if (!result.success) {
+                    container.innerHTML = `<div class="empty-state"><h3>Error</h3><p>${result.message || 'Failed to load products'}</p></div>`;
+                    return;
+                }
+                
+                if (!result.data || result.data.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <svg width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="#d4af7a" stroke-width="1.5">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                <line x1="9" y1="9" x2="15" y2="15"></line>
+                                <line x1="15" y1="9" x2="9" y2="15"></line>
+                            </svg>
+                            <h3>No products yet</h3>
+                            <p>Click "+ Add Product" above to add your first product</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                container.innerHTML = `
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Image</th>
+                                <th>Product ID</th>
+                                <th>Name</th>
+                                <th>Category</th>
+                                <th>Price</th>
+                                <th>Sizes</th>
+                                <th>Stock</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${result.data.map(product => {
+                                const backendUrl = window.API_URL ? window.API_URL.replace('/api', '') : 'http://localhost:5000';
+                                const imagePath = product.images && product.images.length > 0 
+                                    ? `${backendUrl}/${product.images[0]}` 
+                                    : 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="100" height="100"%3E%3Crect fill="%23ddd" width="100" height="100"/%3E%3Ctext x="50%25" y="50%25" text-anchor="middle" dy=".3em" fill="%23999"%3ENo Image%3C/text%3E%3C/svg%3E';
+                                
+                                const sizesDisplay = product.sizes && product.sizes.length > 0 
+                                    ? product.sizes.join(', ') 
+                                    : 'N/A';
+                                
+                                return `
+                                    <tr>
+                                        <td><img src="${imagePath}" alt="${product.name}" class="product-thumb" onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'100\\' height=\\'100\\'%3E%3Crect fill=\\'%23ddd\\' width=\\'100\\' height=\\'100\\'/%3E%3Ctext x=\\'50%25\\' y=\\'50%25\\' text-anchor=\\'middle\\' dy=\\'.3em\\' fill=\\'%23999\\'%3ENo Image%3C/text%3E%3C/svg%3E'"></td>
+                                        <td><strong>${product.productId}</strong></td>
+                                        <td>${product.name}</td>
+                                        <td><span class="badge badge-success">${product.category}</span></td>
+                                        <td><strong>R ${parseFloat(product.price).toFixed(2)}</strong></td>
+                                        <td>${sizesDisplay}</td>
+                                        <td><span class="badge ${product.stock > 5 ? 'badge-success' : product.stock > 0 ? 'badge-warning' : 'badge-danger'}">${product.stock}</span></td>
+                                        <td>
+                                            <button class="btn btn-secondary btn-sm" onclick='editProduct(${JSON.stringify(product).replace(/'/g, "&#39;")})'>Edit</button>
+                                            <button class="btn btn-danger btn-sm" onclick="deleteProduct('${product.productId}')">Delete</button>
+                                        </td>
+                                    </tr>
+                                `;
+                            }).join('')}
+                        </tbody>
+                    </table>
+                `;
+            } catch (error) {
+                console.error('Error loading products:', error);
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <h3>⚠️ Connection Error</h3>
+                        <p>Cannot connect to backend server</p>
+                        <p style="color: #999; font-size: 0.9rem;">Make sure the backend is running on port 5000</p>
+                        <button class="btn btn-primary" onclick="loadProducts()">Retry</button>
+                    </div>
+                `;
+            }
+        }
+
+        // Orders Management
+        async function loadOrders() {
+            const container = document.getElementById('ordersTable');
+            
+            try {
+                const response = await fetch(`${dashboardApiUrl}/orders`);
+                const result = await response.json();
+                
+                if (!result.success || result.data.length === 0) {
+                    container.innerHTML = '<div class="empty-state"><h3>No orders found</h3><p>Orders will appear here when customers make purchases</p></div>';
+                    return;
+                }
+                
+                container.innerHTML = `
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Customer</th>
+                                <th>Email</th>
+                                <th>Products</th>
+                                <th>Total Amount</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${result.data.map(order => `
+                                <tr>
+                                    <td><strong>#${order.id}</strong></td>
+                                    <td>${order.customerInfo?.name || 'N/A'}</td>
+                                    <td>${order.customerInfo?.email || 'N/A'}</td>
+                                    <td>${JSON.parse(order.items || '[]').length} items</td>
+                                    <td><strong>R ${parseFloat(order.total || 0).toFixed(2)}</strong></td>
+                                    <td><span class="badge badge-warning">${order.orderStatus || 'Pending'}</span></td>
+                                    <td>${new Date(order.createdAt).toLocaleDateString()}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                `;
+            } catch (error) {
+                console.error('Error loading orders:', error);
+                container.innerHTML = '<div class="empty-state"><h3>Error loading orders</h3><p>Please try again later</p></div>';
+            }
+        }
+
+        // Modal Functions
+        function openAddProductModal() {
+            currentEditingProduct = null;
+            selectedImages = [];
+            categorizedImages = {
+                front: [],
+                back: [],
+                colors: []
+            };
+            productColors = [];
+            currentImageCategory = 'front';
+            
+            document.getElementById('modalTitle').textContent = 'Add New Product';
+            document.getElementById('productForm').reset();
+            document.getElementById('productId').disabled = false;
+            document.getElementById('selectedImagesPreview').innerHTML = '';
+            document.getElementById('images').value = ''; // Clear hidden input
+            
+            // Reset color section
+            const colorOptionsSection = document.getElementById('colorOptionsSection');
+            if (colorOptionsSection) {
+                colorOptionsSection.style.display = 'none';
+            }
+            updateColorChips();
+            
+            // Reset tab states
+            const tabBtns = document.querySelectorAll('.image-tab-btn');
+            tabBtns.forEach((btn, index) => {
+                if (index === 0) {
+                    btn.style.borderBottomColor = '#d4a574';
+                    btn.style.color = '#d4a574';
+                } else {
+                    btn.style.borderBottomColor = 'transparent';
+                    btn.style.color = '#666';
+                }
+                const originalText = btn.textContent.replace(/\(\d+\)/, '').trim();
+                btn.textContent = originalText;
+            });
+            
+            const modal = document.getElementById('productModal');
+            modal.classList.add('active');
+            modal.style.display = 'flex'; // Force display
+            console.log('Modal opened');
+            
+            // Watch for any changes to modal that might close it
+            if (!window.modalObserver) {
+                window.modalObserver = new MutationObserver(function(mutations) {
+                    mutations.forEach(function(mutation) {
+                        if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                            const modal = document.getElementById('productModal');
+                            if (!modal.classList.contains('active') && !isUploadingImage) {
+                                console.error('❌ MODAL CLOSED UNEXPECTEDLY!', new Error().stack);
+                                // Force it back open if we're in the middle of something
+                                modal.classList.add('active');
+                                modal.style.display = 'flex';
+                            }
+                        }
+                        if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
+                            const modal = document.getElementById('productModal');
+                            if (modal.style.display === 'none' && modal.classList.contains('active')) {
+                                console.error('❌ MODAL HIDDEN UNEXPECTEDLY!', new Error().stack);
+                                modal.style.display = 'flex';
+                            }
+                        }
+                    });
+                });
+                window.modalObserver.observe(modal, { attributes: true });
+            }
+        }
+
+        function editProduct(product) {
+            currentEditingProduct = product;
+            selectedImages = product.images || [];
+            document.getElementById('modalTitle').textContent = 'Edit Product';
+            document.getElementById('productId').value = product.productId;
+            document.getElementById('productId').disabled = false;
+            document.getElementById('name').value = product.name;
+            document.getElementById('category').value = product.category;
+            document.getElementById('price').value = product.price;
+            document.getElementById('description').value = product.description || '';
+            document.getElementById('images').value = selectedImages.join(', ');
+            document.getElementById('sizes').value = product.sizes.join(', ');
+            
+            // Handle size guide
+            if (product.sizeGuide) {
+                if (typeof product.sizeGuide === 'string') {
+                    document.getElementById('sizeGuide').value = product.sizeGuide;
+                } else {
+                    document.getElementById('sizeGuide').value = JSON.stringify(product.sizeGuide);
+                }
+                updateSizeGuidePreview(typeof product.sizeGuide === 'string' ? JSON.parse(product.sizeGuide) : product.sizeGuide);
+            } else {
+                document.getElementById('sizeGuide').value = '';
+                updateSizeGuidePreview(null);
+            }
+            
+            document.getElementById('stock').value = product.stock;
+            document.getElementById('isFeatured').checked = product.isFeatured;
+            document.getElementById('isNewArrival').checked = product.isNewArrival;
+            updateImagePreview();
+            document.getElementById('isBestSeller').checked = product.isBestSeller;
+            const modal = document.getElementById('productModal');
+            modal.classList.add('active');
+            modal.style.display = 'flex'; // Force display
+        }
+
+        function closeProductModal() {
+            // Prevent closing if upload is in progress
+            if (isUploadingImage) {
+                console.warn('⚠️ Cannot close modal - image upload in progress');
+                alert('⚠️ Please wait for the image upload to complete before closing.');
+                return;
+            }
+            
+            console.log('🚪 closeProductModal called - stack trace:', new Error().stack);
+            
+            const modal = document.getElementById('productModal');
+            modal.classList.remove('active');
+            modal.style.display = 'none';
+            currentEditingProduct = null;
+            console.log('Modal closed');
+        }
+
+        // Note: Size Guide Functions are defined later in the file
+
+        function populateSizeGuideEditor(sizeGuide) {
+            const tbody = document.getElementById('sizeGuideRows');
+            tbody.innerHTML = '';
+            
+            if (sizeGuide && sizeGuide.measurements) {
+                document.getElementById('sizeGuideUnit').value = sizeGuide.unit || 'cm';
+                document.getElementById('sizeGuideNotes').value = sizeGuide.notes || '';
+                
+                sizeGuide.measurements.forEach(measurement => {
+                    addSizeRow(measurement);
+                });
+            }
+        }
+
+        function addSizeRow(data = null) {
+            const tbody = document.getElementById('sizeGuideRows');
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td style="padding: 8px; border: 1px solid #ddd;">
+                    <input type="text" class="size-input" value="${data?.size || ''}" placeholder="e.g., S, M, L" style="width: 100%; padding: 5px; border: 1px solid #ddd; border-radius: 3px;">
+                </td>
+                <td style="padding: 8px; border: 1px solid #ddd;">
+                    <input type="text" class="bust-input" value="${data?.bust || ''}" placeholder="e.g., 32-34" style="width: 100%; padding: 5px; border: 1px solid #ddd; border-radius: 3px;">
+                </td>
+                <td style="padding: 8px; border: 1px solid #ddd;">
+                    <input type="text" class="waist-input" value="${data?.waist || ''}" placeholder="e.g., 26-28" style="width: 100%; padding: 5px; border: 1px solid #ddd; border-radius: 3px;">
+                </td>
+                <td style="padding: 8px; border: 1px solid #ddd;">
+                    <input type="text" class="hips-input" value="${data?.hips || ''}" placeholder="e.g., 36-38" style="width: 100%; padding: 5px; border: 1px solid #ddd; border-radius: 3px;">
+                </td>
+                <td style="padding: 8px; border: 1px solid #ddd;">
+                    <input type="text" class="length-input" value="${data?.length || ''}" placeholder="e.g., 95" style="width: 100%; padding: 5px; border: 1px solid #ddd; border-radius: 3px;">
+                </td>
+                <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">
+                    <button type="button" onclick="this.closest('tr').remove()" style="background: #dc3545; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer;">🗑️</button>
+                </td>
+            `;
+            tbody.appendChild(row);
+        }
+
+        function saveSizeGuide() {
+            const rows = document.querySelectorAll('#sizeGuideRows tr');
+            const measurements = [];
+            
+            rows.forEach(row => {
+                const size = row.querySelector('.size-input').value.trim();
+                const bust = row.querySelector('.bust-input').value.trim();
+                const waist = row.querySelector('.waist-input').value.trim();
+                const hips = row.querySelector('.hips-input').value.trim();
+                const length = row.querySelector('.length-input').value.trim();
+                
+                if (size) { // Only add if size is provided
+                    measurements.push({ size, bust, waist, hips, length });
+                }
+            });
+            
+            const sizeGuide = {
+                measurements: measurements,
+                unit: document.getElementById('sizeGuideUnit').value,
+                notes: document.getElementById('sizeGuideNotes').value
+            };
+            
+            // Save to hidden input
+            document.getElementById('sizeGuide').value = JSON.stringify(sizeGuide);
+            
+            // Update preview
+            updateSizeGuidePreview(sizeGuide);
+            
+            closeSizeGuideModal();
+        }
+
+        // Size Guide Functions
+        let currentSizeGuideData = null;
+
+        function showSizeGuideEditor() {
+            console.log('Opening size guide editor...');
+            // Load existing size guide data if available
+            const sizeGuideTextarea = document.getElementById('sizeGuide');
+            
+            try {
+                if (sizeGuideTextarea.value) {
+                    currentSizeGuideData = JSON.parse(sizeGuideTextarea.value);
+                } else {
+                    currentSizeGuideData = {
+                        unit: 'cm',
+                        measurements: [],
+                        notes: ''
+                    };
+                }
+            } catch (e) {
+                currentSizeGuideData = {
+                    unit: 'cm',
+                    measurements: [],
+                    notes: ''
+                };
+            }
+
+            // Populate the modal
+            document.getElementById('sizeGuideUnit').value = currentSizeGuideData.unit || 'cm';
+            document.getElementById('sizeGuideNotes').value = currentSizeGuideData.notes || '';
+            
+            // Clear form inputs
+            clearSizeForm();
+            
+            // Display existing measurements
+            renderSizeGuideList();
+
+            document.getElementById('sizeGuideModal').style.display = 'flex';
+        }
+
+        function clearSizeForm() {
+            document.getElementById('newSizeLabel').value = '';
+            document.getElementById('newSizeBust').value = '';
+            document.getElementById('newSizeWaist').value = '';
+            document.getElementById('newSizeHips').value = '';
+            document.getElementById('newSizeLength').value = '';
+        }
+
+        function addSizeFromForm() {
+            const size = document.getElementById('newSizeLabel').value.trim();
+            const bust = document.getElementById('newSizeBust').value.trim();
+            const waist = document.getElementById('newSizeWaist').value.trim();
+            const hips = document.getElementById('newSizeHips').value.trim();
+            const length = document.getElementById('newSizeLength').value.trim();
+
+            if (!size) {
+                alert('⚠️ Please enter a size label (e.g., S, M, L)');
+                document.getElementById('newSizeLabel').focus();
+                return;
+            }
+
+            // Check if size already exists
+            const existingSize = currentSizeGuideData.measurements.find(m => m.size.toLowerCase() === size.toLowerCase());
+            if (existingSize) {
+                alert('⚠️ This size already exists. Please use a different label or edit the existing one.');
+                return;
+            }
+
+            // Add to measurements array
+            currentSizeGuideData.measurements.push({
+                size: size,
+                bust: bust || '-',
+                waist: waist || '-',
+                hips: hips || '-',
+                length: length || '-'
+            });
+
+            // Clear form and re-render
+            clearSizeForm();
+            renderSizeGuideList();
+            
+            // Show success feedback
+            showNotification('✅ Size added successfully!', 'success');
+        }
+
+        function renderSizeGuideList() {
+            const list = document.getElementById('sizeGuideList');
+            const emptyMessage = document.getElementById('emptyStateMessage');
+            
+            if (!currentSizeGuideData.measurements || currentSizeGuideData.measurements.length === 0) {
+                emptyMessage.style.display = 'block';
+                // Remove all size cards
+                const cards = list.querySelectorAll('.size-card');
+                cards.forEach(card => card.remove());
+                return;
+            }
+
+            emptyMessage.style.display = 'none';
+            list.innerHTML = '';
+
+            currentSizeGuideData.measurements.forEach((measurement, index) => {
+                const card = document.createElement('div');
+                card.className = 'size-card';
+                card.style.cssText = `
+                    background: white;
+                    border: 2px solid #e0e0e0;
+                    border-radius: 8px;
+                    padding: 15px 20px;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    transition: all 0.3s;
+                    cursor: pointer;
+                `;
+                
+                card.innerHTML = `
+                    <div style="flex: 1;">
+                        <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
+                            <div style="background: #d4a574; color: white; padding: 8px 16px; border-radius: 5px; font-weight: 700; font-size: 1.1rem; min-width: 50px; text-align: center;">
+                                ${measurement.size}
+                            </div>
+                            <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                                <div>
+                                    <span style="color: #999; font-size: 0.85rem;">Bust:</span>
+                                    <strong style="margin-left: 5px; color: #5C4F44;">${measurement.bust}</strong>
+                                </div>
+                                <div>
+                                    <span style="color: #999; font-size: 0.85rem;">Waist:</span>
+                                    <strong style="margin-left: 5px; color: #5C4F44;">${measurement.waist}</strong>
+                                </div>
+                                <div>
+                                    <span style="color: #999; font-size: 0.85rem;">Hips:</span>
+                                    <strong style="margin-left: 5px; color: #5C4F44;">${measurement.hips}</strong>
+                                </div>
+                                <div>
+                                    <span style="color: #999; font-size: 0.85rem;">Length:</span>
+                                    <strong style="margin-left: 5px; color: #5C4F44;">${measurement.length}</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <button onclick="editSize(${index})" style="background: #ffc107; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: 600; transition: all 0.3s;">
+                            ✏️ Edit
+                        </button>
+                        <button onclick="removeSize(${index})" style="background: #dc3545; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: 600; transition: all 0.3s;">
+                            🗑️ Delete
+                        </button>
+                    </div>
+                `;
+
+                // Hover effect
+                card.onmouseover = function() {
+                    this.style.borderColor = '#d4a574';
+                    this.style.boxShadow = '0 4px 12px rgba(212, 165, 116, 0.2)';
+                };
+                card.onmouseout = function() {
+                    this.style.borderColor = '#e0e0e0';
+                    this.style.boxShadow = 'none';
+                };
+
+                list.appendChild(card);
+            });
+        }
+
+        function editSize(index) {
+            const measurement = currentSizeGuideData.measurements[index];
+            
+            // Fill form with existing data
+            document.getElementById('newSizeLabel').value = measurement.size;
+            document.getElementById('newSizeBust').value = measurement.bust === '-' ? '' : measurement.bust;
+            document.getElementById('newSizeWaist').value = measurement.waist === '-' ? '' : measurement.waist;
+            document.getElementById('newSizeHips').value = measurement.hips === '-' ? '' : measurement.hips;
+            document.getElementById('newSizeLength').value = measurement.length === '-' ? '' : measurement.length;
+            
+            // Remove the old entry
+            currentSizeGuideData.measurements.splice(index, 1);
+            renderSizeGuideList();
+            
+            // Scroll to form
+            document.getElementById('newSizeLabel').focus();
+            showNotification('📝 Editing size - update values and click "Add This Size"', 'info');
+        }
+
+        function removeSize(index) {
+            if (confirm(`Are you sure you want to remove size "${currentSizeGuideData.measurements[index].size}"?`)) {
+                currentSizeGuideData.measurements.splice(index, 1);
+                renderSizeGuideList();
+                showNotification('🗑️ Size removed', 'success');
+            }
+        }
+
+        function saveSizeGuide() {
+            const unit = document.getElementById('sizeGuideUnit').value;
+            const notes = document.getElementById('sizeGuideNotes').value.trim();
+            
+            // Update the current data with latest values
+            currentSizeGuideData.unit = unit;
+            currentSizeGuideData.notes = notes;
+
+            console.log('💾 Saving size guide:', currentSizeGuideData);
+
+            if (currentSizeGuideData.measurements.length === 0) {
+                if (confirm('⚠️ No sizes have been added. Do you want to save an empty size guide?')) {
+                    // Save empty size guide
+                    document.getElementById('sizeGuide').value = '';
+                    updateSizeGuidePreview(null);
+                    closeSizeGuideModal();
+                    showNotification('ℹ️ Empty size guide saved', 'info');
+                }
+                return;
+            }
+
+            // Save to hidden textarea
+            const jsonString = JSON.stringify(currentSizeGuideData);
+            document.getElementById('sizeGuide').value = jsonString;
+            console.log('✅ Size guide saved to textarea:', jsonString);
+            console.log('✅ Textarea value confirmed:', document.getElementById('sizeGuide').value);
+            
+            // Update preview
+            updateSizeGuidePreview(currentSizeGuideData);
+            
+            // Close modal
+            closeSizeGuideModal();
+            
+            // Show success message
+            showNotification('✅ Size guide saved! Changes will be reflected when you save the product.', 'success');
+        }
+
+        function updateSizeGuidePreview(data) {
+            const preview = document.getElementById('sizeGuidePreview');
+            
+            if (!data || !data.measurements || data.measurements.length === 0) {
+                preview.innerHTML = '<em style="color: #999;">📏 No size guide added yet. Click "Edit Size Guide" to add measurements.</em>';
+                return;
+            }
+
+            let html = `
+                <div style="font-weight: 600; color: #5C4F44; margin-bottom: 10px;">📏 Size Guide (${data.unit})</div>
+                <div style="overflow-x: auto;">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
+                        <thead>
+                            <tr style="background: var(--table-header-bg, #3d3020); color: var(--table-header-text, #ffffff);">
+                                <th style="padding: 8px; text-align: left; border: 1px solid var(--table-header-border, #5a4a35); font-weight: 700;">Size</th>
+                                <th style="padding: 8px; text-align: left; border: 1px solid var(--table-header-border, #5a4a35); font-weight: 700;">Bust</th>
+                                <th style="padding: 8px; text-align: left; border: 1px solid var(--table-header-border, #5a4a35); font-weight: 700;">Waist</th>
+                                <th style="padding: 8px; text-align: left; border: 1px solid var(--table-header-border, #5a4a35); font-weight: 700;">Hips</th>
+                                <th style="padding: 8px; text-align: left; border: 1px solid var(--table-header-border, #5a4a35); font-weight: 700;">Length</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+            
+            data.measurements.forEach((m, index) => {
+                html += `
+                    <tr style="background: ${index % 2 === 0 ? 'white' : '#fafafa'};">
+                        <td style="padding: 8px; border: 1px solid #ddd; font-weight: 600;">${m.size}</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">${m.bust || '-'}</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">${m.waist || '-'}</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">${m.hips || '-'}</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">${m.length || '-'}</td>
+                    </tr>
+                `;
+            });
+            
+            html += '</tbody></table></div>';
+            
+            if (data.notes) {
+                html += `<div style="margin-top: 10px; padding: 8px; background: #fffbf0; border-left: 3px solid #d4a574; font-size: 0.85rem; color: #666;"><strong>Note:</strong> ${data.notes}</div>`;
+            }
+            
+            preview.innerHTML = html;
+        }
+
+        function closeSizeGuideModal() {
+            document.getElementById('sizeGuideModal').style.display = 'none';
+        }
+
+        function showNotification(message, type = 'info') {
+            // Simple notification (you can enhance this with a proper notification system)
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 15px 20px;
+                background: ${type === 'success' ? '#28a745' : type === 'error' ? '#dc3545' : '#17a2b8'};
+                color: white;
+                border-radius: 5px;
+                box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+                z-index: 10000;
+                animation: slideIn 0.3s ease;
+                font-weight: 600;
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        // Delete Product
+        async function deleteProduct(productId) {
+            if (!confirm('Are you sure you want to delete this product?')) return;
+            
+            try {
+                // URL encode product ID to handle special characters like /
+                const encodedProductId = encodeURIComponent(productId);
+                const response = await fetch(`${dashboardApiUrl}/products/${encodedProductId}`, {
+                    method: 'DELETE'
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert('Product deleted successfully!');
+                    loadProducts();
+                    loadDashboardStats();
+                } else {
+                    alert('Error: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Error deleting product:', error);
+                alert('Error deleting product. Please try again.');
+            }
+        }
+
+        // Add Sample Products
+        async function addSampleProducts() {
+            if (!confirm('This will add 5 sample products. Continue?')) return;
+            
+            const sampleProducts = [
+                {
+                    productId: 'A1',
+                    name: 'Casual Summer Dress',
+                    category: 'dress',
+                    price: 380,
+                    description: 'Beautiful casual summer dress in nude tones. Perfect for everyday wear.',
+                    images: ['images/PRODUCTS/A1 front.png'],
+                    sizes: ['S', 'M', 'L', 'XL'],
+                    stock: 12,
+                    isFeatured: true,
+                    isNewArrival: true
+                },
+                {
+                    productId: 'A2',
+                    name: 'Elegant Evening Dress',
+                    category: 'dress',
+                    price: 420,
+                    description: 'Sophisticated dress for special occasions.',
+                    images: ['images/PRODUCTS/A2 front.png'],
+                    sizes: ['S', 'M', 'L'],
+                    stock: 8,
+                    isFeatured: true
+                },
+                {
+                    productId: 'C1',
+                    name: 'Everyday Top',
+                    category: 'top',
+                    price: 220,
+                    description: 'Comfortable everyday top in soft fabrics.',
+                    images: ['images/PRODUCTS/C1 front.png'],
+                    sizes: ['S', 'M', 'L', 'XL'],
+                    stock: 15,
+                    isNewArrival: true
+                },
+                {
+                    productId: 'D1',
+                    name: 'Chic Co-ord Set',
+                    category: 'set',
+                    price: 300,
+                    description: 'Stylish two-piece coordinated set.',
+                    images: ['images/PRODUCTS/D1 front.png'],
+                    sizes: ['S', 'M', 'L'],
+                    stock: 10,
+                    isBestSeller: true
+                },
+                {
+                    productId: 'E1',
+                    name: 'Midi Skirt',
+                    category: 'bottom',
+                    price: 250,
+                    description: 'Elegant midi skirt for versatile styling.',
+                    images: ['images/PRODUCTS/E1 blue.jpg'],
+                    sizes: ['S', 'M', 'L'],
+                    stock: 6
+                }
+            ];
+            
+            let successCount = 0;
+            let errorCount = 0;
+            
+            for (const product of sampleProducts) {
+                try {
+                    const response = await fetch(`${dashboardApiUrl}/products`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(product)
+                    });
+                    
+                    const result = await response.json();
+                    if (result.success) {
+                        successCount++;
+                    } else {
+                        errorCount++;
+                        console.log(`Failed to add ${product.productId}:`, result.message);
+                    }
+                } catch (error) {
+                    errorCount++;
+                    console.error(`Error adding ${product.productId}:`, error);
+                }
+            }
+            
+            alert(`Sample products added!\n\nSuccess: ${successCount}\nFailed: ${errorCount}`);
+            loadProducts();
+            loadDashboardStats();
+        }
+
+        // ============ IMAGE UPLOAD FUNCTIONS ============
+        
+        function initializeImageUpload() {
+            const dropZone = document.getElementById('imageDropZone');
+            const fileInput = document.getElementById('imageUploadInput');
+            
+            console.log('Initializing image upload...', dropZone, fileInput);
+            
+            if (!dropZone || !fileInput) {
+                console.error('Drop zone or file input not found!');
+                return;
+            }
+            
+            // Make drop zone clickable - use onclick to trigger file input
+            dropZone.onclick = function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                e.stopImmediatePropagation();
+                console.log('🖱️ Drop zone clicked - triggering file input');
+                console.log('📊 Modal state before click:', document.getElementById('productModal').style.display);
+                fileInput.click();
+                console.log('📊 Modal state after click:', document.getElementById('productModal').style.display);
+                return false;
+            };
+            
+            // Prevent default drag behaviors on drop zone
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, preventDefaults, false);
+            });
+            
+            // Highlight drop zone when dragging over it
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropZone.addEventListener(eventName, () => {
+                    dropZone.style.borderColor = '#2C2416';
+                    dropZone.style.background = '#fff8f0';
+                }, false);
+            });
+            
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, () => {
+                    dropZone.style.borderColor = '#d4a574';
+                    dropZone.style.background = '#f9f6f3';
+                }, false);
+            });
+            
+            // Handle dropped files
+            dropZone.addEventListener('drop', function(e) {
+                console.log('Files dropped!');
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    handleFiles(files);
+                }
+            }, false);
+            
+            // Handle file input change
+            fileInput.onchange = function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('📁 Files selected:', this.files.length);
+                console.log('📊 Modal state during file selection:', document.getElementById('productModal').style.display);
+                if (this.files && this.files.length > 0) {
+                    handleFiles(this.files);
+                }
+                // Reset file input to allow selecting the same file again
+                this.value = '';
+                console.log('📊 Modal state after file handling:', document.getElementById('productModal').style.display);
+            };
+            
+            console.log('Image upload initialized successfully');
+        }
+        
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        
+        async function handleFiles(files) {
+            console.log('=== HANDLEFILES CALLED ===');
+            console.log('handleFiles called with', files.length, 'file(s)');
+            
+            if (!files || files.length === 0) {
+                console.log('No files to handle');
+                return;
+            }
+            
+            // Only allow ONE image per category
+            if (categorizedImages[currentImageCategory].length > 0) {
+                alert(`⚠️ Only ONE image allowed per category!\n\nYou already have a ${currentImageCategory === 'front' ? 'Front' : currentImageCategory === 'back' ? 'Back' : 'Other Colours'} image.\n\nPlease remove the existing image first (click the × button).`);
+                return;
+            }
+            
+            // Use the first file (should only be one anyway)
+            const fileToUpload = files[0];
+            
+            // Set uploading flag to prevent modal close
+            isUploadingImage = true;
+            console.log('🔒 Upload started - modal locked');
+            
+            // Validate file type
+            const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+            if (!validTypes.includes(fileToUpload.type)) {
+                alert(`${fileToUpload.name} is not a valid image file`);
+                return;
+            }
+            
+            // Show progress (if elements exist)
+            const uploadProgress = document.getElementById('uploadProgress');
+            const uploadStatus = document.getElementById('uploadStatus');
+            const uploadProgressBar = document.getElementById('uploadProgressBar');
+            
+            if (uploadProgress && uploadStatus) {
+                uploadProgress.style.display = 'block';
+                uploadStatus.textContent = 'Uploading...';
+            }
+            
+            // Create FormData
+            const formData = new FormData();
+            formData.append('images', fileToUpload);
+            
+            console.log('Uploading to:', `${dashboardApiUrl}/admin/upload`);
+            
+            try {
+                const response = await fetch(`${dashboardApiUrl}/admin/upload`, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                console.log('Response status:', response.status);
+                const result = await response.json();
+                console.log('Upload result:', result);
+                
+                if (result.success) {
+                    // Set the single uploaded image for this category
+                    categorizedImages[currentImageCategory] = result.imagePaths;
+                    
+                    // Update selected images with all categorized images
+                    selectedImages = [
+                        ...categorizedImages.front,
+                        ...categorizedImages.back,
+                        ...categorizedImages.colors
+                    ];
+                    
+                    const imagesInput = document.getElementById('images');
+                    if (imagesInput) {
+                        imagesInput.value = selectedImages.join(', ');
+                    }
+                    updateImagePreview();
+                    
+                    // Update progress
+                    if (uploadProgressBar) uploadProgressBar.style.width = '100%';
+                    if (uploadStatus) {
+                        const categoryLabels = {
+                            'front': 'Front Image',
+                            'back': 'Back Image',
+                            'colors': 'Other Colours Image'
+                        };
+                        uploadStatus.textContent = `✅ ${categoryLabels[currentImageCategory]} uploaded!`;
+                        uploadStatus.style.color = '#27ae60';
+                    }
+                    
+                    console.log('Images uploaded successfully!', categorizedImages);
+                    
+                    // Unlock modal
+                    isUploadingImage = false;
+                    console.log('🔓 Upload complete - modal unlocked');
+                    
+                    // Hide progress after 3 seconds
+                    if (uploadProgress && uploadProgressBar && uploadStatus) {
+                        setTimeout(() => {
+                            uploadProgress.style.display = 'none';
+                            uploadProgressBar.style.width = '0%';
+                            uploadStatus.style.color = '#666';
+                        }, 3000);
+                    }
+                } else {
+                    throw new Error(result.message || 'Upload failed');
+                }
+            } catch (error) {
+                console.error('Upload error:', error);
+                const errorMsg = 'Upload failed: ' + error.message;
+                if (uploadStatus) {
+                    uploadStatus.textContent = errorMsg;
+                    uploadStatus.style.color = '#e74c3c';
+                }
+                // Unlock modal even on error
+                isUploadingImage = false;
+                console.log('🔓 Upload error - modal unlocked');
+            }
+        }
+        
+        function updateImagePreview() {
+            const preview = document.getElementById('selectedImagesPreview');
+            const backendUrl = window.API_URL ? window.API_URL.replace('/api', '') : 'http://localhost:5000';
+            
+            // Show images from current category
+            const currentImages = categorizedImages[currentImageCategory] || [];
+            
+            preview.innerHTML = currentImages.map(path => {
+                const categoryLabels = {
+                    'front': '📸',
+                    'back': '🔄',
+                    'colors': '🎨'
+                };
+                const badge = categoryLabels[currentImageCategory] || '';
+                
+                return `
+                    <div style="position: relative; width: 100px; height: 100px;">
+                        <img src="${backendUrl}/${path}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px; border: 2px solid #d4a574;" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22100%22%3E%3Crect fill=%22%23f0f0f0%22 width=%22100%22 height=%22100%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22%23999%22%3ENo Image%3C/text%3E%3C/svg%3E'">
+                        <span style="position: absolute; top: 5px; left: 5px; background: rgba(0,0,0,0.7); color: white; padding: 2px 6px; border-radius: 4px; font-size: 12px;">${badge}</span>
+                        <button type="button" onclick="removeSelectedImage('${path}', '${currentImageCategory}')" style="position: absolute; top: -8px; right: -8px; background: #e74c3c; color: white; border: none; border-radius: 50%; width: 24px; height: 24px; cursor: pointer; font-size: 16px; line-height: 1; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">×</button>
+                    </div>
+                `;
+            }).join('');
+            
+            // Update tab badges with counts
+            const tabBtns = document.querySelectorAll('.image-tab-btn');
+            tabBtns.forEach(btn => {
+                const category = btn.dataset.category;
+                const count = categorizedImages[category]?.length || 0;
+                const originalText = btn.textContent.replace(/\(\d+\)/, '').trim();
+                btn.textContent = count > 0 ? `${originalText} (${count})` : originalText;
+            });
+        }
+        
+        function removeSelectedImage(imagePath, category) {
+            // Remove from categorized images
+            if (categorizedImages[category]) {
+                categorizedImages[category] = categorizedImages[category].filter(p => p !== imagePath);
+            }
+            
+            // Update selected images with all categorized images
+            selectedImages = [
+                ...categorizedImages.front,
+                ...categorizedImages.back,
+                ...categorizedImages.colors
+            ];
+            
+            document.getElementById('images').value = selectedImages.join(', ');
+            updateImagePreview();
+        }
+
+        // Logout
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                localStorage.removeItem('adminToken');
+                window.location.href = 'login.html';
+            }
+        }
+
+        // Close modal on outside click - DISABLED to prevent accidental closure during upload
+        // document.getElementById('productModal').addEventListener('click', function(e) {
+        //     if (e.target === this) {
+        //         closeProductModal();
+        //     }
+        // });
+        
+        // Prevent modal content clicks from closing modal
+        document.querySelector('#productModal .modal-content').addEventListener('click', function(e) {
+            e.stopPropagation();
+        });
+    </script>
+</body>
+</html>

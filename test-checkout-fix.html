@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Checkout - Add Products</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #F5EBE0 0%, #E8D5C4 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            max-width: 800px;
+            width: 100%;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 30px;
+        }
+        
+        .product-card {
+            border: 2px solid #e8d5c4;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+        
+        .product-card:hover {
+            border-color: #d4af7a;
+            box-shadow: 0 5px 15px rgba(212, 175, 122, 0.2);
+        }
+        
+        .product-info h3 {
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        
+        .product-info p {
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
+        
+        .product-price {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #27ae60;
+        }
+        
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .quantity-control button {
+            background: #d4af7a;
+            color: white;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.2em;
+        }
+        
+        .quantity-control button:hover {
+            background: #c19a6b;
+        }
+        
+        .quantity-control input {
+            width: 60px;
+            text-align: center;
+            padding: 5px;
+            border: 2px solid #e8d5c4;
+            border-radius: 5px;
+        }
+        
+        .btn {
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn:hover {
+            background: #229954;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(39, 174, 96, 0.3);
+        }
+        
+        .btn-secondary {
+            background: #3498db;
+        }
+        
+        .btn-secondary:hover {
+            background: #2980b9;
+        }
+        
+        .btn-danger {
+            background: #e74c3c;
+        }
+        
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+        
+        .cart-summary {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+        
+        .cart-summary h2 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+        
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .cart-total {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 2px solid #2c3e50;
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .success {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🛍️ Test Checkout System</h1>
+        <p class="subtitle">Select products to test the checkout flow</p>
+        
+        <div id="message"></div>
+        
+        <div class="product-card">
+            <div class="product-info">
+                <h3>A1 — Casual Summer Dress</h3>
+                <p>Size: M | Color: Sand</p>
+                <div class="quantity-control">
+                    <button onclick="changeQty('dress', -1)">-</button>
+                    <input type="number" id="qty-dress" value="1" min="1" max="10">
+                    <button onclick="changeQty('dress', 1)">+</button>
+                </div>
+            </div>
+            <div class="product-price">R 380.00</div>
+        </div>
+        
+        <div class="product-card">
+            <div class="product-info">
+                <h3>C1 — Everyday Top</h3>
+                <p>Size: L | Color: White</p>
+                <div class="quantity-control">
+                    <button onclick="changeQty('top', -1)">-</button>
+                    <input type="number" id="qty-top" value="1" min="1" max="10">
+                    <button onclick="changeQty('top', 1)">+</button>
+                </div>
+            </div>
+            <div class="product-price">R 220.00</div>
+        </div>
+        
+        <div class="product-card">
+            <div class="product-info">
+                <h3>E1 — Skirt (Blue)</h3>
+                <p>Size: S | Color: Blue</p>
+                <div class="quantity-control">
+                    <button onclick="changeQty('skirt', -1)">-</button>
+                    <input type="number" id="qty-skirt" value="1" min="1" max="10">
+                    <button onclick="changeQty('skirt', 1)">+</button>
+                </div>
+            </div>
+            <div class="product-price">R 250.00</div>
+        </div>
+        
+        <div class="cart-summary" id="cart-summary" style="display: none;">
+            <h2>Current Cart</h2>
+            <div id="cart-items"></div>
+            <div class="cart-total">
+                <span>Estimated Total:</span>
+                <span id="estimated-total">R 0.00</span>
+            </div>
+        </div>
+        
+        <button class="btn" onclick="addToCart()">✓ Add Selected Items to Cart</button>
+        <button class="btn btn-secondary" onclick="goToCheckout()">→ Go to Checkout</button>
+        <button class="btn btn-danger" onclick="clearCart()">🗑️ Clear Cart</button>
+        
+        <div style="margin-top: 30px; padding: 20px; background: #fff3cd; border-radius: 10px;">
+            <h3 style="color: #856404; margin-bottom: 10px;">💡 Instructions:</h3>
+            <ol style="color: #856404; line-height: 1.8; margin-left: 20px;">
+                <li>Adjust quantities using +/- buttons</li>
+                <li>Click "Add Selected Items to Cart"</li>
+                <li>Click "Go to Checkout" to see totals</li>
+                <li>On checkout page, totals will display automatically</li>
+                <li>Change shipping options to see dynamic updates</li>
+            </ol>
+        </div>
+    </div>
+    
+    <script>
+        function changeQty(product, delta) {
+            const input = document.getElementById(`qty-${product}`);
+            let value = parseInt(input.value) + delta;
+            if (value < 1) value = 1;
+            if (value > 10) value = 10;
+            input.value = value;
+            updateCartPreview();
+        }
+        
+        function updateCartPreview() {
+            const cart = [];
+            const qtyDress = parseInt(document.getElementById('qty-dress').value);
+            const qtyTop = parseInt(document.getElementById('qty-top').value);
+            const qtySkirt = parseInt(document.getElementById('qty-skirt').value);
+            
+            if (qtyDress > 0) cart.push({name: "A1 Dress", qty: qtyDress, price: 380});
+            if (qtyTop > 0) cart.push({name: "C1 Top", qty: qtyTop, price: 220});
+            if (qtySkirt > 0) cart.push({name: "E1 Skirt", qty: qtySkirt, price: 250});
+            
+            const summary = document.getElementById('cart-summary');
+            const itemsDiv = document.getElementById('cart-items');
+            const totalEl = document.getElementById('estimated-total');
+            
+            if (cart.length > 0) {
+                summary.style.display = 'block';
+                itemsDiv.innerHTML = cart.map(item => 
+                    `<div class="cart-item">
+                        <span>${item.name} × ${item.qty}</span>
+                        <span>R ${(item.price * item.qty).toFixed(2)}</span>
+                    </div>`
+                ).join('');
+                
+                const total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+                totalEl.textContent = `R ${total.toFixed(2)}`;
+            }
+        }
+        
+        function addToCart() {
+            const cart = [];
+            const qtyDress = parseInt(document.getElementById('qty-dress').value);
+            const qtyTop = parseInt(document.getElementById('qty-top').value);
+            const qtySkirt = parseInt(document.getElementById('qty-skirt').value);
+            
+            if (qtyDress > 0) {
+                cart.push({
+                    id: "A1",
+                    name: "A1 — Casual Summer Dress",
+                    price: 380,
+                    size: "M",
+                    color: "Sand",
+                    quantity: qtyDress,
+                    image: "images/PRODUCTS/A1 front.png"
+                });
+            }
+            
+            if (qtyTop > 0) {
+                cart.push({
+                    id: "C1",
+                    name: "C1 — Everyday Top",
+                    price: 220,
+                    size: "L",
+                    color: "White",
+                    quantity: qtyTop,
+                    image: "images/PRODUCTS/C1 front.png"
+                });
+            }
+            
+            if (qtySkirt > 0) {
+                cart.push({
+                    id: "E1",
+                    name: "E1 — Skirt (Blue)",
+                    price: 250,
+                    size: "S",
+                    color: "Blue",
+                    quantity: qtySkirt,
+                    image: "images/PRODUCTS/E1 blue.jpg"
+                });
+            }
+            
+            if (cart.length === 0) {
+                showMessage('Please select at least one item', 'error');
+                return;
+            }
+            
+            localStorage.setItem('cart', JSON.stringify(cart));
+            showMessage(`✓ Successfully added ${cart.length} product(s) to cart!`, 'success');
+            updateCartPreview();
+        }
+        
+        function goToCheckout() {
+            const cart = localStorage.getItem('cart');
+            if (!cart || JSON.parse(cart).length === 0) {
+                showMessage('Please add items to cart first', 'error');
+                return;
+            }
+            window.location.href = 'checkout.html';
+        }
+        
+        function clearCart() {
+            localStorage.removeItem('cart');
+            showMessage('Cart cleared!', 'info');
+            document.getElementById('cart-summary').style.display = 'none';
+        }
+        
+        function showMessage(text, type) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.className = type === 'success' ? 'success' : type === 'error' ? 'info' : 'info';
+            messageDiv.textContent = text;
+            messageDiv.style.display = 'block';
+            
+            setTimeout(() => {
+                messageDiv.style.display = 'none';
+            }, 3000);
+        }
+        
+        // Initialize
+        updateCartPreview();
+    </script>
+</body>
+</html>

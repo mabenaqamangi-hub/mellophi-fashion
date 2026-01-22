@@ -1,0 +1,1390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart - Mellophi Fashion</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script src="js/config.js"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #FAF8F5 0%, #F5EBE0 100%);
+            min-height: 100vh;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+        
+        .cart-container {
+            max-width: 1100px;
+            margin: 120px auto 60px;
+            padding: 40px;
+        }
+        
+        .cart-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 3rem;
+            font-weight: 500;
+            margin-bottom: 40px;
+            color: #2c2416;
+            text-align: center;
+            letter-spacing: 2px;
+        }
+        
+        .cart-content {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 30px;
+        }
+        
+        /* Cart Items */
+        .cart-items {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+        }
+        
+        .cart-item {
+            display: grid;
+            grid-template-columns: auto auto 1fr;
+            gap: 20px;
+            padding: 25px;
+            border: 2px solid #F5EBE0;
+            border-radius: 15px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+            background: linear-gradient(135deg, #ffffff 0%, #FAF8F5 100%);
+        }
+        
+        .cart-item.selected {
+            border-color: #d4af7a;
+            background: linear-gradient(135deg, #fffef8 0%, #fdf9f3 100%);
+            box-shadow: 0 4px 15px rgba(212, 175, 122, 0.2);
+        }
+        
+        .item-checkbox {
+            display: flex;
+            align-items: center;
+        }
+        
+        .item-checkbox input[type="checkbox"] {
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            accent-color: #d4af7a;
+        }
+        
+        .item-image {
+            width: 100px;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 10px;
+            background: #F5EBE0;
+        }
+        
+        .item-details {
+            flex: 1;
+        }
+        
+        .item-name {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #2c2416;
+            margin-bottom: 8px;
+        }
+        
+        .item-meta {
+            color: #8B7B6E;
+            font-size: 0.95rem;
+            margin-bottom: 15px;
+        }
+        
+        .item-price {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #d4af7a;
+            margin-bottom: 10px;
+        }
+        
+        .item-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: white;
+            border: 2px solid #E8D5C4;
+            border-radius: 10px;
+            padding: 5px 10px;
+        }
+        
+        .quantity-btn {
+            width: 30px;
+            height: 30px;
+            border: none;
+            background: linear-gradient(135deg, #d4af7a, #c9a876);
+            color: white;
+            border-radius: 8px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+        
+        .quantity-btn:hover {
+            background: linear-gradient(135deg, #c9a876, #b89865);
+            transform: scale(1.1);
+        }
+        
+        .quantity-display {
+            min-width: 40px;
+            text-align: center;
+            font-weight: 600;
+            color: #2c2416;
+            font-size: 1.1rem;
+        }
+        
+        .btn-remove {
+            padding: 8px 16px;
+            background: transparent;
+            border: 2px solid #ff6b6b;
+            color: #ff6b6b;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+        
+        .btn-remove:hover {
+            background: #ff6b6b;
+            color: white;
+        }
+        
+        .item-subtotal {
+            text-align: right;
+        }
+        
+        .subtotal-label {
+            color: #8B7B6E;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+        
+        .subtotal-amount {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #2c2416;
+        }
+        
+        /* Order Summary */
+        .order-summary {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+            position: sticky;
+            top: 120px;
+            height: fit-content;
+        }
+        
+        .summary-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #2c2416;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #F5EBE0;
+        }
+        
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            font-size: 1.05rem;
+            color: #4a4a4a;
+        }
+        
+        .summary-row.selected-items {
+            color: #8B7B6E;
+            font-size: 0.95rem;
+            font-style: italic;
+        }
+        
+        .shipping-section {
+            margin: 25px 0;
+            padding: 20px 0;
+            border-top: 2px solid #F5EBE0;
+            border-bottom: 2px solid #F5EBE0;
+        }
+        
+        .shipping-title {
+            font-weight: 600;
+            color: #2c2416;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+        
+        .shipping-option {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 15px;
+            border: 2px solid #E8D5C4;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .shipping-option:hover {
+            border-color: #d4af7a;
+            background: #FAF8F5;
+        }
+        
+        .shipping-option.selected {
+            border-color: #d4af7a;
+            background: linear-gradient(135deg, #fffef8 0%, #fdf9f3 100%);
+            box-shadow: 0 2px 10px rgba(212, 175, 122, 0.2);
+        }
+        
+        .shipping-option input[type="radio"] {
+            accent-color: #d4af7a;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+        
+        .shipping-info {
+            flex: 1;
+            margin-left: 15px;
+        }
+        
+        .shipping-name {
+            font-weight: 600;
+            color: #2c2416;
+        }
+        
+        .shipping-time {
+            font-size: 0.85rem;
+            color: #8B7B6E;
+        }
+        
+        .shipping-cost {
+            font-weight: 700;
+            color: #d4af7a;
+            font-size: 1.1rem;
+        }
+        
+        .total-section {
+            background: linear-gradient(135deg, #2c2416 0%, #3d3426 100%);
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+        }
+        
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            color: white;
+            font-size: 1.6rem;
+            font-weight: 700;
+            font-family: 'Cormorant Garamond', serif;
+        }
+        
+        .total-amount {
+            color: #d4af7a;
+            font-size: 2rem;
+        }
+        
+        .checkout-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #d4af7a 0%, #c9a876 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 6px 20px rgba(212, 175, 122, 0.3);
+        }
+        
+        .checkout-btn:hover:not(:disabled) {
+            background: linear-gradient(135deg, #c9a876 0%, #b89865 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(212, 175, 122, 0.5);
+        }
+        
+        .checkout-btn:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+        
+        .payment-section {
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+            transition: all 0.5s ease;
+            margin-top: 0;
+        }
+        
+        .payment-section.show {
+            max-height: 2500px;
+            opacity: 1;
+            margin-top: 30px;
+            overflow: visible;
+        }
+        
+        .payment-form {
+            background: linear-gradient(135deg, #FAF8F5 0%, #F5EBE0 100%);
+            padding: 30px;
+            border-radius: 15px;
+            margin-top: 20px;
+        }
+        
+        .form-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.6rem;
+            font-weight: 600;
+            color: #2c2416;
+            margin-bottom: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c2416;
+            font-size: 0.95rem;
+        }
+        
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #E8D5C4;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            font-family: 'Montserrat', sans-serif;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #d4af7a;
+            box-shadow: 0 0 0 3px rgba(212, 175, 122, 0.1);
+        }
+        
+        .btn-complete {
+            width: 100%;
+            padding: 20px;
+            background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.3rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 20px;
+            box-shadow: 0 6px 20px rgba(39, 174, 96, 0.3);
+        }
+        
+        .btn-complete:hover {
+            background: linear-gradient(135deg, #229954 0%, #1e8449 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(39, 174, 96, 0.5);
+        }
+        
+        .empty-cart {
+            text-align: center;
+            padding: 80px 20px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+        }
+        
+        .empty-cart h2 {
+            font-family: 'Cormorant Garamond', serif;
+            color: #2c2416;
+            margin: 25px 0 15px;
+            font-size: 2rem;
+        }
+        
+        .empty-cart p {
+            color: #8B7B6E;
+            font-size: 1.1rem;
+        }
+        
+        .btn-shop {
+            display: inline-block;
+            padding: 18px 45px;
+            background: linear-gradient(135deg, #d4af7a 0%, #c9a876 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 700;
+            margin-top: 30px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 6px 20px rgba(212, 175, 122, 0.3);
+        }
+        
+        .btn-shop:hover {
+            background: linear-gradient(135deg, #c9a876 0%, #b89865 100%);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(212, 175, 122, 0.5);
+        }
+        
+        /* Payment Methods */
+        .payment-methods {
+            display: grid;
+            gap: 15px;
+            margin-top: 10px;
+        }
+        
+        .payment-method-option {
+            cursor: pointer;
+        }
+        
+        .payment-method-option input[type="radio"] {
+            display: none;
+        }
+        
+        .payment-method-card {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 18px 20px;
+            border: 2px solid #E8D5C4;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+        
+        .payment-method-option input[type="radio"]:checked + .payment-method-card {
+            border-color: #d4af7a;
+            background: linear-gradient(135deg, #fffef8 0%, #fdf9f3 100%);
+            box-shadow: 0 4px 15px rgba(212, 175, 122, 0.2);
+        }
+        
+        .payment-method-card:hover {
+            border-color: #d4af7a;
+            background: #fafafa;
+        }
+        
+        .payment-icon {
+            font-size: 2rem;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #F5EBE0;
+            border-radius: 10px;
+        }
+        
+        .payment-info {
+            flex: 1;
+        }
+        
+        .payment-name {
+            font-weight: 600;
+            color: #2c2416;
+            font-size: 1.1rem;
+            margin-bottom: 3px;
+        }
+        
+        .payment-desc {
+            font-size: 0.85rem;
+            color: #8B7B6E;
+        }
+        
+        .card-fields,
+        .eft-details {
+            animation: slideDown 0.3s ease;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @media (max-width: 968px) {
+            .cart-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .order-summary {
+                position: static;
+            }
+            
+            .cart-item {
+                grid-template-columns: auto 1fr;
+            }
+            
+            .item-subtotal {
+                grid-column: 2;
+                text-align: left;
+                margin-top: 10px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .cart-container {
+                margin: 80px 15px 40px;
+                padding: 20px;
+            }
+            
+            .cart-title {
+                font-size: 2rem;
+            }
+            
+            .cart-item {
+                padding: 15px;
+                gap: 15px;
+            }
+            
+            .item-image {
+                width: 80px;
+                height: 100px;
+            }
+            
+            .item-name {
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="sticky-header">
+        <div class="container">
+            <nav class="navbar">
+                <div class="logo">
+                    <h1><a href="index.html">MELLOPHI FASHION</a></h1>
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="shop.html">Shop</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                </ul>
+                <div class="nav-icons">
+                    <button class="icon-btn" id="cart-btn">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="9" cy="21" r="1"></circle>
+                            <circle cx="20" cy="21" r="1"></circle>
+                            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                        </svg>
+                        <span class="badge" id="cart-count">0</span>
+                    </button>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <div class="cart-container">
+        <h1 class="cart-title">Shopping Cart</h1>
+        
+        <div id="cart-content">
+            <!-- Content will be loaded by JavaScript -->
+        </div>
+    </div>
+
+    <script>
+        // Get cart from localStorage (already declared in main.js)
+        cart = JSON.parse(localStorage.getItem('cart')) || [];
+        let selectedShipping = 80; // Default Standard Delivery
+        let selectedItems = new Set();
+        const checkoutApiUrl = window.API_URL || 'http://localhost:5000/api';
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            renderCart();
+            updateCartCount();
+        });
+
+        function renderCart() {
+            const content = document.getElementById('cart-content');
+            
+            if (cart.length === 0) {
+                content.innerHTML = `
+                    <div class="empty-cart">
+                        <svg width="120" height="120" viewBox="0 0 24 24" fill="none" stroke="#d4af7a" stroke-width="1.5">
+                            <circle cx="9" cy="21" r="1"></circle>
+                            <circle cx="20" cy="21" r="1"></circle>
+                            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                        </svg>
+                        <h2>Your cart is empty</h2>
+                        <p>Start shopping to add items to your cart</p>
+                        <a href="shop.html" class="btn-shop">Continue Shopping</a>
+                    </div>
+                `;
+                return;
+            }
+
+            content.innerHTML = `
+                <div class="cart-content">
+                    <div class="cart-items" id="cart-items-list">
+                        ${cart.map((item, index) => createCartItemHTML(item, index)).join('')}
+                    </div>
+                    
+                    <div class="order-summary">
+                        <h3 class="summary-title">Order Summary</h3>
+                        
+                        <div class="summary-row selected-items">
+                            <span>Selected Items:</span>
+                            <span id="selected-count">0 items</span>
+                        </div>
+                        
+                        <div class="summary-row">
+                            <span>Subtotal:</span>
+                            <span id="subtotal-amount">R 0.00</span>
+                        </div>
+                        
+                        <div class="shipping-section">
+                            <div class="shipping-title">Shipping Options:</div>
+                            
+                            <label class="shipping-option selected" onclick="selectShipping(80, this)">
+                                <input type="radio" name="shipping" value="80" checked>
+                                <div class="shipping-info">
+                                    <div class="shipping-name">Standard Delivery</div>
+                                    <div class="shipping-time">3-5 business days</div>
+                                </div>
+                                <div class="shipping-cost">R 80.00</div>
+                            </label>
+                            
+                            <label class="shipping-option" onclick="selectShipping(150, this)">
+                                <input type="radio" name="shipping" value="150">
+                                <div class="shipping-info">
+                                    <div class="shipping-name">Express Delivery</div>
+                                    <div class="shipping-time">1-2 business days</div>
+                                </div>
+                                <div class="shipping-cost">R 150.00</div>
+                            </label>
+                        </div>
+                        
+                        <div class="summary-row">
+                            <span>Shipping:</span>
+                            <span id="shipping-amount">R 80.00</span>
+                        </div>
+                        
+                        <div class="total-section">
+                            <div class="total-row">
+                                <span>TOTAL:</span>
+                                <span class="total-amount" id="total-amount">R 0.00</span>
+                            </div>
+                        </div>
+                        
+                        <button class="checkout-btn" id="proceed-btn" onclick="showPaymentSection()" disabled>
+                            Proceed to Payment
+                        </button>
+                        
+                        <div class="payment-section" id="payment-section">
+                            <div class="payment-form">
+                                <h3 class="form-title">💳 Payment Details</h3>
+                                
+                                <form id="payment-form" onsubmit="handleCheckout(event)">
+                                    <div class="form-group">
+                                        <label for="name">Full Name *</label>
+                                        <input type="text" id="name" required placeholder="Enter your full name">
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="email">Email Address *</label>
+                                        <input type="email" id="email" required placeholder="your@email.com">
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="phone">Phone Number *</label>
+                                        <input type="tel" id="phone" required placeholder="0XX XXX XXXX">
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="address">Delivery Address *</label>
+                                        <input type="text" id="address" required placeholder="Street address, City, Postal Code">
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label>Select Payment Method *</label>
+                                        <div class="payment-methods">
+                                            <label class="payment-method-option">
+                                                <input type="radio" name="payment-method" value="card" onchange="showCardFields()" checked>
+                                                <div class="payment-method-card">
+                                                    <div class="payment-icon">💳</div>
+                                                    <div class="payment-info">
+                                                        <div class="payment-name">Card Payment</div>
+                                                        <div class="payment-desc">Credit or Debit Card</div>
+                                                    </div>
+                                                </div>
+                                            </label>
+                                            
+                                            <label class="payment-method-option">
+                                                <input type="radio" name="payment-method" value="eft" onchange="hideCardFields()">
+                                                <div class="payment-method-card">
+                                                    <div class="payment-icon">🏦</div>
+                                                    <div class="payment-info">
+                                                        <div class="payment-name">EFT / Bank Transfer</div>
+                                                        <div class="payment-desc">Direct bank deposit</div>
+                                                    </div>
+                                                </div>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Card Payment Fields (Hidden by default) -->
+                                    <div id="card-fields" class="card-fields" style="display: none;">
+                                        <div class="form-group">
+                                            <label for="card-number">Card Number *</label>
+                                            <input type="text" id="card-number" placeholder="1234 5678 9012 3456" maxlength="19" pattern="[0-9\s]+" inputmode="numeric">
+                                        </div>
+                                        
+                                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                                            <div class="form-group">
+                                                <label for="card-expiry">Expiry Date *</label>
+                                                <input type="text" id="card-expiry" placeholder="MM/YY" maxlength="5" pattern="[0-9\/]+" inputmode="numeric">
+                                            </div>
+                                            
+                                            <div class="form-group">
+                                                <label for="card-cvv">CVV *</label>
+                                                <input type="text" id="card-cvv" placeholder="123" maxlength="4" pattern="[0-9]+" inputmode="numeric">
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            <label for="card-name">Cardholder Name *</label>
+                                            <input type="text" id="card-name" placeholder="Name as shown on card">
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- EFT Banking Details (Hidden by default) -->
+                                    <div id="eft-details" class="eft-details" style="display: none;">
+                                        <div style="background: #f8f9fa; padding: 20px; border-radius: 12px; margin-top: 15px;">
+                                            <h4 style="color: #2c2416; margin-bottom: 15px; font-family: 'Cormorant Garamond', serif;">Banking Details:</h4>
+                                            <p style="margin: 8px 0; color: #555;"><strong>Bank:</strong> Standard Bank</p>
+                                            <p style="margin: 8px 0; color: #555;"><strong>Account Name:</strong> Mellophi Fashion</p>
+                                            <p style="margin: 8px 0; color: #555;"><strong>Account Number:</strong> 1234567890</p>
+                                            <p style="margin: 8px 0; color: #555;"><strong>Branch Code:</strong> 051001</p>
+                                            <p style="margin: 8px 0; color: #555;"><strong>Reference:</strong> Use your order number</p>
+                                            <p style="margin-top: 15px; font-size: 0.9rem; color: #666;">Please transfer the total amount and upload proof of payment.</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <button type="submit" class="btn-complete" id="submit-btn">
+                                        Complete Order - <span id="btn-total">R 0.00</span>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Initialize checkboxes and calculations
+            updateSummary();
+        }
+
+        function createCartItemHTML(item, index) {
+            const itemPrice = parseFloat(item.price || 0);
+            const itemTotal = (itemPrice * item.quantity).toFixed(2);
+            const backendUrl = window.API_URL ? window.API_URL.replace('/api', '') : 'http://localhost:5000';
+            
+            // Handle image path - ensure it includes backend URL
+            let itemImage = item.image || (item.images && item.images[0]) || 'images/placeholder.jpg';
+            if (!itemImage.startsWith('http') && !itemImage.startsWith('data:')) {
+                itemImage = itemImage.startsWith('images/') 
+                    ? `${backendUrl}/${itemImage}`
+                    : itemImage;
+            }
+            
+            return `
+                <div class="cart-item" id="item-${index}">
+                    <div class="item-checkbox">
+                        <input type="checkbox" onchange="toggleItemSelection(${index})" id="checkbox-${index}">
+                    </div>
+                    <img src="${itemImage}" alt="${item.name}" class="item-image">
+                    <div class="item-details">
+                        <div class="item-name">${item.name}</div>
+                        <div class="item-meta">Size: ${item.size || 'N/A'} | Color: ${item.color || 'Default'}</div>
+                        <div class="item-price">R ${parseFloat(item.price || 0).toFixed(2)}</div>
+                        <div class="item-controls">
+                            <div class="quantity-control">
+                                <button class="quantity-btn" onclick="decreaseQuantity(${index})">−</button>
+                                <span class="quantity-display" id="qty-${index}">${item.quantity}</span>
+                                <button class="quantity-btn" onclick="increaseQuantity(${index})">+</button>
+                            </div>
+                            <button class="btn-remove" onclick="removeItem(${index})">Remove</button>
+                        </div>
+                    </div>
+                    <div class="item-subtotal">
+                        <div class="subtotal-label">Subtotal</div>
+                        <div class="subtotal-amount" id="subtotal-${index}">R ${itemTotal}</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function toggleItemSelection(index) {
+            const checkbox = document.getElementById(`checkbox-${index}`);
+            const itemElement = document.getElementById(`item-${index}`);
+            
+            if (checkbox.checked) {
+                selectedItems.add(index);
+                itemElement.classList.add('selected');
+            } else {
+                selectedItems.delete(index);
+                itemElement.classList.remove('selected');
+            }
+            
+            updateSummary();
+        }
+
+        function increaseQuantity(index) {
+            cart[index].quantity++;
+            updateItemDisplay(index);
+            saveCart();
+        }
+
+        function decreaseQuantity(index) {
+            if (cart[index].quantity > 1) {
+                cart[index].quantity--;
+                updateItemDisplay(index);
+                saveCart();
+            }
+        }
+
+        function updateItemDisplay(index) {
+            const item = cart[index];
+            const itemTotal = (item.price * item.quantity).toFixed(2);
+            
+            document.getElementById(`qty-${index}`).textContent = item.quantity;
+            document.getElementById(`subtotal-${index}`).textContent = `R ${itemTotal}`;
+            
+            updateSummary();
+        }
+
+        function removeItem(index) {
+            if (confirm('Remove this item from cart?')) {
+                selectedItems.delete(index);
+                cart.splice(index, 1);
+                saveCart();
+                renderCart();
+                updateCartCount();
+            }
+        }
+
+        function selectShipping(cost, element) {
+            selectedShipping = cost;
+            
+            // Update visual selection
+            document.querySelectorAll('.shipping-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            element.classList.add('selected');
+            
+            updateSummary();
+        }
+
+        function updateSummary() {
+            // Calculate subtotal for selected items only
+            let subtotal = 0;
+            let selectedCount = 0;
+            
+            selectedItems.forEach(index => {
+                if (cart[index]) {
+                    const itemPrice = parseFloat(cart[index].price || 0);
+                    subtotal += itemPrice * cart[index].quantity;
+                    selectedCount++;
+                }
+            });
+            
+            const total = subtotal + selectedShipping;
+            
+            // Update displays
+            document.getElementById('selected-count').textContent = `${selectedCount} item${selectedCount !== 1 ? 's' : ''}`;
+            document.getElementById('subtotal-amount').textContent = `R ${subtotal.toFixed(2)}`;
+            document.getElementById('shipping-amount').textContent = selectedShipping === 0 ? 'FREE' : `R ${selectedShipping.toFixed(2)}`;
+            document.getElementById('total-amount').textContent = `R ${total.toFixed(2)}`;
+            
+            // Update button total
+            const btnTotal = document.getElementById('btn-total');
+            if (btnTotal) {
+                btnTotal.textContent = `R ${total.toFixed(2)}`;
+            }
+            
+            // Enable/disable proceed button
+            const proceedBtn = document.getElementById('proceed-btn');
+            if (proceedBtn) {
+                proceedBtn.disabled = selectedCount === 0;
+            }
+        }
+
+        function showPaymentSection() {
+            const paymentSection = document.getElementById('payment-section');
+            paymentSection.classList.add('show');
+            
+            // Scroll to payment section
+            paymentSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        function showCardFields() {
+            // Hide all payment-specific sections
+            document.getElementById('card-fields').style.display = 'block';
+            document.getElementById('eft-details').style.display = 'none';
+            
+            // Make card fields required
+            document.getElementById('card-number').required = true;
+            document.getElementById('card-expiry').required = true;
+            document.getElementById('card-cvv').required = true;
+            document.getElementById('card-name').required = true;
+            
+            // Show submit button immediately when card fields appear
+            const submitBtn = document.getElementById('submit-btn');
+            if (submitBtn) submitBtn.style.display = 'block';
+        }
+
+        function hideCardFields() {
+            document.getElementById('card-fields').style.display = 'none';
+            
+            // Remove required from card fields
+            document.getElementById('card-number').required = false;
+            document.getElementById('card-expiry').required = false;
+            document.getElementById('card-cvv').required = false;
+            document.getElementById('card-name').required = false;
+            
+            // Show submit button immediately for EFT (no additional fields needed)
+            const submitBtn = document.getElementById('submit-btn');
+            if (submitBtn) submitBtn.style.display = 'block';
+            
+            // Show appropriate section based on selected payment method
+            const selectedMethod = document.querySelector('input[name="payment-method"]:checked');
+            if (selectedMethod) {
+                if (selectedMethod.value === 'eft') {
+                    document.getElementById('eft-details').style.display = 'block';
+                } else {
+                    document.getElementById('eft-details').style.display = 'none';
+                }
+            }
+        }
+
+        // Format card number with spaces
+        document.addEventListener('DOMContentLoaded', function() {
+            const cardNumberInput = document.getElementById('card-number');
+            if (cardNumberInput) {
+                cardNumberInput.addEventListener('input', function(e) {
+                    let value = e.target.value.replace(/\s/g, '');
+                    let formattedValue = value.match(/.{1,4}/g)?.join(' ') || value;
+                    e.target.value = formattedValue;
+                    
+                    // Real-time validation feedback
+                    validateCardNumber(value, true);
+                });
+                
+                cardNumberInput.addEventListener('blur', function(e) {
+                    const value = e.target.value.replace(/\s/g, '');
+                    validateCardNumber(value, false);
+                });
+            }
+            
+            // Format expiry date
+            const expiryInput = document.getElementById('card-expiry');
+            if (expiryInput) {
+                expiryInput.addEventListener('input', function(e) {
+                    let value = e.target.value.replace(/\//g, '');
+                    if (value.length >= 2) {
+                        value = value.slice(0, 2) + '/' + value.slice(2, 4);
+                    }
+                    e.target.value = value;
+                    
+                    // Real-time validation feedback
+                    if (value.length === 5) {
+                        validateExpiryDate(value, true);
+                    }
+                });
+                
+                expiryInput.addEventListener('blur', function(e) {
+                    validateExpiryDate(e.target.value, false);
+                });
+            }
+            
+            // CVV validation
+            const cvvInput = document.getElementById('card-cvv');
+            if (cvvInput) {
+                cvvInput.addEventListener('input', function(e) {
+                    // Only allow numbers
+                    e.target.value = e.target.value.replace(/\D/g, '');
+                });
+                
+                cvvInput.addEventListener('blur', function(e) {
+                    validateCVV(e.target.value);
+                });
+            }
+            
+            // Cardholder name validation
+            const cardNameInput = document.getElementById('card-name');
+            if (cardNameInput) {
+                cardNameInput.addEventListener('input', function(e) {
+                    // Only allow letters and spaces
+                    e.target.value = e.target.value.replace(/[^a-zA-Z\s]/g, '');
+                });
+                
+                cardNameInput.addEventListener('blur', function(e) {
+                    validateCardholderName(e.target.value);
+                });
+            }
+        });
+
+        // Luhn Algorithm for card number validation
+        function luhnCheck(cardNumber) {
+            let sum = 0;
+            let isEven = false;
+            
+            for (let i = cardNumber.length - 1; i >= 0; i--) {
+                let digit = parseInt(cardNumber[i]);
+                
+                if (isEven) {
+                    digit *= 2;
+                    if (digit > 9) {
+                        digit -= 9;
+                    }
+                }
+                
+                sum += digit;
+                isEven = !isEven;
+            }
+            
+            return sum % 10 === 0;
+        }
+
+        // Validate card number
+        function validateCardNumber(cardNumber, isTyping) {
+            const input = document.getElementById('card-number');
+            const cleanNumber = cardNumber.replace(/\s/g, '');
+            
+            // Clear previous error
+            input.style.borderColor = '';
+            const existingError = input.parentElement.querySelector('.validation-error');
+            if (existingError) existingError.remove();
+            
+            if (!cleanNumber) {
+                if (!isTyping) {
+                    showFieldError(input, 'Card number is required');
+                }
+                return false;
+            }
+            
+            // Check length (13-19 digits for most cards)
+            if (cleanNumber.length < 13 || cleanNumber.length > 19) {
+                if (!isTyping) {
+                    showFieldError(input, 'Card number must be 13-19 digits');
+                }
+                return false;
+            }
+            
+            // Validate using Luhn algorithm
+            if (!luhnCheck(cleanNumber)) {
+                if (!isTyping) {
+                    showFieldError(input, 'Invalid card number');
+                }
+                return false;
+            }
+            
+            // Show success indicator
+            input.style.borderColor = '#4CAF50';
+            return true;
+        }
+
+        // Validate expiry date
+        function validateExpiryDate(expiry, isTyping) {
+            const input = document.getElementById('card-expiry');
+            
+            // Clear previous error
+            input.style.borderColor = '';
+            const existingError = input.parentElement.querySelector('.validation-error');
+            if (existingError) existingError.remove();
+            
+            if (!expiry) {
+                if (!isTyping) {
+                    showFieldError(input, 'Expiry date is required');
+                }
+                return false;
+            }
+            
+            // Check format MM/YY
+            if (!/^\d{2}\/\d{2}$/.test(expiry)) {
+                if (!isTyping) {
+                    showFieldError(input, 'Format must be MM/YY');
+                }
+                return false;
+            }
+            
+            const [month, year] = expiry.split('/').map(Number);
+            
+            // Validate month
+            if (month < 1 || month > 12) {
+                showFieldError(input, 'Invalid month (01-12)');
+                return false;
+            }
+            
+            // Check if card is expired
+            const now = new Date();
+            const currentYear = now.getFullYear() % 100; // Get last 2 digits
+            const currentMonth = now.getMonth() + 1;
+            
+            if (year < currentYear || (year === currentYear && month < currentMonth)) {
+                showFieldError(input, 'Card has expired');
+                return false;
+            }
+            
+            // Check if expiry is too far in future (more than 20 years)
+            if (year > currentYear + 20) {
+                showFieldError(input, 'Invalid expiry year');
+                return false;
+            }
+            
+            // Show success indicator
+            input.style.borderColor = '#4CAF50';
+            return true;
+        }
+
+        // Validate CVV
+        function validateCVV(cvv) {
+            const input = document.getElementById('card-cvv');
+            
+            // Clear previous error
+            input.style.borderColor = '';
+            const existingError = input.parentElement.querySelector('.validation-error');
+            if (existingError) existingError.remove();
+            
+            if (!cvv) {
+                showFieldError(input, 'CVV is required');
+                return false;
+            }
+            
+            // Check if CVV is 3 or 4 digits
+            if (!/^\d{3,4}$/.test(cvv)) {
+                showFieldError(input, 'CVV must be 3 or 4 digits');
+                return false;
+            }
+            
+            // Show success indicator
+            input.style.borderColor = '#4CAF50';
+            return true;
+        }
+
+        // Validate cardholder name
+        function validateCardholderName(name) {
+            const input = document.getElementById('card-name');
+            
+            // Clear previous error
+            input.style.borderColor = '';
+            const existingError = input.parentElement.querySelector('.validation-error');
+            if (existingError) existingError.remove();
+            
+            if (!name) {
+                showFieldError(input, 'Cardholder name is required');
+                return false;
+            }
+            
+            // Check if name has at least 2 characters
+            if (name.trim().length < 2) {
+                showFieldError(input, 'Name must be at least 2 characters');
+                return false;
+            }
+            
+            // Check if name contains at least one space (first and last name)
+            if (!name.trim().includes(' ')) {
+                showFieldError(input, 'Please enter full name (first and last)');
+                return false;
+            }
+            
+            // Show success indicator
+            input.style.borderColor = '#4CAF50';
+            return true;
+        }
+
+        // Show field error message
+        function showFieldError(input, message) {
+            input.style.borderColor = '#e74c3c';
+            
+            // Remove existing error
+            const existingError = input.parentElement.querySelector('.validation-error');
+            if (existingError) existingError.remove();
+            
+            // Add error message
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'validation-error';
+            errorDiv.style.color = '#e74c3c';
+            errorDiv.style.fontSize = '0.85rem';
+            errorDiv.style.marginTop = '5px';
+            errorDiv.textContent = message;
+            input.parentElement.appendChild(errorDiv);
+        }
+
+        async function handleCheckout(event) {
+            event.preventDefault();
+            
+            // Get selected payment method
+            const paymentMethodInput = document.querySelector('input[name="payment-method"]:checked');
+            if (!paymentMethodInput) {
+                alert('Please select a payment method');
+                return;
+            }
+            
+            // Validate card fields if card payment is selected
+            if (paymentMethodInput.value === 'card') {
+                const cardNumber = document.getElementById('card-number').value.trim().replace(/\s/g, '');
+                const cardExpiry = document.getElementById('card-expiry').value.trim();
+                const cardCvv = document.getElementById('card-cvv').value.trim();
+                const cardName = document.getElementById('card-name').value.trim();
+                
+                // Run all validations
+                const isCardNumberValid = validateCardNumber(cardNumber, false);
+                const isExpiryValid = validateExpiryDate(cardExpiry, false);
+                const isCvvValid = validateCVV(cardCvv);
+                const isNameValid = validateCardholderName(cardName);
+                
+                // If any validation fails, stop
+                if (!isCardNumberValid || !isExpiryValid || !isCvvValid || !isNameValid) {
+                    alert('⚠️ Please fix the card validation errors before proceeding');
+                    return;
+                }
+            }
+            
+            // Get selected items
+            const selectedProducts = [];
+            let subtotal = 0;
+            
+            selectedItems.forEach(index => {
+                if (cart[index]) {
+                    selectedProducts.push({
+                        productId: cart[index].id || cart[index].productId || 'UNKNOWN',
+                        name: cart[index].name,
+                        price: cart[index].price,
+                        quantity: cart[index].quantity,
+                        size: cart[index].size,
+                        color: cart[index].color
+                    });
+                    subtotal += cart[index].price * cart[index].quantity;
+                }
+            });
+            
+            const total = subtotal + selectedShipping;
+            
+            const orderData = {
+                customerInfo: {
+                    name: document.getElementById('name').value,
+                    email: document.getElementById('email').value,
+                    phone: document.getElementById('phone').value
+                },
+                shippingAddress: document.getElementById('address').value,
+                items: selectedProducts,
+                paymentMethod: paymentMethodInput.value,
+                subtotal: subtotal,
+                shippingCost: selectedShipping,
+                tax: 0,
+                discount: 0,
+                total: total
+            };
+            
+            // Add card details if card payment selected
+            if (paymentMethodInput.value === 'card') {
+                orderData.cardDetails = {
+                    cardNumber: document.getElementById('card-number').value,
+                    cardExpiry: document.getElementById('card-expiry').value,
+                    cardCvv: document.getElementById('card-cvv').value,
+                    cardName: document.getElementById('card-name').value
+                };
+            }
+            
+            try {
+                // Save order to backend
+                const response = await fetch(`${checkoutApiUrl}/orders`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(orderData)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    // Show payment success message
+                    let successMessage = '✓ Payment Successful!\n\n';
+                    successMessage += `Order Number: ${result.data.orderNumber}\n`;
+                    successMessage += `Total: R ${total.toFixed(2)}\n`;
+                    successMessage += `Items: ${selectedProducts.length}\n`;
+                    successMessage += `Payment Method: ${paymentMethodInput.value.toUpperCase()}\n\n`;
+                    successMessage += 'You will receive a confirmation email shortly.';
+                    
+                    alert(successMessage);
+                    
+                    // Remove selected items from cart
+                    selectedItems.forEach(index => {
+                        cart[index] = null;
+                    });
+                    cart = cart.filter(item => item !== null);
+                    
+                    saveCart();
+                    window.location.href = 'index.html';
+                } else {
+                    alert('Error placing order: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Error placing order:', error);
+                alert('Error placing order. Your order has been saved locally. Please try again later or contact support.');
+                
+                // Still remove items from cart even if API fails
+                selectedItems.forEach(index => {
+                    cart[index] = null;
+                });
+                cart = cart.filter(item => item !== null);
+                saveCart();
+            }
+        }
+
+        function saveCart() {
+            localStorage.setItem('cart', JSON.stringify(cart));
+        }
+
+        function updateCartCount() {
+            const count = cart.reduce((sum, item) => sum + (item ? item.quantity : 0), 0);
+            const badge = document.getElementById('cart-count');
+            if (badge) {
+                badge.textContent = count;
+            }
+        }
+    </script>
+    
+    <script src="js/main.js"></script>
+</body>
+</html>

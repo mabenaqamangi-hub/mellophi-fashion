@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Start MELLOPHI Website</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 3rem;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+            font-size: 2rem;
+        }
+        
+        .subtitle {
+            color: #7f8c8d;
+            margin-bottom: 2rem;
+            font-size: 0.9rem;
+        }
+        
+        .status {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            border-left: 4px solid #3498db;
+        }
+        
+        .status.error {
+            border-left-color: #e74c3c;
+            background: #fee;
+        }
+        
+        .status.success {
+            border-left-color: #2ecc71;
+            background: #efe;
+        }
+        
+        .instructions {
+            background: #fff3cd;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            border-left: 4px solid #ffc107;
+        }
+        
+        .instructions h3 {
+            color: #856404;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+        
+        .instructions ol {
+            margin-left: 1.5rem;
+            color: #856404;
+        }
+        
+        .instructions li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .instructions code {
+            background: #fff;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            color: #c7254e;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .btn-primary {
+            background: #3498db;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(52,152,219,0.4);
+        }
+        
+        .btn-secondary {
+            background: #95a5a6;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #7f8c8d;
+        }
+        
+        .note {
+            margin-top: 2rem;
+            padding: 1rem;
+            background: #e8f4f8;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            color: #2c3e50;
+        }
+        
+        .command-box {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎀 MELLOPHI Fashion Website</h1>
+        <p class="subtitle">Setup & Launch Guide</p>
+        
+        <div class="instructions">
+            <h3>📋 Quick Start Instructions</h3>
+            <ol>
+                <li>Open PowerShell in the <code>backend</code> folder</li>
+                <li>Run: <code>npm start</code></li>
+                <li>Open another PowerShell in the main folder</li>
+                <li>Run: <code>npx serve -p 3000</code></li>
+                <li>Visit: <code>http://localhost:3000</code></li>
+            </ol>
+        </div>
+        
+        <div class="status">
+            <strong>⚠️ Important:</strong> You need to run both the backend server (port 5000) and a frontend server (port 3000) for images and features to work properly.
+        </div>
+        
+        <div class="command-box">
+            # Terminal 1 (Backend)<br>
+            cd backend<br>
+            npm start<br>
+            <br>
+            # Terminal 2 (Frontend)<br>
+            npm install -g serve<br>
+            npx serve -p 3000
+        </div>
+        
+        <div class="button-group">
+            <a href="index.html" class="btn btn-primary" onclick="return checkServer()">
+                🚀 Launch Website
+            </a>
+        </div>
+        
+        <div class="note">
+            <strong>💡 Pro Tip:</strong> If images still don't show, make sure you're accessing the site through <code>http://localhost:3000</code> and not by opening the HTML file directly (file://).
+        </div>
+    </div>
+    
+    <script>
+        function checkServer() {
+            const isFileProtocol = window.location.protocol === 'file:';
+            if (isFileProtocol) {
+                alert('⚠️ You need to run a web server!\n\nPlease follow the instructions above to start the servers.\n\nOpening HTML files directly (file://) won\'t work properly.');
+                return false;
+            }
+            return true;
+        }
+    </script>
+</body>
+</html>
