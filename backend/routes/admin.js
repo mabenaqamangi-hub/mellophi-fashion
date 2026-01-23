@@ -242,4 +242,67 @@ router.get('/stats', async (req, res) => {
     }
 });
 
+// ============ SEED DATABASE (ONE-TIME SETUP) ============
+router.post('/seed', async (req, res) => {
+    try {
+        // Check if products already exist
+        const existingProducts = await Product.count();
+        if (existingProducts > 0) {
+            return res.status(400).json({ 
+                success: false, 
+                message: `Database already has ${existingProducts} products. Clear database first if you want to reseed.` 
+            });
+        }
+
+        const productsData = [
+            { id: "A1", name: "A1 — Casual Summer Dress", category: "dress", price: 380, images: ["images/PRODUCTS/A1 front.png"], sizes: ["XS", "S", "M", "L"], stock: 15, isNewArrival: true },
+            { id: "A2", name: "A2 — Casual Dress", category: "dress", price: 300, images: ["images/PRODUCTS/A2 front.png"], sizes: ["S", "M", "L"], stock: 12 },
+            { id: "A3", name: "A3 — Summer Dress", category: "dress", price: 400, images: ["images/PRODUCTS/A3 front.png"], sizes: ["XS", "S", "M", "L"], stock: 10, isBestSeller: true },
+            { id: "A4", name: "A4 — Casual Dress", category: "dress", price: 380, images: ["images/PRODUCTS/A4 front.png"], sizes: ["S", "M", "L"], stock: 8, isBestSeller: true },
+            { id: "A5", name: "A5 — Elegant Dress", category: "dress", price: 450, images: ["images/PRODUCTS/A5 front.png"], sizes: ["XS", "S", "M", "L"], stock: 6 },
+            { id: "A6", name: "A6 — Party Dress", category: "dress", price: 500, images: ["images/PRODUCTS/A6 front.png"], sizes: ["S", "M", "L"], stock: 5 },
+            { id: "A7", name: "A7 — Maxi Dress", category: "dress", price: 550, images: ["images/PRODUCTS/A7 front.png"], sizes: ["XS", "S", "M", "L"], stock: 7 },
+            { id: "A8", name: "A8 — Cocktail Dress", category: "dress", price: 600, images: ["images/PRODUCTS/A8 front.png"], sizes: ["S", "M", "L"], stock: 4 },
+            { id: "A9", name: "A9 — Evening Dress", category: "dress", price: 650, images: ["images/PRODUCTS/A9 front.png"], sizes: ["XS", "S", "M", "L"], stock: 3 },
+            { id: "B1", name: "B1 — Elegant Dress", category: "dress", price: 380, images: ["images/PRODUCTS/B1 front.png"], sizes: ["XS", "S", "M", "L"], stock: 14, isNewArrival: true },
+            { id: "B2", name: "B2 — Formal Dress", category: "dress", price: 400, images: ["images/PRODUCTS/B2 front.png"], sizes: ["S", "M", "L"], stock: 11, isBestSeller: true },
+            { id: "B3", name: "B3 — Cocktail Dress", category: "dress", price: 450, images: ["images/PRODUCTS/B3 front.png"], sizes: ["XS", "S", "M", "L"], stock: 9 },
+            { id: "B4", name: "B4 — Sleeveless Dress", category: "dress", price: 420, images: ["images/PRODUCTS/B4 front.png"], sizes: ["S", "M", "L"], stock: 8 },
+            { id: "C1", name: "C1 — V-Neck Top", category: "top", price: 220, images: ["images/PRODUCTS/C1 front.png"], sizes: ["S", "M", "L"], stock: 20, isNewArrival: true },
+            { id: "C2", name: "C2 — Ribbed Tee", category: "top", price: 220, images: ["images/PRODUCTS/C2 front.png"], sizes: ["S", "M", "L"], stock: 18, isBestSeller: true },
+            { id: "C3", name: "C3 — Casual Top", category: "top", price: 250, images: ["images/PRODUCTS/C3 front.png"], sizes: ["S", "M", "L"], stock: 16 },
+            { id: "C4", name: "C4 — Crop Top", category: "top", price: 220, images: ["images/PRODUCTS/C4 front.png"], sizes: ["S", "M", "L"], stock: 15 },
+            { id: "C5", name: "C5 — Sleeveless Top", category: "top", price: 200, images: ["images/PRODUCTS/C5 front.png"], sizes: ["S", "M", "L"], stock: 12 },
+            { id: "C6", name: "C6 — Basic Tee", category: "top", price: 180, images: ["images/PRODUCTS/C6 front.png"], sizes: ["S", "M", "L"], stock: 25 },
+            { id: "D1", name: "D1 — Co-ord Set", category: "set", price: 300, images: ["images/PRODUCTS/D1 front.png"], sizes: ["XS", "S", "M", "L"], stock: 10, isNewArrival: true }
+        ];
+
+        await Product.bulkCreate(productsData);
+        
+        // Create admin user
+        const adminExists = await User.findOne({ where: { email: 'admin@mellophi.co.za' } });
+        if (!adminExists) {
+            await User.create({
+                firstName: 'Admin',
+                lastName: 'Mellophi',
+                email: 'admin@mellophi.co.za',
+                password: 'Mellophi2026!',
+                isAdmin: true
+            });
+        }
+
+        res.json({ 
+            success: true, 
+            message: `✅ Database seeded successfully with ${productsData.length} products and admin user`,
+            adminCredentials: {
+                email: 'admin@mellophi.co.za',
+                password: 'Mellophi2026!'
+            }
+        });
+    } catch (error) {
+        console.error('Seed error:', error);
+        res.status(500).json({ success: false, message: error.message });
+    }
+});
+
 module.exports = router;
