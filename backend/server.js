@@ -56,24 +56,24 @@ app.use('/uploads', express.static(path.join(__dirname, 'images')));
 async function initializeDatabase() {
     try {
         console.log('🔄 Starting database sync...');
+        await sequelize.authenticate();
+        console.log('✅ Database connection verified');
+        
         const syncOptions = { alter: true };
         await sequelize.sync(syncOptions);
         console.log('✅ Database Synced Successfully');
         console.log('📊 All tables created/updated');
     } catch (err) {
         console.error('❌ Database Sync Error:', err.message);
-        console.error('Full error:', err);
-        throw err;
+        console.error('⚠️  Database features will be limited');
+        // Don't exit - let server run without database
     }
 }
 
 // Initialize database (will wait for connection from config/database.js)
 setTimeout(() => {
-    initializeDatabase().catch(err => {
-        console.error('💥 Fatal: Database initialization failed');
-        process.exit(1);
-    });
-}, 2000); // Wait 2 seconds for connection to be established
+    initializeDatabase();
+}, 3000); // Wait 3 seconds for connection to be established
 
 // API Routes
 app.use('/api/products', productRoutes);
@@ -85,10 +85,36 @@ app.use('/api/reviews', reviewRoutes);
 app.use('/api/paygate', paygateRoutes);
 
 // Health check endpoint
-app.get('/api/health', (req, res) => {
+app.get('/api/health', async (req, res) => {
+    let dbStatus = 'unknown';
+    try {
+        await sequelize.authenticate();
+        dbStatus = 'connected';
+    } catch (err) {
+        dbStatus = 'disconnected';
+    }
+    
     res.json({ 
         status: 'OK', 
         message: 'Mellophi Fashion API is running',
+        timestamp: new Date().toISOString(),
+        database: dbStatus,
+        environment: process.env.NODE_ENV || 'development',
+        hasDatabaseUrl: !!process.env.DATABASE_URL
+    });
+});
+
+// Diagnostic endpoint
+app.get('/api/diagnostic', (req, res) => {
+    res.json({
+        server: 'running',
+        nodeVersion: process.version,
+        env: {
+            NODE_ENV: process.env.NODE_ENV,
+            hasDatabaseUrl: !!process.env.DATABASE_URL,
+            databaseUrlPrefix: process.env.DATABASE_URL ? process.env.DATABASE_URL.substring(0, 15) + '...' : 'not set',
+            port: process.env.PORT || 5000
+        },
         timestamp: new Date().toISOString()
     });
 });

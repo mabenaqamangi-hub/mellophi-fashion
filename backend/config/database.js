@@ -82,19 +82,17 @@ async function testConnection(retries = 3) {
                 await new Promise(resolve => setTimeout(resolve, 5000));
             } else {
                 console.error('❌ All connection attempts failed!');
+                console.error('⚠️  Server will start but database features will be unavailable');
                 console.error('⚠️  Please check:');
                 console.error('   1. DATABASE_URL environment variable is set correctly');
                 console.error('   2. Database server is running and accessible');
                 console.error('   3. Database credentials are correct');
-                throw err;
+                return false;
             }
         }
     }
 }
 
-testConnection().catch(err => {
-    console.error('💥 Fatal: Could not connect to database');
-    process.exit(1);
-});
+testConnection();
 
 module.exports = sequelize;
