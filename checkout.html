@@ -1257,6 +1257,10 @@
             submitBtn.innerHTML = 'Processing...';
             
             try {
+                console.log('Initiating PayGate payment...');
+                console.log('Order Reference:', orderReference);
+                console.log('Total Amount:', total);
+                
                 // Initiate PayGate payment
                 const response = await fetch(`${checkoutApiUrl}/paygate/initiate`, {
                     method: 'POST',
@@ -1278,12 +1282,15 @@
                     })
                 });
                 
+                console.log('Response status:', response.status);
                 const result = await response.json();
+                console.log('Response data:', result);
                 
-                if (result.success && result.data.paymentUrl) {
+                if (result.success && result.data && result.data.paymentUrl) {
                     // Save cart state before redirecting
                     localStorage.setItem('pendingOrderItems', JSON.stringify(selectedItems));
                     
+                    console.log('Redirecting to PayGate:', result.data.paymentUrl);
                     // Redirect to PayGate payment page
                     window.location.href = result.data.paymentUrl;
                 } else {
@@ -1291,7 +1298,7 @@
                 }
             } catch (error) {
                 console.error('Error initiating payment:', error);
-                alert('Error processing payment: ' + error.message);
+                alert('Error processing payment: ' + error.message + '\n\nPlease check:\n1. All fields are filled correctly\n2. Your internet connection\n3. Try again in a moment');
                 
                 // Restore button
                 submitBtn.disabled = false;
