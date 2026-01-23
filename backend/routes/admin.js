@@ -33,14 +33,15 @@ router.post('/upload', upload.array('images', 5), async (req, res) => {
 });
 
 // ============ SEED DATABASE (ONE-TIME SETUP - NO AUTH) ============
-router.post('/seed', async (req, res) => {
+
+// Seed products only
+router.post('/seed-products', async (req, res) => {
     try {
-        // Check if products already exist
         const existingProducts = await Product.count();
         if (existingProducts > 0) {
             return res.status(400).json({ 
                 success: false, 
-                message: `Database already has ${existingProducts} products. Clear database first if you want to reseed.` 
+                message: `Database already has ${existingProducts} products.` 
             });
         }
 
@@ -68,30 +69,37 @@ router.post('/seed', async (req, res) => {
         ];
 
         await Product.bulkCreate(productsData);
-        
-        // Create admin user
+        res.json({ success: true, message: `✅ ${productsData.length} products added` });
+    } catch (error) {
+        console.error('Seed products error:', error);
+        res.status(500).json({ success: false, message: error.message, stack: error.stack });
+    }
+});
+
+// Create admin user
+router.post('/create-admin', async (req, res) => {
+    try {
         const adminExists = await User.findOne({ where: { email: 'admin@mellophi.co.za' } });
-        if (!adminExists) {
-            await User.create({
-                firstName: 'Admin',
-                lastName: 'Mellophi',
-                email: 'admin@mellophi.co.za',
-                password: 'Mellophi2026!',
-                isAdmin: true
-            });
+        if (adminExists) {
+            return res.status(400).json({ success: false, message: 'Admin already exists' });
         }
+
+        const admin = await User.create({
+            firstName: 'Admin',
+            lastName: 'Mellophi',
+            email: 'admin@mellophi.co.za',
+            password: 'Mellophi2026!',
+            isAdmin: true
+        });
 
         res.json({ 
             success: true, 
-            message: `✅ Database seeded successfully with ${productsData.length} products and admin user`,
-            adminCredentials: {
-                email: 'admin@mellophi.co.za',
-                password: 'Mellophi2026!'
-            }
+            message: '✅ Admin user created',
+            credentials: { email: 'admin@mellophi.co.za', password: 'Mellophi2026!' }
         });
     } catch (error) {
-        console.error('Seed error:', error);
-        res.status(500).json({ success: false, message: error.message });
+        console.error('Create admin error:', error);
+        res.status(500).json({ success: false, message: error.message, stack: error.stack });
     }
 });
 
