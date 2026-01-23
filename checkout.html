@@ -1263,25 +1263,8 @@
                 return;
             }
             
-            // Validate card fields if card payment is selected
-            if (paymentMethodInput.value === 'card') {
-                const cardNumber = document.getElementById('card-number').value.trim().replace(/\s/g, '');
-                const cardExpiry = document.getElementById('card-expiry').value.trim();
-                const cardCvv = document.getElementById('card-cvv').value.trim();
-                const cardName = document.getElementById('card-name').value.trim();
-                
-                // Run all validations
-                const isCardNumberValid = validateCardNumber(cardNumber, false);
-                const isExpiryValid = validateExpiryDate(cardExpiry, false);
-                const isCvvValid = validateCVV(cardCvv);
-                const isNameValid = validateCardholderName(cardName);
-                
-                // If any validation fails, stop
-                if (!isCardNumberValid || !isExpiryValid || !isCvvValid || !isNameValid) {
-                    alert('⚠️ Please fix the card validation errors before proceeding');
-                    return;
-                }
-            }
+            // For card payment, PayGate will handle the card validation
+            // No client-side validation needed
             
             // Get selected items
             const selectedProducts = [];
