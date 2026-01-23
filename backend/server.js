@@ -52,20 +52,17 @@ app.use('/images', express.static(path.join(__dirname, '../images')));
 app.use('/uploads', express.static(path.join(__dirname, 'images')));
 
 // Database connection and sync
-// In production, use { alter: false } or migrations
-const syncOptions = process.env.NODE_ENV === 'production' 
-    ? { alter: false }  // Don't auto-alter in production
-    : { alter: true };  // Auto-update schema in development
+// Using alter: true to allow table creation/updates
+const syncOptions = { alter: true };
 
 sequelize.sync(syncOptions)
     .then(() => {
-        console.log('✅ MySQL Database Synced');
-        if (process.env.NODE_ENV === 'production') {
-            console.log('ℹ️  Production mode: Schema changes require manual migration');
-        }
+        console.log('✅ Database Synced Successfully');
+        console.log('📊 All tables created/updated');
     })
     .catch(err => {
         console.error('❌ Database Sync Error:', err.message);
+        console.error('Full error:', err);
         process.exit(1);
     });
 
