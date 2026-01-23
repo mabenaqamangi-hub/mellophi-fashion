@@ -227,12 +227,26 @@
     left: 50%;
     transform: translateX(-50%);
     background: linear-gradient(135deg, var(--champagne), var(--nude-dark));
-    color: var(--off-white);
+    color: white;
     padding: 1rem 2rem;
     border-radius: 50px;
-    font-weight: 500;
-    box-shadow: var(--shadow-lg);
+    font-weight: 600;
+    font-size: 1rem;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
     z-index: 100;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.mobile-filter-toggle:hover {
+    transform: translateX(-50%) translateY(-2px);
+    box-shadow: 0 6px 25px rgba(0,0,0,0.4);
+}
+
+.mobile-filter-toggle svg {
+    display: inline-block;
+    vertical-align: middle;
 }
 
 /* === PRODUCTS CONTAINER === */
