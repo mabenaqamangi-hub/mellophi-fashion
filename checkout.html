@@ -1218,9 +1218,6 @@
                 return;
             }
             
-            // For card payment, PayGate will handle the card validation
-            // No client-side validation needed
-            
             // Get selected items
             const selectedProducts = [];
             let subtotal = 0;
@@ -1239,76 +1236,66 @@
                 }
             });
             
-            const total = subtotal + selectedShipping;
-            
-            const orderData = {
-                customerInfo: {
-                    name: document.getElementById('name').value,
-                    email: document.getElementById('email').value,
-                    phone: document.getElementById('phone').value
-                },
-                shippingAddress: document.getElementById('address').value,
-                items: selectedProducts,
-                paymentMethod: paymentMethodInput.value,
-                subtotal: subtotal,
-                shippingCost: selectedShipping,
-                tax: 0,
-                discount: 0,
-                total: total
-            };
-            
-            // Add card details if card payment selected
-            if (paymentMethodInput.value === 'card') {
-                orderData.cardDetails = {
-                    cardNumber: document.getElementById('card-number').value,
-                    cardExpiry: document.getElementById('card-expiry').value,
-                    cardCvv: document.getElementById('card-cvv').value,
-                    cardName: document.getElementById('card-name').value
-                };
+            if (selectedProducts.length === 0) {
+                alert('Please select at least one item to checkout');
+                return;
             }
             
+            const total = subtotal + selectedShipping;
+            const customerName = document.getElementById('name').value;
+            const customerEmail = document.getElementById('email').value;
+            const customerPhone = document.getElementById('phone').value;
+            const shippingAddress = document.getElementById('address').value;
+            
+            // Generate order reference
+            const orderReference = 'MELL' + Date.now();
+            
+            // Show loading state
+            const submitBtn = document.getElementById('submit-btn');
+            const originalBtnText = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = 'Processing...';
+            
             try {
-                // Save order to backend
-                const response = await fetch(`${checkoutApiUrl}/orders`, {
+                // Initiate PayGate payment
+                const response = await fetch(`${checkoutApiUrl}/paygate/initiate`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(orderData)
+                    body: JSON.stringify({
+                        amount: total,
+                        reference: orderReference,
+                        email: customerEmail,
+                        firstName: customerName.split(' ')[0],
+                        lastName: customerName.split(' ').slice(1).join(' ') || customerName.split(' ')[0],
+                        orderDetails: {
+                            items: selectedProducts,
+                            shippingAddress: shippingAddress,
+                            phone: customerPhone,
+                            subtotal: subtotal,
+                            shipping: selectedShipping,
+                            discount: 0
+                        }
+                    })
                 });
                 
                 const result = await response.json();
                 
-                if (result.success) {
-                    // Show payment success message
-                    let successMessage = '✓ Payment Successful!\n\n';
-                    successMessage += `Order Number: ${result.data.orderNumber}\n`;
-                    successMessage += `Total: R ${total.toFixed(2)}\n`;
-                    successMessage += `Items: ${selectedProducts.length}\n`;
-                    successMessage += `Payment Method: ${paymentMethodInput.value.toUpperCase()}\n\n`;
-                    successMessage += 'You will receive a confirmation email shortly.';
+                if (result.success && result.data.paymentUrl) {
+                    // Save cart state before redirecting
+                    localStorage.setItem('pendingOrderItems', JSON.stringify(selectedItems));
                     
-                    alert(successMessage);
-                    
-                    // Remove selected items from cart
-                    selectedItems.forEach(index => {
-                        cart[index] = null;
-                    });
-                    cart = cart.filter(item => item !== null);
-                    
-                    saveCart();
-                    window.location.href = 'index.html';
+                    // Redirect to PayGate payment page
+                    window.location.href = result.data.paymentUrl;
                 } else {
-                    alert('Error placing order: ' + result.message);
+                    throw new Error(result.message || 'Failed to initiate payment');
                 }
             } catch (error) {
-                console.error('Error placing order:', error);
-                alert('Error placing order. Your order has been saved locally. Please try again later or contact support.');
+                console.error('Error initiating payment:', error);
+                alert('Error processing payment: ' + error.message);
                 
-                // Still remove items from cart even if API fails
-                selectedItems.forEach(index => {
-                    cart[index] = null;
-                });
-                cart = cart.filter(item => item !== null);
-                saveCart();
+                // Restore button
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalBtnText;
             }
         }
 

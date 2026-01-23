@@ -226,22 +226,36 @@
     bottom: 2rem;
     left: 50%;
     transform: translateX(-50%);
-    background: linear-gradient(135deg, var(--champagne), var(--nude-dark));
+    background: linear-gradient(135deg, #d4af7a, #b8975e);
     color: white;
-    padding: 1rem 2rem;
+    padding: 1.2rem 2.5rem;
     border-radius: 50px;
-    font-weight: 600;
-    font-size: 1rem;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-    z-index: 100;
-    border: none;
+    font-weight: 700;
+    font-size: 1.1rem;
+    box-shadow: 0 6px 25px rgba(212, 175, 122, 0.5);
+    z-index: 1002;
+    border: 2px solid white;
     cursor: pointer;
     transition: all 0.3s ease;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        box-shadow: 0 6px 25px rgba(212, 175, 122, 0.5);
+    }
+    50% {
+        box-shadow: 0 6px 35px rgba(212, 175, 122, 0.8);
+    }
 }
 
 .mobile-filter-toggle:hover {
     transform: translateX(-50%) translateY(-2px);
-    box-shadow: 0 6px 25px rgba(0,0,0,0.4);
+    box-shadow: 0 8px 30px rgba(212, 175, 122, 0.7);
+}
+
+.mobile-filter-toggle:active {
+    transform: translateX(-50%) translateY(0);
 }
 
 .mobile-filter-toggle svg {
