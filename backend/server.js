@@ -53,18 +53,27 @@ app.use('/uploads', express.static(path.join(__dirname, 'images')));
 
 // Database connection and sync
 // Using alter: true to allow table creation/updates
-const syncOptions = { alter: true };
-
-sequelize.sync(syncOptions)
-    .then(() => {
+async function initializeDatabase() {
+    try {
+        console.log('🔄 Starting database sync...');
+        const syncOptions = { alter: true };
+        await sequelize.sync(syncOptions);
         console.log('✅ Database Synced Successfully');
         console.log('📊 All tables created/updated');
-    })
-    .catch(err => {
+    } catch (err) {
         console.error('❌ Database Sync Error:', err.message);
         console.error('Full error:', err);
+        throw err;
+    }
+}
+
+// Initialize database (will wait for connection from config/database.js)
+setTimeout(() => {
+    initializeDatabase().catch(err => {
+        console.error('💥 Fatal: Database initialization failed');
         process.exit(1);
     });
+}, 2000); // Wait 2 seconds for connection to be established
 
 // API Routes
 app.use('/api/products', productRoutes);
