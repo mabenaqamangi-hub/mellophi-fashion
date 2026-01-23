@@ -422,3 +422,5 @@ This project is for Mellophi Fashion. All rights reserved.
 
 **Built with ♡ for Mellophi Fashion**
 *Soft. Stylish. Confident.*
+#   F o r c e   r e d e p l o y   t o   i n c l u d e   i m a g e s  
+ 
