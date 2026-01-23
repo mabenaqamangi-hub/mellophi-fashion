@@ -632,7 +632,51 @@
         document.addEventListener('DOMContentLoaded', function() {
             renderCart();
             updateCartCount();
+            initializeCardFormatting();
         });
+
+        function toggleCardFields() {
+            const cardFields = document.getElementById('card-payment-fields');
+            const paymentMethod = document.querySelector('input[name="payment-method"]:checked').value;
+            
+            if (paymentMethod === 'card') {
+                cardFields.style.display = 'block';
+            } else {
+                cardFields.style.display = 'none';
+            }
+        }
+
+        function initializeCardFormatting() {
+            // Format card number with spaces
+            const cardNumberInput = document.getElementById('card-number');
+            if (cardNumberInput) {
+                cardNumberInput.addEventListener('input', function(e) {
+                    let value = e.target.value.replace(/\s/g, '').replace(/\D/g, '');
+                    let formattedValue = value.match(/.{1,4}/g)?.join(' ') || value;
+                    e.target.value = formattedValue;
+                });
+            }
+
+            // Format expiry date MM/YY
+            const expiryInput = document.getElementById('expiry-date');
+            if (expiryInput) {
+                expiryInput.addEventListener('input', function(e) {
+                    let value = e.target.value.replace(/\D/g, '');
+                    if (value.length >= 2) {
+                        value = value.slice(0, 2) + '/' + value.slice(2, 4);
+                    }
+                    e.target.value = value;
+                });
+            }
+
+            // Format CVV - numbers only
+            const cvvInput = document.getElementById('cvv');
+            if (cvvInput) {
+                cvvInput.addEventListener('input', function(e) {
+                    e.target.value = e.target.value.replace(/\D/g, '');
+                });
+            }
+        }
 
         function renderCart() {
             const content = document.getElementById('cart-content');
@@ -745,22 +789,41 @@
                                         <label>Payment Method</label>
                                         <div class="payment-methods">
                                             <label class="payment-method-option">
-                                                <input type="radio" name="payment-method" value="card" checked>
+                                                <input type="radio" name="payment-method" value="card" checked onchange="toggleCardFields()">
                                                 <div class="payment-method-card">
                                                     <div class="payment-icon">💳</div>
                                                     <div class="payment-info">
-                                                        <div class="payment-name">Card Payment via PayGate</div>
-                                                        <div class="payment-desc">Secure credit or debit card payment</div>
+                                                        <div class="payment-name">Card Payment</div>
+                                                        <div class="payment-desc">Credit or Debit Card</div>
                                                     </div>
                                                 </div>
                                             </label>
                                         </div>
                                     </div>
                                     
-                                    <div style="background: #f0f8ff; padding: 15px; border-radius: 8px; margin-top: 15px; border-left: 3px solid #d4af7a;">
-                                        <p style="margin: 0; color: #555; font-size: 0.9rem;">
-                                            <strong>Secure Payment:</strong> You'll be redirected to PayGate's secure payment page to complete your purchase.
-                                        </p>
+                                    <!-- Card Payment Fields -->
+                                    <div id="card-payment-fields" style="display: block;">
+                                        <div class="form-group">
+                                            <label for="cardholder-name">Cardholder Name *</label>
+                                            <input type="text" id="cardholder-name" placeholder="Name as it appears on card" required>
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            <label for="card-number">Card Number *</label>
+                                            <input type="text" id="card-number" placeholder="1234 5678 9012 3456" maxlength="19" required inputmode="numeric">
+                                        </div>
+                                        
+                                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                                            <div class="form-group">
+                                                <label for="expiry-date">Expiry Date *</label>
+                                                <input type="text" id="expiry-date" placeholder="MM/YY" maxlength="5" required inputmode="numeric">
+                                            </div>
+                                            
+                                            <div class="form-group">
+                                                <label for="cvv">CVV *</label>
+                                                <input type="text" id="cvv" placeholder="123" maxlength="4" required inputmode="numeric">
+                                            </div>
+                                        </div>
                                     </div>
                                     
                                     <button type="submit" class="btn-complete" id="submit-btn">
@@ -1275,6 +1338,33 @@
             const customerPhone = document.getElementById('phone').value;
             const shippingAddress = document.getElementById('address').value;
             
+            // Get card details
+            const cardholderName = document.getElementById('cardholder-name').value;
+            const cardNumber = document.getElementById('card-number').value.replace(/\s/g, '');
+            const expiryDate = document.getElementById('expiry-date').value;
+            const cvv = document.getElementById('cvv').value;
+            
+            // Validate card fields
+            if (!cardholderName || !cardNumber || !expiryDate || !cvv) {
+                alert('❌ Please fill in all card details');
+                return;
+            }
+            
+            if (cardNumber.length < 13 || cardNumber.length > 19) {
+                alert('❌ Please enter a valid card number');
+                return;
+            }
+            
+            if (expiryDate.length !== 5 || !expiryDate.includes('/')) {
+                alert('❌ Please enter expiry date in MM/YY format');
+                return;
+            }
+            
+            if (cvv.length < 3 || cvv.length > 4) {
+                alert('❌ Please enter a valid CVV');
+                return;
+            }
+            
             // Generate order reference
             const orderReference = 'MELL' + Date.now();
             
@@ -1289,7 +1379,7 @@
                 console.log('Order Reference:', orderReference);
                 console.log('Total Amount:', total);
                 
-                // Initiate PayGate payment
+                // Initiate PayGate payment with card details
                 const response = await fetch(`${checkoutApiUrl}/paygate/initiate`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -1299,6 +1389,12 @@
                         email: customerEmail,
                         firstName: customerName.split(' ')[0],
                         lastName: customerName.split(' ').slice(1).join(' ') || customerName.split(' ')[0],
+                        cardDetails: {
+                            cardholderName: cardholderName,
+                            cardNumber: cardNumber,
+                            expiryDate: expiryDate,
+                            cvv: cvv
+                        },
                         orderDetails: {
                             items: selectedProducts,
                             shippingAddress: shippingAddress,
