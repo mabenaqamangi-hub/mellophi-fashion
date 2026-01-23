@@ -146,15 +146,22 @@ async function loadProductsFromAPI() {
                 title: p.name,
                 name: p.name,
                 price: parseFloat(p.price),
-                category: p.category === 'dress' ? 'dresses' : p.category === 'top' ? 'tops' : p.category === 'bottom' ? 'skirts' : 'shorts-top-set',
+                category: p.category === 'dress' ? 'dresses' 
+                        : p.category === 'top' ? 'tops' 
+                        : p.category === 'bottom' ? 'skirts' 
+                        : p.category === 'set' ? 'shorts-top-set'
+                        : p.category + 's',
                 sub: 'casual',
                 images: p.images && p.images.length > 0 
                     ? p.images.map(img => img.startsWith('http') ? img : `${backendBaseURL}/${img}`)
-                    : ['data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22500%22%3E%3Crect fill=%22%23f0f0f0%22 width=%22400%22 height=%22500%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22%23999%22 font-size=%2224%22%3ENo Image%3C/text%3E%3C/svg%3E'],
+                    : ['images/PRODUCTS/A1 front.png'],
                 sizes: p.sizes || ['S', 'M', 'L'],
                 colors: p.colors || [],
                 stock: p.stock !== undefined ? p.stock : 12,
-                reviews: [4.5]
+                reviews: [4.5],
+                isFeatured: p.isFeatured || false,
+                isNewArrival: p.isNewArrival || false,
+                isBestSeller: p.isBestSeller || false
             }));
             
             // Only use API products if they have valid data
