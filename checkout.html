@@ -656,6 +656,12 @@
             content.innerHTML = `
                 <div class="cart-content">
                     <div class="cart-items" id="cart-items-list">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid #f0f0f0;">
+                            <h3 style="margin: 0; color: #2c2416; font-family: 'Cormorant Garamond', serif; font-size: 1.5rem;">Shopping Cart</h3>
+                            <button onclick="selectAllItems()" style="background: #d4af7a; color: white; border: none; padding: 8px 20px; border-radius: 20px; cursor: pointer; font-weight: 600; font-size: 0.9rem;">
+                                ✓ Select All Items
+                            </button>
+                        </div>
                         ${cart.map((item, index) => createCartItemHTML(item, index)).join('')}
                     </div>
                     
@@ -809,6 +815,21 @@
                     </div>
                 </div>
             `;
+        }
+
+        function selectAllItems() {
+            cart.forEach((item, index) => {
+                if (item) {
+                    const checkbox = document.getElementById(`checkbox-${index}`);
+                    const itemElement = document.getElementById(`item-${index}`);
+                    if (checkbox && !checkbox.checked) {
+                        checkbox.checked = true;
+                        selectedItems.add(index);
+                        if (itemElement) itemElement.classList.add('selected');
+                    }
+                }
+            });
+            updateSummary();
         }
 
         function toggleItemSelection(index) {
@@ -1211,6 +1232,10 @@
         async function handleCheckout(event) {
             event.preventDefault();
             
+            console.log('=== CHECKOUT STARTED ===');
+            console.log('Selected items:', selectedItems);
+            console.log('Cart:', cart);
+            
             // Get selected payment method
             const paymentMethodInput = document.querySelector('input[name="payment-method"]:checked');
             if (!paymentMethodInput) {
@@ -1236,8 +1261,13 @@
                 }
             });
             
+            console.log('Selected products:', selectedProducts);
+            console.log('Subtotal:', subtotal);
+            
             if (selectedProducts.length === 0) {
-                alert('Please select at least one item to checkout');
+                alert('❌ Please select items to checkout!\n\nTick the checkbox next to the items you want to purchase.');
+                return;
+            }
                 return;
             }
             
