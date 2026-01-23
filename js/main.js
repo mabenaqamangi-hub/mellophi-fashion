@@ -467,7 +467,7 @@ function showQuickViewModal(product, backendUrl) {
             : product.images[0].startsWith('images/') 
                 ? `${backendUrl}/${product.images[0]}`
                 : product.images[0])
-        : 'images/placeholder.jpg';
+        : 'images/PRODUCTS/A1 front.png';
     
     document.getElementById('qv-product-image').src = imagePath;
     document.getElementById('qv-product-image').alt = product.name || product.title;
@@ -680,7 +680,7 @@ function addToCartFromQV() {
         size: selectedQVSize,
         color: selectedQVColor || 'Default',
         quantity: quantity,
-        image: currentQuickViewProduct.images ? currentQuickViewProduct.images[0] : 'images/placeholder.jpg'
+        image: currentQuickViewProduct.images ? currentQuickViewProduct.images[0] : 'images/PRODUCTS/A1 front.png'
     };
     
     // Add to cart (using localStorage)

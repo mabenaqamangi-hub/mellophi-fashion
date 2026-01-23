@@ -243,7 +243,7 @@ function createProductCard(product) {
     card.dataset.productId = product.id;
     
     // Get first image
-    const productImage = product.images && product.images.length > 0 ? product.images[0] : 'images/placeholder.jpg';
+    const productImage = product.images && product.images.length > 0 ? product.images[0] : 'images/PRODUCTS/A1 front.png';
     const productName = product.title || product.name || 'Product';
     
     // Get color swatches
@@ -256,7 +256,7 @@ function createProductCard(product) {
     card.innerHTML = `
         <a href="product.html?id=${product.id}" class="product-link">
             <div class="product-image ${stockClass}">
-                <img src="${productImage}" alt="${productName}" onerror="this.src='images/placeholder.jpg'">
+                <img src="${productImage}" alt="${productName}" onerror="this.src='images/PRODUCTS/A1 front.png'">
                 ${stockBadge}
                 <button class="wishlist-btn" onclick="event.preventDefault(); event.stopPropagation();">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -517,7 +517,7 @@ function showQuickViewModal(product, backendUrl) {
             : product.images[0].startsWith('images/') 
                 ? `${backendUrl}/${product.images[0]}`
                 : product.images[0])
-        : 'images/placeholder.jpg';
+        : 'images/PRODUCTS/A1 front.png';
     
     document.getElementById('qv-product-image').src = imagePath;
     document.getElementById('qv-product-image').alt = product.name || product.title;
@@ -731,7 +731,7 @@ function addToCartFromQV() {
         size: selectedQVSize,
         color: selectedQVColor || 'Default',
         quantity: quantity,
-        image: currentQuickViewProduct.images ? currentQuickViewProduct.images[0] : 'images/placeholder.jpg'
+        image: currentQuickViewProduct.images ? currentQuickViewProduct.images[0] : 'images/PRODUCTS/A1 front.png'
     };
     
     // Add to cart (using localStorage)
