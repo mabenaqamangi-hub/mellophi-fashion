@@ -55,17 +55,21 @@ router.post('/initiate', async (req, res) => {
         // Create order in database
         const order = await Order.create({
             orderNumber: reference,
-            customerEmail: email,
-            customerName: `${firstName} ${lastName}`,
+            customerInfo: {
+                email: email,
+                firstName: firstName,
+                lastName: lastName,
+                fullName: `${firstName} ${lastName}`
+            },
             items: orderDetails.items,
             shippingAddress: orderDetails.shippingAddress,
             subtotal: orderDetails.subtotal,
-            shipping: orderDetails.shipping,
+            shippingCost: orderDetails.shipping,
             discount: orderDetails.discount || 0,
             total: amount,
             paymentMethod: 'paygate',
             paymentStatus: 'pending',
-            status: 'pending'
+            orderStatus: 'pending'
         });
 
         // PayGate initiate payload
