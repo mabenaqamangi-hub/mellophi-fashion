@@ -183,39 +183,50 @@
                         <h3>Customer Reviews</h3>
                         <div class="reviews-summary">
                             <div class="rating-overview">
-                                <span class="big-rating">4.8</span>
-                                <div class="stars">★★★★★</div>
-                                <p>Based on 24 reviews</p>
+                                <span class="big-rating" id="avg-rating">0</span>
+                                <div class="stars" id="avg-stars"></div>
+                                <p id="review-count-text">No reviews yet</p>
                             </div>
                         </div>
 
-                        <div class="review-list">
-                            <div class="review-item">
-                                <div class="review-header">
-                                    <strong>M.</strong>
-                                    <div class="stars">★★★★★</div>
+                        <!-- Add Review Form -->
+                        <div class="add-review-section">
+                            <h4>Write a Review</h4>
+                            <form id="review-form" class="review-form">
+                                <div class="form-group">
+                                    <label for="reviewer-name">Name *</label>
+                                    <input type="text" id="reviewer-name" name="customerName" required>
                                 </div>
-                                <p class="review-text">Absolutely love This! The  color is perfect and the quality is amazing. So soft and comfortable.</p>
-                                <span class="review-date">2 weeks ago</span>
-                            </div>
+                                <div class="form-group">
+                                    <label for="reviewer-email">Email *</label>
+                                    <input type="email" id="reviewer-email" name="customerEmail" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Rating *</label>
+                                    <div class="star-rating-input">
+                                        <input type="radio" name="rating" id="star5" value="5" required>
+                                        <label for="star5">★</label>
+                                        <input type="radio" name="rating" id="star4" value="4">
+                                        <label for="star4">★</label>
+                                        <input type="radio" name="rating" id="star3" value="3">
+                                        <label for="star3">★</label>
+                                        <input type="radio" name="rating" id="star2" value="2">
+                                        <label for="star2">★</label>
+                                        <input type="radio" name="rating" id="star1" value="1">
+                                        <label for="star1">★</label>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="review-comment">Your Review *</label>
+                                    <textarea id="review-comment" name="comment" rows="4" required></textarea>
+                                </div>
+                                <button type="submit" class="btn-primary">Submit Review</button>
+                            </form>
+                        </div>
 
-                            <div class="review-item">
-                                <div class="review-header">
-                                    <strong>Thandi K.</strong>
-                                    <div class="stars">★★★★★</div>
-                                </div>
-                                <p class="review-text">Perfect fit! Exactly what I was looking for. The  aesthetic is so beautiful and versatile.</p>
-                                <span class="review-date">1 month ago</span>
-                            </div>
-
-                            <div class="review-item">
-                                <div class="review-header">
-                                    <strong>Lisa P.</strong>
-                                    <div class="stars">★★★★☆</div>
-                                </div>
-                                <p class="review-text">Great quality Dress. Love the color and feel. Would recommend sizing down if you want a more fitted look.</p>
-                                <span class="review-date">1 month ago</span>
-                            </div>
+                        <!-- Reviews List -->
+                        <div class="review-list" id="review-list">
+                            <!-- Reviews will be loaded dynamically -->
                         </div>
                     </div>
                 </div>

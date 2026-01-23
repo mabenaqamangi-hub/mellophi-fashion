@@ -921,5 +921,174 @@ window.addEventListener('load', function() {
         if (breadcrumb && productTitle) {
             breadcrumb.textContent = productTitle.textContent;
         }
+        
+        // Load reviews for this product
+        loadReviews(productId);
     }
 });
+
+// ========================================
+// REVIEW SYSTEM
+// ========================================
+
+// Load reviews for a product
+async function loadReviews(productId) {
+    const apiUrl = window.API_URL || 'http://localhost:5000/api';
+    
+    try {
+        const response = await fetch(`${apiUrl}/reviews/product/${productId}`);
+        if (!response.ok) throw new Error('Failed to load reviews');
+        
+        const reviews = await response.json();
+        displayReviews(reviews);
+        
+        // Load review stats
+        const statsResponse = await fetch(`${apiUrl}/reviews/stats/${productId}`);
+        if (statsResponse.ok) {
+            const stats = await statsResponse.json();
+            updateReviewStats(stats);
+        }
+    } catch (error) {
+        console.error('Error loading reviews:', error);
+        document.getElementById('review-list').innerHTML = '<p style="padding: 2rem; text-align: center; color: #999;">No reviews yet. Be the first to review!</p>';
+    }
+}
+
+// Display reviews
+function displayReviews(reviews) {
+    const reviewList = document.getElementById('review-list');
+    
+    if (!reviews || reviews.length === 0) {
+        reviewList.innerHTML = '<p style="padding: 2rem; text-align: center; color: #999;">No reviews yet. Be the first to review!</p>';
+        return;
+    }
+    
+    reviewList.innerHTML = reviews.map(review => {
+        const stars = '★'.repeat(review.rating) + '☆'.repeat(5 - review.rating);
+        const date = new Date(review.createdAt);
+        const timeAgo = getTimeAgo(date);
+        
+        return `
+            <div class="review-item">
+                <div class="review-header">
+                    <strong>${escapeHtml(review.customerName)}</strong>
+                    <div class="stars">${stars}</div>
+                </div>
+                <p class="review-text">${escapeHtml(review.comment)}</p>
+                <span class="review-date">${timeAgo}</span>
+            </div>
+        `;
+    }).join('');
+}
+
+// Update review statistics
+function updateReviewStats(stats) {
+    const avgRating = document.getElementById('avg-rating');
+    const avgStars = document.getElementById('avg-stars');
+    const reviewCountText = document.getElementById('review-count-text');
+    
+    if (avgRating) avgRating.textContent = stats.average || '0';
+    if (avgStars) {
+        const rating = parseFloat(stats.average) || 0;
+        const fullStars = Math.floor(rating);
+        const hasHalfStar = rating % 1 >= 0.5;
+        const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+        
+        avgStars.innerHTML = '★'.repeat(fullStars) + (hasHalfStar ? '⯨' : '') + '☆'.repeat(emptyStars);
+    }
+    if (reviewCountText) {
+        reviewCountText.textContent = stats.total === 0 ? 'No reviews yet' : `Based on ${stats.total} review${stats.total !== 1 ? 's' : ''}`;
+    }
+    
+    // Update tab button
+    const reviewTabBtn = document.querySelector('[data-tab="reviews"]');
+    if (reviewTabBtn && stats.total > 0) {
+        reviewTabBtn.textContent = `Reviews (${stats.total})`;
+    }
+}
+
+// Submit review form
+const reviewForm = document.getElementById('review-form');
+if (reviewForm) {
+    reviewForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const urlParams = new URLSearchParams(window.location.search);
+        const productId = urlParams.get('id');
+        
+        if (!productId) {
+            alert('Product ID not found');
+            return;
+        }
+        
+        const formData = new FormData(reviewForm);
+        const reviewData = {
+            productId: productId,
+            customerName: formData.get('customerName'),
+            customerEmail: formData.get('customerEmail'),
+            rating: parseInt(formData.get('rating')),
+            comment: formData.get('comment')
+        };
+        
+        const submitBtn = reviewForm.querySelector('button[type="submit"]');
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Submitting...';
+        
+        const apiUrl = window.API_URL || 'http://localhost:5000/api';
+        
+        try {
+            const response = await fetch(`${apiUrl}/reviews`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(reviewData)
+            });
+            
+            const result = await response.json();
+            
+            if (response.ok) {
+                alert('✓ Thank you for your review!');
+                reviewForm.reset();
+                loadReviews(productId); // Reload reviews
+            } else {
+                alert('Error: ' + (result.message || 'Failed to submit review'));
+            }
+        } catch (error) {
+            console.error('Error submitting review:', error);
+            alert('Failed to submit review. Please try again.');
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Submit Review';
+        }
+    });
+}
+
+// Helper function to get time ago
+function getTimeAgo(date) {
+    const seconds = Math.floor((new Date() - date) / 1000);
+    
+    let interval = Math.floor(seconds / 31536000);
+    if (interval >= 1) return interval + ' year' + (interval > 1 ? 's' : '') + ' ago';
+    
+    interval = Math.floor(seconds / 2592000);
+    if (interval >= 1) return interval + ' month' + (interval > 1 ? 's' : '') + ' ago';
+    
+    interval = Math.floor(seconds / 86400);
+    if (interval >= 1) return interval + ' day' + (interval > 1 ? 's' : '') + ' ago';
+    
+    interval = Math.floor(seconds / 3600);
+    if (interval >= 1) return interval + ' hour' + (interval > 1 ? 's' : '') + ' ago';
+    
+    interval = Math.floor(seconds / 60);
+    if (interval >= 1) return interval + ' minute' + (interval > 1 ? 's' : '') + ' ago';
+    
+    return 'Just now';
+}
+
+// Helper function to escape HTML
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}

@@ -740,6 +740,111 @@ html {
     color: var(--color-gray-dark);
 }
 
+/* === REVIEW FORM === */
+.add-review-section {
+    margin: 2rem 0;
+    padding: 2rem;
+    background-color: var(--color-gray-light);
+    border: 1px solid var(--color-gray-medium);
+}
+
+.add-review-section h4 {
+    margin-bottom: 1.5rem;
+    font-size: 1.125rem;
+    font-weight: 500;
+    color: var(--color-black);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.review-form .form-group {
+    margin-bottom: 1.5rem;
+}
+
+.review-form label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--color-text);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.review-form input[type="text"],
+.review-form input[type="email"],
+.review-form textarea {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--color-gray-medium);
+    background-color: var(--color-white);
+    font-size: 0.875rem;
+    font-family: var(--font-primary);
+    transition: border-color 0.2s ease;
+}
+
+.review-form input:focus,
+.review-form textarea:focus {
+    outline: none;
+    border-color: var(--color-black);
+}
+
+.review-form textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.star-rating-input {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+    gap: 0.25rem;
+}
+
+.star-rating-input input[type="radio"] {
+    display: none;
+}
+
+.star-rating-input label {
+    font-size: 2rem;
+    color: var(--color-gray-medium);
+    cursor: pointer;
+    transition: color 0.2s ease;
+    margin: 0;
+    text-transform: none;
+    letter-spacing: 0;
+}
+
+.star-rating-input input[type="radio"]:checked ~ label,
+.star-rating-input label:hover,
+.star-rating-input label:hover ~ label {
+    color: #FFD700;
+}
+
+.review-form button[type="submit"] {
+    margin-top: 1rem;
+    padding: 1rem 2.5rem;
+    background-color: var(--color-black);
+    color: var(--color-white);
+    border: none;
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.review-form button[type="submit"]:hover {
+    background-color: #333;
+}
+
+.review-form button[type="submit"]:disabled {
+    background-color: var(--color-gray-dark);
+    cursor: not-allowed;
+}
+
+
 /* === RELATED PRODUCTS === */
 .related-products {
     margin-top: 4rem;

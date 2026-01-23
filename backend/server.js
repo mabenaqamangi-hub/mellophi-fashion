@@ -14,6 +14,7 @@ const userRoutes = require('./routes/users');
 const authRoutes = require('./routes/auth');
 const adminRoutes = require('./routes/admin');
 const paygateRoutes = require('./routes/paygate');
+const reviewRoutes = require('./routes/reviews');
 
 // Initialize Express app
 const app = express();
@@ -74,6 +75,7 @@ app.use('/api/orders', orderRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/reviews', reviewRoutes);
 app.use('/api/paygate', paygateRoutes);
 
 // Health check endpoint
