@@ -934,16 +934,17 @@ window.addEventListener('load', function() {
 // Load reviews for a product
 async function loadReviews(productId) {
     const apiUrl = window.API_URL || 'http://localhost:5000/api';
+    const encodedProductId = encodeURIComponent(productId);
     
     try {
-        const response = await fetch(`${apiUrl}/reviews/product/${productId}`);
+        const response = await fetch(`${apiUrl}/reviews/product/${encodedProductId}`);
         if (!response.ok) throw new Error('Failed to load reviews');
         
         const reviews = await response.json();
         displayReviews(reviews);
         
         // Load review stats
-        const statsResponse = await fetch(`${apiUrl}/reviews/stats/${productId}`);
+        const statsResponse = await fetch(`${apiUrl}/reviews/stats/${encodedProductId}`);
         if (statsResponse.ok) {
             const stats = await statsResponse.json();
             updateReviewStats(stats);
