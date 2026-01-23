@@ -1,98 +1,98 @@
-// ========================================
+﻿// ========================================
 // PRODUCT PAGE JAVASCRIPT
 // ========================================
 
 // MELLOPHI FASHION PRODUCTS (same as shop.js)
 const products = [
-  {id:"A1", title:"A1 — Casual Summer Dress", price:380, category:"dresses", sub:"casual",
+  {id:"A1", title:"A1 â€” Casual Summer Dress", price:380, category:"dresses", sub:"casual",
     images:["images/PRODUCTS/A1 front.png","images/PRODUCTS/A1 back.png"], sizes:["S","M","L","XL"],
     colors:[{name:'Sand', value:'#d6c5b7', sizes:["S","M","L","XL"]},{name:'Olive', value:'#9aa27a', sizes:["S","M","L"]}],
     description:"Beautiful casual summer dress perfect for everyday wear. Made with premium quality fabric.", stock: 12,
     sizeGuide: {unit: "cm", measurements: [{size: "S", bust: "84-88", waist: "66-70", hips: "90-94", length: "95"}, {size: "M", bust: "88-92", waist: "70-74", hips: "94-98", length: "96"}, {size: "L", bust: "92-96", waist: "74-78", hips: "98-102", length: "97"}, {size: "XL", bust: "96-100", waist: "78-82", hips: "102-106", length: "98"}], notes: "Measurements are approximate. Model is 175cm wearing size S."}},
-  {id:"A2", title:"A2 — Casual Dress", price:420, category:"dresses", sub:"casual",
+  {id:"A2", title:"A2 â€” Casual Dress", price:420, category:"dresses", sub:"casual",
     images:["images/PRODUCTS/A2 front.png","images/PRODUCTS/A2 back.png"], sizes:["S","M","L","XL"],
     colors:[{name:'White', value:'#ffffff', sizes:["S","M","L","XL"]},{name:'Navy', value:'#2b3a67', sizes:["M","L"]}],
     description:"Elegant casual dress with a modern silhouette. Perfect for any occasion.", stock: 12,
     sizeGuide: {unit: "cm", measurements: [{size: "S", bust: "84-88", waist: "66-70", hips: "90-94", length: "92"}, {size: "M", bust: "88-92", waist: "70-74", hips: "94-98", length: "93"}, {size: "L", bust: "92-96", waist: "74-78", hips: "98-102", length: "94"}, {size: "XL", bust: "96-100", waist: "78-82", hips: "102-106", length: "95"}], notes: "Relaxed fit. Model is 170cm wearing size M."}},
-  {id:"A3", title:"A3 — Casual Dress", price:420, category:"dresses", sub:"casual",
+  {id:"A3", title:"A3 â€” Casual Dress", price:420, category:"dresses", sub:"casual",
     images:["images/PRODUCTS/A3 front.png","images/PRODUCTS/A3 back.png"], sizes:["S","M","L"],
     colors:[{name:'Beige', value:'#e6d9c9', sizes:["S","M","L"]}],
     description:"Comfortable and stylish casual dress in a beautiful beige tone.", stock: 12,
     sizeGuide: {unit: "cm", measurements: [{size: "S", bust: "86-90", waist: "68-72", hips: "92-96", length: "88"}, {size: "M", bust: "90-94", waist: "72-76", hips: "96-100", length: "89"}, {size: "L", bust: "94-98", waist: "76-80", hips: "100-104", length: "90"}], notes: "True to size. Comfortable stretch fabric."}},
-  {id:"A4", title:"A4 — Casual Dress", price:420, category:"dresses", sub:"casual",
+  {id:"A4", title:"A4 â€” Casual Dress", price:420, category:"dresses", sub:"casual",
    images:["images/PRODUCTS/A4 front.png","images/PRODUCTS/A4 back.png"], sizes:["S","M","L"],
    description:"Versatile casual dress that combines comfort with style.", stock: 12,
    sizeGuide: {unit: "cm", measurements: [{size: "S", bust: "84-88", waist: "66-70", hips: "90-94", length: "94"}, {size: "M", bust: "88-92", waist: "70-74", hips: "94-98", length: "95"}, {size: "L", bust: "92-96", waist: "74-78", hips: "98-102", length: "96"}], notes: "Flowy fit. Model is 168cm wearing size S."}},
-  {id:"A5", title:"A5 — Casual Dress", price:380, category:"dresses", sub:"casual",
+  {id:"A5", title:"A5 â€” Casual Dress", price:380, category:"dresses", sub:"casual",
    images:["images/PRODUCTS/A5 front.png","images/PRODUCTS/A5 back.png"], sizes:["S","M","L"],
    description:"Effortless casual dress perfect for everyday elegance.", stock: 12,
    sizeGuide: {unit: "cm", measurements: [{size: "S", bust: "82-86", waist: "64-68", hips: "88-92", length: "90"}, {size: "M", bust: "86-90", waist: "68-72", hips: "92-96", length: "91"}, {size: "L", bust: "90-94", waist: "72-76", hips: "96-100", length: "92"}], notes: "Fitted at waist, flowy at bottom."}},
-  {id:"A6", title:"A6 — Casual Dress", price:380, category:"dresses", sub:"casual",
+  {id:"A6", title:"A6 â€” Casual Dress", price:380, category:"dresses", sub:"casual",
    images:["images/PRODUCTS/A6 front.png","images/PRODUCTS/A6 back.png"], sizes:["S","M","L"],
    description:"Chic casual dress with a relaxed fit.", stock: 0,
    sizeGuide: {unit: "cm", measurements: [{size: "S", bust: "84-88", waist: "66-70", hips: "90-94", length: "93"}, {size: "M", bust: "88-92", waist: "70-74", hips: "94-98", length: "94"}, {size: "L", bust: "92-96", waist: "74-78", hips: "98-102", length: "95"}], notes: "Relaxed fit throughout."}},
-  {id:"A7", title:"A7 — Casual Dress", price:430, category:"dresses", sub:"summer",
+  {id:"A7", title:"A7 â€” Casual Dress", price:430, category:"dresses", sub:"summer",
    images:["images/PRODUCTS/A7 front.png","images/PRODUCTS/A7 back.png"], sizes:["S","M","L"],
    description:"Light summer dress perfect for warm days.", stock: 12,
    sizeGuide: {unit: "cm", measurements: [{size: "S", bust: "86-90", waist: "68-72", hips: "92-96", length: "98"}, {size: "M", bust: "90-94", waist: "72-76", hips: "96-100", length: "99"}, {size: "L", bust: "94-98", waist: "76-80", hips: "100-104", length: "100"}], notes: "Breathable summer fabric. Model is 172cm wearing size M."}},
-  {id:"A8", title:"A8 — Casual Dress", price:380, category:"dresses", sub:"summer",
+  {id:"A8", title:"A8 â€” Casual Dress", price:380, category:"dresses", sub:"summer",
    images:["images/PRODUCTS/A8 front.png","images/PRODUCTS/A8 back.png"], sizes:["S","M","L"],
    description:"Breezy summer dress with beautiful detailing.", stock: 12,
    sizeGuide: {unit: "cm", measurements: [{size: "S", bust: "84-88", waist: "66-70", hips: "90-94", length: "96"}, {size: "M", bust: "88-92", waist: "70-74", hips: "94-98", length: "97"}, {size: "L", bust: "92-96", waist: "74-78", hips: "98-102", length: "98"}], notes: "Lightweight and airy. Perfect for hot days."}},
-  {id:"A9", title:"A9 — Casual Dress", price:380, category:"dresses", sub:"summer",
+  {id:"A9", title:"A9 â€” Casual Dress", price:380, category:"dresses", sub:"summer",
    images:["images/PRODUCTS/A9 front.png"], sizes:["S","M","L"],
    description:"Elegant summer dress for special occasions.", stock: 12,
    sizeGuide: {unit: "cm", measurements: [{size: "S", bust: "82-86", waist: "64-68", hips: "88-92", length: "100"}, {size: "M", bust: "86-90", waist: "68-72", hips: "92-96", length: "101"}, {size: "L", bust: "90-94", waist: "72-76", hips: "96-100", length: "102"}], notes: "Maxi length. Model is 175cm wearing size S."}},
-  {id:"B1", title:"B1 — Elegant Linen Dress", price:380, category:"dresses", sub:"elegant",
+  {id:"B1", title:"B1 â€” Elegant Linen Dress", price:380, category:"dresses", sub:"elegant",
    images:["images/PRODUCTS/B1 front.png","images/PRODUCTS/B1 back.png"], sizes:["XS","S","M","L"],
    description:"Sophisticated linen dress with timeless elegance.", stock: 12,
    sizeGuide: {unit: "cm", measurements: [{size: "XS", bust: "80-84", waist: "62-66", hips: "86-90", length: "105"}, {size: "S", bust: "84-88", waist: "66-70", hips: "90-94", length: "106"}, {size: "M", bust: "88-92", waist: "70-74", hips: "94-98", length: "107"}, {size: "L", bust: "92-96", waist: "74-78", hips: "98-102", length: "108"}], notes: "Natural linen fabric. Model is 178cm wearing size S."}},
-  {id:"B2", title:"B2 — Elegant Dress", price:380, category:"dresses", sub:"elegant",
+  {id:"B2", title:"B2 â€” Elegant Dress", price:380, category:"dresses", sub:"elegant",
    images:["images/PRODUCTS/B2 front.png","images/PRODUCTS/B2 back.png"], sizes:["XS","S","M"],
    description:"Refined elegant dress for special events.", stock: 12,
    sizeGuide: {unit: "cm", measurements: [{size: "XS", bust: "80-84", waist: "62-66", hips: "86-90", length: "102"}, {size: "S", bust: "84-88", waist: "66-70", hips: "90-94", length: "103"}, {size: "M", bust: "88-92", waist: "70-74", hips: "94-98", length: "104"}], notes: "Fitted silhouette. Dry clean only."}},
-  {id:"B3", title:"B3 — Evening Dress", price:380, category:"dresses", sub:"elegant",
+  {id:"B3", title:"B3 â€” Evening Dress", price:380, category:"dresses", sub:"elegant",
    images:["images/PRODUCTS/B3 front.png","images/PRODUCTS/B3 back.png"], sizes:["S","M","L"],
    colors:["Brown", "Blue", "Yellow"],
    description:"Stunning evening dress that makes a statement. Available in Brown, Blue, and Yellow.", stock: 12,
    sizeGuide: {unit: "cm", measurements: [{size: "S", bust: "84-88", waist: "66-70", hips: "90-94", length: "110"}, {size: "M", bust: "88-92", waist: "70-74", hips: "94-98", length: "111"}, {size: "L", bust: "92-96", waist: "74-78", hips: "98-102", length: "112"}], notes: "Floor-length gown. Model is 175cm wearing size S."}},
-  {id:"B4", title:"B4 — Formal Dress", price:380, category:"dresses", sub:"elegant",
+  {id:"B4", title:"B4 â€” Formal Dress", price:380, category:"dresses", sub:"elegant",
    images:["images/PRODUCTS/B4.png"], sizes:["S","M","L"],
    description:"Classic formal dress with elegant lines.", stock: 12,
    sizeGuide: {unit: "cm", measurements: [{size: "S", bust: "84-88", waist: "66-70", hips: "90-94", length: "108"}, {size: "M", bust: "88-92", waist: "70-74", hips: "94-98", length: "109"}, {size: "L", bust: "92-96", waist: "74-78", hips: "98-102", length: "110"}], notes: "Elegant fit. Professional dry clean recommended."}},
-  {id:"C1", title:"C1 — Everyday Top", price:220, category:"tops", sub:"casual",
+  {id:"C1", title:"C1 â€” Everyday Top", price:220, category:"tops", sub:"casual",
    images:["images/PRODUCTS/C1 front.png"], sizes:["S","M","L","XL"],
    description:"Versatile everyday top that pairs with everything.", stock: 12,
    sizeGuide: {unit: "cm", measurements: [{size: "S", bust: "84-88", waist: "66-70", length: "60"}, {size: "M", bust: "88-92", waist: "70-74", length: "61"}, {size: "L", bust: "92-96", waist: "74-78", length: "62"}, {size: "XL", bust: "96-100", waist: "78-82", length: "63"}], notes: "Relaxed fit. Model is 170cm wearing size M."}},
-  {id:"C2", title:"C2 — Slouch Top", price:150, category:"tops", sub:"casual",
+  {id:"C2", title:"C2 â€” Slouch Top", price:150, category:"tops", sub:"casual",
    images:["images/PRODUCTS/C2 front.png","images/PRODUCTS/C2 back.png"], sizes:["S","M","L"],
    description:"Relaxed slouch top for casual comfort.", stock: 12,
    sizeGuide: {unit: "cm", measurements: [{size: "S", bust: "86-90", waist: "68-72", length: "58"}, {size: "M", bust: "90-94", waist: "72-76", length: "59"}, {size: "L", bust: "94-98", waist: "76-80", length: "60"}], notes: "Oversized fit. Size down for fitted look."}},
-  {id:"C3", title:"C3 — Knit Top", price:220, category:"tops", sub:"casual",
+  {id:"C3", title:"C3 â€” Knit Top", price:220, category:"tops", sub:"casual",
    images:["images/PRODUCTS/C3 front.png","images/PRODUCTS/C3 back.png"], sizes:["S","M","L"],
    description:"Cozy knit top perfect for layering.", stock: 12,
    sizeGuide: {unit: "cm", measurements: [{size: "S", bust: "84-88", waist: "66-70", length: "62"}, {size: "M", bust: "88-92", waist: "70-74", length: "63"}, {size: "L", bust: "92-96", waist: "74-78", length: "64"}], notes: "Stretchy knit fabric. True to size."}},
-  {id:"C4", title:"C4 — Modern Top", price:200, category:"tops", sub:"casual",
+  {id:"C4", title:"C4 â€” Modern Top", price:200, category:"tops", sub:"casual",
    images:["images/PRODUCTS/C4 front.jpg"], sizes:["S","M","L"],
    description:"Contemporary top with modern styling.", stock: 0,
    sizeGuide: {unit: "cm", measurements: [{size: "S", bust: "84-88", waist: "66-70", length: "61"}, {size: "M", bust: "88-92", waist: "70-74", length: "62"}, {size: "L", bust: "92-96", waist: "74-78", length: "63"}], notes: "Fitted style. Model is 168cm wearing size S."}},
-  {id:"C5", title:"C5 — Minimal Top", price:150, category:"tops", sub:"casual",
+  {id:"C5", title:"C5 â€” Minimal Top", price:150, category:"tops", sub:"casual",
    images:["images/PRODUCTS/C5 front.jpg"], sizes:["S","M","L"],
    description:"Minimalist top for effortless style.", stock: 12,
    sizeGuide: {unit: "cm", measurements: [{size: "S", bust: "84-88", waist: "66-70", length: "59"}, {size: "M", bust: "88-92", waist: "70-74", length: "60"}, {size: "L", bust: "92-96", waist: "74-78", length: "61"}], notes: "Classic fit. Great for layering."}},
-  {id:"C6", title:"C6 — Statement Top", price:200, category:"tops", sub:"casual",
+  {id:"C6", title:"C6 â€” Statement Top", price:200, category:"tops", sub:"casual",
    images:["images/PRODUCTS/C6 front.jpg"], sizes:["S","M","L"],
    description:"Bold statement top that stands out.", stock: 12,
    sizeGuide: {unit: "cm", measurements: [{size: "S", bust: "86-90", waist: "68-72", length: "60"}, {size: "M", bust: "90-94", waist: "72-76", length: "61"}, {size: "L", bust: "94-98", waist: "76-80", length: "62"}], notes: "Loose fit. Model is 172cm wearing size M."}},
-  {id:"D1", title:"D1 — Chic Co-ord Set", price:300, category:"shorts-top-set", sub:"set",
+  {id:"D1", title:"D1 â€” Chic Co-ord Set", price:300, category:"shorts-top-set", sub:"set",
    images:["images/PRODUCTS/D1 front.png","images/PRODUCTS/D1 back.png"], sizes:["S","M","L"],
    description:"Stylish coordinated set for a complete look.", stock: 12,
    sizeGuide: {unit: "cm", measurements: [{size: "S", bust: "84-88", waist: "66-70", hips: "90-94", length: "55"}, {size: "M", bust: "88-92", waist: "70-74", hips: "94-98", length: "56"}, {size: "L", bust: "92-96", waist: "74-78", hips: "98-102", length: "57"}], notes: "Top and shorts set. Model is 170cm wearing size S."}},
-  {id:"E1", title:"E1 — Skirt (Blue)", price:250, category:"skirts", sub:"midi",
+  {id:"E1", title:"E1 â€” Skirt (Blue)", price:250, category:"skirts", sub:"midi",
    images:["images/PRODUCTS/E1 blue.jpg"], sizes:["S","M","L"],
    description:"Elegant midi skirt in beautiful blue.", stock: 12,
    sizeGuide: {unit: "cm", measurements: [{size: "S", waist: "66-70", hips: "90-94", length: "75"}, {size: "M", waist: "70-74", hips: "94-98", length: "76"}, {size: "L", waist: "74-78", hips: "98-102", length: "77"}], notes: "Midi length. Model is 168cm wearing size S."}},
-  {id:"E2", title:"E2 — Skirt (Gold)", price:250, category:"skirts", sub:"midi",
+  {id:"E2", title:"E2 â€” Skirt (Gold)", price:250, category:"skirts", sub:"midi",
    images:["images/PRODUCTS/E1 gold.jpg"], sizes:["S","M","L"],
    description:"Luxurious gold midi skirt.", stock: 12,
    sizeGuide: {unit: "cm", measurements: [{size: "S", waist: "66-70", hips: "90-94", length: "75"}, {size: "M", waist: "70-74", hips: "94-98", length: "76"}, {size: "L", waist: "74-78", hips: "98-102", length: "77"}], notes: "Midi length. Model is 168cm wearing size S."}}
@@ -115,7 +115,7 @@ function loadProductData() {
         return;
     }
     
-    console.log('Loading product:', productId);
+
     
     // Try to fetch from API first
     const apiUrl = window.API_URL || 'http://localhost:5000/api';
@@ -125,13 +125,13 @@ function loadProductData() {
         .then(response => response.json())
         .then(result => {
             if (result.success && result.data) {
-                console.log('Found product from API:', result.data);
+            
                 updateProductDisplay(result.data);
             } else {
                 // Fallback to local array
                 const product = products.find(p => p.id === productId);
                 if (product) {
-                    console.log('Found product from local array:', product);
+                
                     updateProductDisplay(product);
                 } else {
                     console.error('Product not found:', productId);
@@ -144,7 +144,7 @@ function loadProductData() {
             // Fallback to local array
             const product = products.find(p => p.id === productId);
             if (product) {
-                console.log('Found product from local array (fallback):', product);
+            
                 updateProductDisplay(product);
             } else {
                 console.error('Product not found:', productId);
@@ -156,10 +156,6 @@ function loadProductData() {
 // === UPDATE PRODUCT DISPLAY ===
 function updateProductDisplay(product) {
     const backendUrl = window.API_URL ? window.API_URL.replace('/api', '') : 'http://localhost:5000';
-    
-    console.log('🔍 Full Product Data Received:', product);
-    console.log('🔍 Size Guide Raw Value:', product.sizeGuide);
-    console.log('🔍 Size Guide Type:', typeof product.sizeGuide);
     
     // Update title and breadcrumb
     document.getElementById('product-title').textContent = product.title || product.name;
@@ -191,8 +187,6 @@ function updateProductDisplay(product) {
     // Update thumbnails - show front, back, and other-colours as simple thumbnails
     const thumbnailsContainer = document.querySelector('.product-thumbnails');
     if (thumbnailsContainer && product.images && product.images.length > 0) {
-        console.log('📸 Displaying product images:', product.images.length);
-        
         // Clear existing thumbnails
         thumbnailsContainer.innerHTML = '';
         
@@ -224,8 +218,6 @@ function updateProductDisplay(product) {
             
             thumbnailsContainer.appendChild(thumbnail);
         });
-        
-        console.log('📸 Thumbnails created:', product.images.length);
     }
     
     // Update description
@@ -239,13 +231,6 @@ function updateProductDisplay(product) {
     const sizeGuideContent = document.getElementById('product-size-guide-content');
     const toggleButton = document.getElementById('toggleSizeGuide');
     
-    console.log('📏 Size Guide Debug:', {
-        hasSizeGuide: !!product.sizeGuide,
-        sizeGuideType: typeof product.sizeGuide,
-        sizeGuideRaw: product.sizeGuide,
-        sizeGuideLength: product.sizeGuide ? product.sizeGuide.length : 0
-    });
-    
     // Check if size guide exists and is not empty
     if (product.sizeGuide && product.sizeGuide !== '' && product.sizeGuide !== 'null') {
         let sizeGuideData = product.sizeGuide;
@@ -254,9 +239,9 @@ function updateProductDisplay(product) {
         if (typeof sizeGuideData === 'string') {
             try {
                 sizeGuideData = JSON.parse(sizeGuideData);
-                console.log('✅ Parsed size guide:', sizeGuideData);
+            
             } catch (e) {
-                console.warn('⚠️ Could not parse size guide as JSON:', e);
+                console.warn('âš ï¸ Could not parse size guide as JSON:', e);
                 // Old format - plain text
                 if (sizeGuideContent) {
                     sizeGuideContent.innerHTML = `<p style="padding: 10px; background: #f9f9f9; border-left: 3px solid #d4a574;">${product.sizeGuide.replace(/\n/g, '<br>')}</p>`;
@@ -277,7 +262,7 @@ function updateProductDisplay(product) {
         
         // New structured format - check if measurements exist
         if (sizeGuideData && sizeGuideData.measurements && Array.isArray(sizeGuideData.measurements) && sizeGuideData.measurements.length > 0) {
-            console.log('✅ Building size guide table with', sizeGuideData.measurements.length, 'measurements');
+        
             
             let html = '<div style="overflow-x: auto; margin-top: 15px;">';
             html += '<table style="width: 100%; border-collapse: collapse; margin: 10px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">';
@@ -301,14 +286,14 @@ function updateProductDisplay(product) {
             });
             
             html += '</tbody></table></div>';
-            html += `<p style="margin: 10px 0; font-size: 0.9em; color: #666; padding: 8px; background: #f9f6f3; border-radius: 4px;"><strong>📐 Unit:</strong> ${sizeGuideData.unit || 'cm'}</p>`;
+            html += `<p style="margin: 10px 0; font-size: 0.9em; color: #666; padding: 8px; background: #f9f6f3; border-radius: 4px;"><strong>ðŸ“ Unit:</strong> ${sizeGuideData.unit || 'cm'}</p>`;
             if (sizeGuideData.notes) {
-                html += `<p style="margin: 10px 0; font-size: 0.9em; color: #666; padding: 10px; background: #fffbf0; border-left: 3px solid #d4a574; border-radius: 4px;"><strong>💡 Note:</strong> ${sizeGuideData.notes}</p>`;
+                html += `<p style="margin: 10px 0; font-size: 0.9em; color: #666; padding: 10px; background: #fffbf0; border-left: 3px solid #d4a574; border-radius: 4px;"><strong>ðŸ’¡ Note:</strong> ${sizeGuideData.notes}</p>`;
             }
             
             if (sizeGuideContent) {
                 sizeGuideContent.innerHTML = html;
-                console.log('✅ Size guide HTML inserted into page');
+            
             }
             
             // Show size guide by default and set up toggle functionality
@@ -321,10 +306,10 @@ function updateProductDisplay(product) {
                     sizeGuideSection.style.display = isVisible ? 'none' : 'block';
                     toggleButton.textContent = isVisible ? 'View Size Guide' : 'Hide Size Guide';
                 };
-                console.log('✅ Size guide section is now visible');
+            
             }
         } else {
-            console.warn('⚠️ Size guide data exists but has no measurements:', sizeGuideData);
+            console.warn('âš ï¸ Size guide data exists but has no measurements:', sizeGuideData);
             // Hide if no measurements
             if (toggleButton) {
                 toggleButton.style.display = 'none';
@@ -334,7 +319,7 @@ function updateProductDisplay(product) {
             }
         }
     } else {
-        console.log('ℹ️ No size guide available for this product');
+    
         // No size guide available - hide the section
         if (toggleButton) {
             toggleButton.style.display = 'none';
@@ -433,13 +418,13 @@ function updateProductDisplay(product) {
     
     if (product.stock > 0) {
         if (stockStatus) {
-            stockStatus.innerHTML = '<span class="in-stock">✓ In Stock</span>';
+            stockStatus.innerHTML = '<span class="in-stock">âœ“ In Stock</span>';
         }
         if (addToCartBtn) addToCartBtn.disabled = false;
         if (buyNowBtn) buyNowBtn.disabled = false;
     } else {
         if (stockStatus) {
-            stockStatus.innerHTML = '<span class="out-of-stock">✗ Out of Stock</span>';
+            stockStatus.innerHTML = '<span class="out-of-stock">âœ— Out of Stock</span>';
         }
         if (addToCartBtn) {
             addToCartBtn.disabled = true;
@@ -640,42 +625,42 @@ function initColorSelection() {
 
 // === SIZE SELECTION ===
 function initSizeSelection() {
-    console.log('🎯 initSizeSelection called');
+
     const sizeBtns = document.querySelectorAll('.size-option-btn');
     const selectedSizeSpan = document.getElementById('selected-size');
     
-    console.log('📊 Found size buttons:', sizeBtns.length);
-    console.log('📊 Selected size span exists:', !!selectedSizeSpan);
+
+
     
     if (!sizeBtns.length) {
-        console.error('❌ No size buttons found!');
+        console.error('âŒ No size buttons found!');
         return;
     }
     
     sizeBtns.forEach((btn, index) => {
-        console.log(`🔘 Setting up button ${index}:`, btn.dataset.size);
+    
         btn.addEventListener('click', function(e) {
-            console.log('✅ Size button clicked:', this.dataset.size);
+        
             
             if (this.disabled) {
-                console.log('⚠️ Button is disabled');
+            
                 return;
             }
             
             // Remove active class from all size buttons
             sizeBtns.forEach(b => {
                 b.classList.remove('active');
-                console.log('🔄 Removed active from:', b.dataset.size);
+            
             });
             
             // Add active class to clicked button
             this.classList.add('active');
-            console.log('✨ Added active to:', this.dataset.size);
+        
             
             // Update selected size text
             if (selectedSizeSpan) {
                 selectedSizeSpan.textContent = this.dataset.size;
-                console.log('📝 Updated text to:', this.dataset.size);
+            
             }
         });
     });
@@ -897,7 +882,7 @@ function initWishlistProduct() {
             if (index === -1) {
                 wishlist.push(productId);
                 this.classList.add('active');
-                alert('Added to wishlist ♡');
+                alert('Added to wishlist â™¡');
             } else {
                 wishlist.splice(index, 1);
                 this.classList.remove('active');
@@ -965,7 +950,7 @@ function displayReviews(reviews) {
     }
     
     reviewList.innerHTML = reviews.map(review => {
-        const stars = '★'.repeat(review.rating) + '☆'.repeat(5 - review.rating);
+        const stars = 'â˜…'.repeat(review.rating) + 'â˜†'.repeat(5 - review.rating);
         const date = new Date(review.createdAt);
         const timeAgo = getTimeAgo(date);
         
@@ -995,7 +980,7 @@ function updateReviewStats(stats) {
         const hasHalfStar = rating % 1 >= 0.5;
         const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
         
-        avgStars.innerHTML = '★'.repeat(fullStars) + (hasHalfStar ? '⯨' : '') + '☆'.repeat(emptyStars);
+        avgStars.innerHTML = 'â˜…'.repeat(fullStars) + (hasHalfStar ? 'â¯¨' : '') + 'â˜†'.repeat(emptyStars);
     }
     if (reviewCountText) {
         reviewCountText.textContent = stats.total === 0 ? 'No reviews yet' : `Based on ${stats.total} review${stats.total !== 1 ? 's' : ''}`;
@@ -1049,7 +1034,7 @@ if (reviewForm) {
             const result = await response.json();
             
             if (response.ok) {
-                alert('✓ Thank you for your review!');
+                alert('âœ“ Thank you for your review!');
                 reviewForm.reset();
                 loadReviews(productId); // Reload reviews
             } else {

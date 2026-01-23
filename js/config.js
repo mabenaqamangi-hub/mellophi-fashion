@@ -29,9 +29,11 @@ const API_URL = isDevelopment
     ? 'http://localhost:5000/api'
     : PRODUCTION_API_URL;
 
-// Log current environment (helpful for debugging)
-console.log('🌐 Environment:', isDevelopment ? 'Development' : 'Production');
-console.log('🔗 API URL:', API_URL);
+// Log current environment only in development
+if (isDevelopment) {
+    console.log('🌐 Environment: Development');
+    console.log('🔗 API URL:', API_URL);
+}
 
 // Export for use in other files
 window.API_URL = API_URL;
