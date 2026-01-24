@@ -529,48 +529,31 @@ function applyFilters() {
         const sizeMatch = sizeFilters.length === 0 || 
                          productSizes.some(size => sizeFilters.includes(size));
         
-        // Price filter
-        const priceMatch = product.price <= maxPrice;
-        
-        return categoryMatch && colorMatch && sizeMatch && priceMatch;
-    });
-    
-    currentPage = 1;
-    renderProducts();
-}
-
-function resetFilters() {
-    // Uncheck all filters
-    document.querySelectorAll('.filter-option input, .color-option input, .size-option input').forEach(input => {
-        input.checked = false;
-    });
-    
-    // Reset price slider
-    const priceSlider = document.getElementById('price-slider');
-    if (priceSlider) {
-        priceSlider.value = priceSlider.max;
-        document.getElementById('max-price').textContent = `R ${priceSlider.max}`;
-    }
-    
-    // Reset to all products
-    filteredProducts = [...products];
-    currentPage = 1;
-    renderProducts();
-}
-
-// Initialize sorting
-function initSort() {
-    const sortSelect = document.getElementById('sort-select');
-    if (!sortSelect) return;
-    
-    sortSelect.addEventListener('change', function() {
-        const sortValue = this.value;
-        
-        switch(sortValue) {
-            case 'price-low':
-                filteredProducts.sort((a, b) => a.price - b.price);
-                break;
-            case 'price-high':
+        // Get color swatches
+        const colors = getColorSwatches(product);
+        // Check stock status
+        const stockClass = product.stock === 0 ? 'out-of-stock' : '';
+        const stockBadge = product.stock === 0 ? '<span class="stock-badge">Out of Stock</span>' : '';
+        card.innerHTML = `
+            <a href="product.html?id=${product.id}" class="product-link">
+                <div class="product-image ${stockClass}">
+                    <img src="${productImage}" alt="${productName}" onerror="this.src='images/PRODUCTS/A1 front.png'">
+                    ${stockBadge}
+                    <button class="wishlist-btn" onclick="event.preventDefault(); event.stopPropagation(); addToWishlistFromCard('${product.id}', '${productName.replace(/'/g, "\'")}', '${product.price}', '${productImage}', '${product.sizes ? product.sizes[0] : ''}', '${product.colors && product.colors[0] ? product.colors[0].name : ''}')">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                        </svg>
+                    </button>
+                </div>
+                <div class="product-info">
+                    <h3 class="product-name">${productName}</h3>
+                    <p class="product-price">R ${product.price.toFixed(2)}</p>
+                    <div class="product-colors">
+                        ${colors}
+                    </div>
+                </div>
+            </a>
+        `;
                 filteredProducts.sort((a, b) => b.price - a.price);
                 break;
             case 'newest':
