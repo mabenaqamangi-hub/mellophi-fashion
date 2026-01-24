@@ -295,6 +295,24 @@
 
     <!-- Footer -->
     <footer class="footer">
+        <!-- Wishlist Panel -->
+        <div id="wishlist-panel" class="side-panel" style="display:none; position:fixed; top:0; right:0; width:400px; max-width:90vw; height:100vh; background:#fff; box-shadow:-2px 0 10px rgba(0,0,0,0.1); z-index:1001; overflow-y:auto; transition:all 0.3s;">
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:20px; border-bottom:1px solid #eee;">
+                <h2 style="margin:0; font-size:1.5rem;">Wishlist</h2>
+                <button onclick="closeWishlistPanel()" style="background:none; border:none; font-size:2rem; cursor:pointer;">&times;</button>
+            </div>
+            <div id="wishlist-items" style="padding:20px;"></div>
+        </div>
+
+        <!-- Cart Panel -->
+        <div id="cart-panel" class="side-panel" style="display:none; position:fixed; top:0; right:0; width:400px; max-width:90vw; height:100vh; background:#fff; box-shadow:-2px 0 10px rgba(0,0,0,0.1); z-index:1001; overflow-y:auto; transition:all 0.3s;">
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:20px; border-bottom:1px solid #eee;">
+                <h2 style="margin:0; font-size:1.5rem;">Cart</h2>
+                <button onclick="closeCartPanel()" style="background:none; border:none; font-size:2rem; cursor:pointer;">&times;</button>
+            </div>
+            <div id="cart-items" style="padding:20px;"></div>
+        </div>
+
         <div class="container">
             <div class="footer-content">
                 <div class="footer-section">

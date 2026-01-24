@@ -1,5 +1,135 @@
 // ========================================
 // SHOP PAGE JAVASCRIPT
+// =============================
+// WISHLIST & CART PANEL LOGIC
+// =============================
+
+// Open Wishlist Panel
+document.getElementById('wishlist-btn').addEventListener('click', function() {
+    renderWishlistPanel();
+    document.getElementById('wishlist-panel').style.display = 'block';
+    document.body.style.overflow = 'hidden';
+});
+
+// Open Cart Panel
+document.getElementById('cart-btn').addEventListener('click', function() {
+    renderCartPanel();
+    document.getElementById('cart-panel').style.display = 'block';
+    document.body.style.overflow = 'hidden';
+});
+
+// Close Wishlist Panel
+function closeWishlistPanel() {
+    document.getElementById('wishlist-panel').style.display = 'none';
+    document.body.style.overflow = '';
+}
+
+// Close Cart Panel
+function closeCartPanel() {
+    document.getElementById('cart-panel').style.display = 'none';
+    document.body.style.overflow = '';
+}
+
+// Render Wishlist Panel
+function renderWishlistPanel() {
+    const wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+    const container = document.getElementById('wishlist-items');
+    if (!container) return;
+    if (wishlist.length === 0) {
+        container.innerHTML = '<p style="color:#888;">Your wishlist is empty.</p>';
+        return;
+    }
+    container.innerHTML = wishlist.map(item => `
+        <div style="display:flex;align-items:center;gap:15px;margin-bottom:20px;border-bottom:1px solid #eee;padding-bottom:15px;">
+            <img src="${item.image}" alt="${item.name}" style="width:70px;height:70px;object-fit:cover;border-radius:8px;">
+            <div style="flex:1;">
+                <div style="font-weight:600;">${item.name}</div>
+                ${item.size ? `<div style='font-size:0.95em;color:#666;'>Size: ${item.size}</div>` : ''}
+                ${item.color ? `<div style='font-size:0.95em;color:#666;'>Color: ${item.color}</div>` : ''}
+                <div style="font-size:0.95em;color:#666;">${item.quantity ? 'Quantity: ' + item.quantity : ''}</div>
+            </div>
+            <button onclick="removeFromWishlist('${item.id}','${item.size||''}','${item.color||''}')" style="background:none;border:none;color:#d9534f;font-size:1.3rem;cursor:pointer;">&times;</button>
+            <button onclick="addWishlistToCart('${item.id}','${item.size||''}','${item.color||''}')" style="background:#d4a574;color:#fff;border:none;padding:7px 14px;border-radius:5px;cursor:pointer;font-weight:600;">Add to Cart</button>
+        </div>
+    `).join('');
+}
+
+// Render Cart Panel
+function renderCartPanel() {
+    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+    const container = document.getElementById('cart-items');
+    if (!container) return;
+    if (cart.length === 0) {
+        container.innerHTML = '<p style="color:#888;">Your cart is empty.</p>';
+        return;
+    }
+    container.innerHTML = cart.map(item => `
+        <div style="display:flex;align-items:center;gap:15px;margin-bottom:20px;border-bottom:1px solid #eee;padding-bottom:15px;">
+            <img src="${item.image}" alt="${item.name}" style="width:70px;height:70px;object-fit:cover;border-radius:8px;">
+            <div style="flex:1;">
+                <div style="font-weight:600;">${item.name}</div>
+                ${item.size ? `<div style='font-size:0.95em;color:#666;'>Size: ${item.size}</div>` : ''}
+                ${item.color ? `<div style='font-size:0.95em;color:#666;'>Color: ${item.color}</div>` : ''}
+                <div style="font-size:0.95em;color:#666;">Quantity: ${item.quantity}</div>
+                <div style="font-size:0.95em;color:#666;">Price: R ${item.price.toFixed(2)}</div>
+            </div>
+            <button onclick="removeFromCart('${item.id}','${item.size||''}','${item.color||''}')" style="background:none;border:none;color:#d9534f;font-size:1.3rem;cursor:pointer;">&times;</button>
+        </div>
+    `).join('');
+}
+
+// Remove from Wishlist
+function removeFromWishlist(id, size, color) {
+    let wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+    wishlist = wishlist.filter(item => !(item.id === id && item.size === size && item.color === color));
+    localStorage.setItem('wishlist', JSON.stringify(wishlist));
+    renderWishlistPanel();
+    updateWishlistCount();
+}
+
+// Remove from Cart
+function removeFromCart(id, size, color) {
+    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+    cart = cart.filter(item => !(item.id === id && item.size === size && item.color === color));
+    localStorage.setItem('cart', JSON.stringify(cart));
+    renderCartPanel();
+    updateCartCount();
+}
+
+// Add Wishlist Item to Cart
+function addWishlistToCart(id, size, color) {
+    let wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+    const item = wishlist.find(i => i.id === id && i.size === size && i.color === color);
+    if (!item) return;
+    // Remove from wishlist
+    wishlist = wishlist.filter(i => !(i.id === id && i.size === size && i.color === color));
+    localStorage.setItem('wishlist', JSON.stringify(wishlist));
+    // Add to cart
+    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+    const existing = cart.find(i => i.id === id && i.size === size && i.color === color);
+    if (existing) {
+        existing.quantity += item.quantity || 1;
+    } else {
+        cart.push({ ...item, quantity: item.quantity || 1 });
+    }
+    localStorage.setItem('cart', JSON.stringify(cart));
+    renderWishlistPanel();
+    updateWishlistCount();
+    updateCartCount();
+    alert('Added to cart!');
+}
+
+// Update Wishlist Count
+function updateWishlistCount() {
+    const wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+    const count = wishlist.length;
+    const countEl = document.getElementById('wishlist-count');
+    if (countEl) countEl.textContent = count;
+}
+
+// Call on page load
+updateWishlistCount();
+updateCartCount();
 // ========================================
 
 // Get API_URL from config.js (loaded in HTML)
@@ -260,12 +390,19 @@ function createProductCard(product) {
     const stockClass = product.stock === 0 ? 'out-of-stock' : '';
     const stockBadge = product.stock === 0 ? '<span class="stock-badge">Out of Stock</span>' : '';
     
-    card.innerHTML = `
         <a href="product.html?id=${product.id}" class="product-link">
             <div class="product-image ${stockClass}">
                 <img src="${productImage}" alt="${productName}" onerror="this.src='images/PRODUCTS/A1 front.png'">
                 ${stockBadge}
                 <button class="wishlist-btn" onclick="event.preventDefault(); event.stopPropagation();">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+    card.innerHTML = `
+        <a href="product.html?id=${product.id}" class="product-link">
+            <div class="product-image ${stockClass}">
+                <img src="${productImage}" alt="${productName}" onerror="this.src='images/PRODUCTS/A1 front.png'">
+                ${stockBadge}
+                <button class="wishlist-btn" onclick="event.preventDefault(); event.stopPropagation(); addToWishlistFromCard('${product.id}', '${productName.replace(/'/g, "\'")}', '${product.price}', '${productImage}', '${product.sizes ? product.sizes[0] : ''}', '${product.colors && product.colors[0] ? product.colors[0].name : ''}')">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
                     </svg>
@@ -279,6 +416,23 @@ function createProductCard(product) {
                 </div>
             </div>
         </a>
+    `;
+    return card;
+}
+
+// Add to Wishlist from Card
+function addToWishlistFromCard(id, name, price, image, size, color) {
+    let wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+    // Prevent duplicates (same id, size, color)
+    if (wishlist.some(item => item.id === id && item.size === size && item.color === color)) {
+        alert('Already in wishlist!');
+        return;
+    }
+    wishlist.push({ id, name, price: parseFloat(price), image, size, color, quantity: 1 });
+    localStorage.setItem('wishlist', JSON.stringify(wishlist));
+    updateWishlistCount();
+    alert('Added to wishlist!');
+}
     `;
     
     return card;
