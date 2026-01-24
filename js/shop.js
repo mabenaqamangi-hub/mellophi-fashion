@@ -1,6 +1,26 @@
 // ========================================
 // SHOP PAGE JAVASCRIPT
 // =============================
+// MOBILE FILTER SIDEBAR TOGGLE
+// =============================
+document.addEventListener('DOMContentLoaded', function() {
+    const sidebar = document.getElementById('filters-sidebar');
+    const toggleBtn = document.getElementById('mobile-filter-toggle');
+    const overlay = document.getElementById('filter-overlay');
+    if (toggleBtn && sidebar && overlay) {
+        toggleBtn.addEventListener('click', function() {
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
+            document.body.style.overflow = sidebar.classList.contains('active') ? 'hidden' : '';
+        });
+        overlay.addEventListener('click', function() {
+            sidebar.classList.remove('active');
+            overlay.classList.remove('active');
+            document.body.style.overflow = '';
+        });
+    }
+});
+// =============================
 // WISHLIST & CART PANEL LOGIC
 // =============================
 
