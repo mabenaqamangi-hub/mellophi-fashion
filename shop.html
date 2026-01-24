@@ -60,14 +60,13 @@
     <section class="shop-section">
         <div class="container">
             <div class="shop-layout">
-                <!-- Overlay for mobile filter -->
-                <div class="filter-overlay" id="filter-overlay"></div>
                 <!-- Filters Sidebar -->
-                <aside class="filters-sidebar" id="filters-sidebar">
+                <aside class="filters-sidebar">
                     <div class="filter-header">
                         <h3>Filters</h3>
                         <button class="filter-reset" id="reset-filters">Clear All</button>
                     </div>
+
                     <!-- Category Filter -->
                     <div class="filter-group">
                         <h4 class="filter-title">Category</h4>
@@ -94,6 +93,7 @@
                             </label>
                         </div>
                     </div>
+
                     <!-- Color Filter -->
                     <div class="filter-group">
                         <h4 class="filter-title">Color</h4>
@@ -140,6 +140,7 @@
                             </label>
                         </div>
                     </div>
+
                     <!-- Size Filter -->
                     <div class="filter-group">
                         <h4 class="filter-title">Size</h4>
@@ -166,6 +167,7 @@
                             </label>
                         </div>
                     </div>
+
                     <!-- Price Filter -->
                     <div class="filter-group">
                         <h4 class="filter-title">Price Range</h4>
@@ -177,22 +179,23 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- Mobile Filter Toggle -->
+                    <button class="mobile-filter-toggle" id="mobile-filter-toggle">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 8px;">
+                            <line x1="4" y1="21" x2="4" y2="14"></line>
+                            <line x1="4" y1="10" x2="4" y2="3"></line>
+                            <line x1="12" y1="21" x2="12" y2="12"></line>
+                            <line x1="12" y1="8" x2="12" y2="3"></line>
+                            <line x1="20" y1="21" x2="20" y2="16"></line>
+                            <line x1="20" y1="12" x2="20" y2="3"></line>
+                            <line x1="1" y1="14" x2="7" y2="14"></line>
+                            <line x1="9" y1="8" x2="15" y2="8"></line>
+                            <line x1="17" y1="16" x2="23" y2="16"></line>
+                        </svg>
+                        Categories & Filters
+                    </button>
                 </aside>
-                <!-- Mobile Filter Toggle Button -->
-                <button class="mobile-filter-toggle" id="mobile-filter-toggle">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 8px;">
-                        <line x1="4" y1="21" x2="4" y2="14"></line>
-                        <line x1="4" y1="10" x2="4" y2="3"></line>
-                        <line x1="12" y1="21" x2="12" y2="12"></line>
-                        <line x1="12" y1="8" x2="12" y2="3"></line>
-                        <line x1="20" y1="21" x2="20" y2="16"></line>
-                        <line x1="20" y1="12" x2="20" y2="3"></line>
-                        <line x1="1" y1="14" x2="7" y2="14"></line>
-                        <line x1="9" y1="8" x2="15" y2="8"></line>
-                        <line x1="17" y1="16" x2="23" y2="16"></line>
-                    </svg>
-                    Categories & Filters
-                </button>
 
                 <!-- Products Grid -->
                 <div class="products-container">
