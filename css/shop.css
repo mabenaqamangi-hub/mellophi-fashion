@@ -1,3 +1,39 @@
+/* Mobile Category Bar */
+.mobile-category-bar {
+    display: none;
+    gap: 0.5rem;
+    margin: 1.5rem 0 1rem 0;
+    overflow-x: auto;
+    padding: 0.5rem 0.5rem 0.5rem 0;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    white-space: nowrap;
+}
+.mobile-category-bar .cat-btn {
+    display: inline-block;
+    background: #f5ebe0;
+    color: #2c2416;
+    border: 1px solid #d4af7a;
+    border-radius: 20px;
+    padding: 0.5rem 1.2rem;
+    margin-right: 0.5rem;
+    font-size: 1rem;
+    font-family: inherit;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+}
+.mobile-category-bar .cat-btn.active,
+.mobile-category-bar .cat-btn:active {
+    background: #d4af7a;
+    color: #fff;
+}
+@media (max-width: 900px) {
+    .mobile-category-bar {
+        display: flex;
+    }
+}
 /* ========================================
    SHOP PAGE STYLES
    ======================================== */

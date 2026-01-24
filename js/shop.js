@@ -1,6 +1,31 @@
 // ========================================
 // SHOP PAGE JAVASCRIPT
 // =============================
+// MOBILE CATEGORY BAR LOGIC
+// =============================
+document.addEventListener('DOMContentLoaded', function() {
+    const catBar = document.querySelector('.mobile-category-bar');
+    if (!catBar) return;
+    const catBtns = catBar.querySelectorAll('.cat-btn');
+    catBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            catBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            // Set category filter (simulate sidebar)
+            const val = btn.getAttribute('data-category');
+            // Uncheck all sidebar checkboxes
+            document.querySelectorAll('.filters-sidebar input[name="category"]').forEach(cb => {
+                cb.checked = false;
+                if (cb.value === val || (val === 'all' && cb.value === 'all')) cb.checked = true;
+            });
+            // Trigger filter
+            if (typeof applyFilters === 'function') applyFilters();
+        });
+    });
+    // Set initial active
+    catBtns[0].classList.add('active');
+});
+// =============================
 // WISHLIST & CART PANEL LOGIC
 // =============================
 
