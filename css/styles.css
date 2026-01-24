@@ -1,3 +1,25 @@
+/* Best Sellers Carousel: Mobile Image Fix */
+@media (max-width: 600px) {
+    .best-sellers .product-image img {
+        max-width: 120px;
+        max-height: 160px;
+        width: 100%;
+        height: auto;
+        object-fit: cover;
+        border-radius: 12px;
+        margin: 0 auto;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+        display: block;
+    }
+    .best-sellers .product-card {
+        min-width: 140px;
+        max-width: 160px;
+        margin: 0 8px;
+    }
+    .best-sellers .carousel-track {
+        gap: 0.5rem;
+    }
+}
 /* ========================================
    MELLOPHI FASHION - NUDE AESTHETIC
    ======================================== */
