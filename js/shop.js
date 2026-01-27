@@ -64,9 +64,11 @@ function renderWishlistPanel() {
         container.innerHTML = '<p style="color:#888;">Your wishlist is empty.</p>';
         return;
     }
-    container.innerHTML = wishlist.map(item => `
+    container.innerHTML = wishlist.map(item => {
+        let imgSrc = Array.isArray(item.images) && item.images.length > 0 ? item.images[0] : (item.image || 'images/PRODUCTS/A1 front.png');
+        return `
         <div style="display:flex;align-items:center;gap:15px;margin-bottom:20px;border-bottom:1px solid #eee;padding-bottom:15px;">
-            <img src="${item.image}" alt="${item.name}" style="width:70px;height:70px;object-fit:cover;border-radius:8px;">
+            <img src="${imgSrc}" alt="${item.name}" style="width:70px;height:70px;object-fit:cover;border-radius:8px;">
             <div style="flex:1;">
                 <div style="font-weight:600;">${item.name}</div>
                 ${item.size ? `<div style='font-size:0.95em;color:#666;'>Size: ${item.size}</div>` : ''}
@@ -76,7 +78,8 @@ function renderWishlistPanel() {
             <button onclick="removeFromWishlist('${item.id}','${item.size||''}','${item.color||''}')" style="background:none;border:none;color:#d9534f;font-size:1.3rem;cursor:pointer;">&times;</button>
             <button onclick="addWishlistToCart('${item.id}','${item.size||''}','${item.color||''}')" style="background:#d4a574;color:#fff;border:none;padding:7px 14px;border-radius:5px;cursor:pointer;font-weight:600;">Add to Cart</button>
         </div>
-    `).join('');
+        `;
+    }).join('');
 }
 
 // Render Cart Panel
@@ -88,9 +91,11 @@ function renderCartPanel() {
         container.innerHTML = '<p style="color:#888;">Your cart is empty.</p>';
         return;
     }
-    container.innerHTML = cart.map(item => `
+    container.innerHTML = cart.map(item => {
+        let imgSrc = Array.isArray(item.images) && item.images.length > 0 ? item.images[0] : (item.image || 'images/PRODUCTS/A1 front.png');
+        return `
         <div style="display:flex;align-items:center;gap:15px;margin-bottom:20px;border-bottom:1px solid #eee;padding-bottom:15px;">
-            <img src="${item.image}" alt="${item.name}" style="width:70px;height:70px;object-fit:cover;border-radius:8px;">
+            <img src="${imgSrc}" alt="${item.name}" style="width:70px;height:70px;object-fit:cover;border-radius:8px;">
             <div style="flex:1;">
                 <div style="font-weight:600;">${item.name}</div>
                 ${item.size ? `<div style='font-size:0.95em;color:#666;'>Size: ${item.size}</div>` : ''}
@@ -100,7 +105,8 @@ function renderCartPanel() {
             </div>
             <button onclick="removeFromCart('${item.id}','${item.size||''}','${item.color||''}')" style="background:none;border:none;color:#d9534f;font-size:1.3rem;cursor:pointer;">&times;</button>
         </div>
-    `).join('');
+        `;
+    }).join('');
 }
 
 // Remove from Wishlist
