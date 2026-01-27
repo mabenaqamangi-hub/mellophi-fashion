@@ -16,6 +16,13 @@ const fs = require('fs');
 // POST upload product images
 router.post('/upload', upload.array('images', 5), async (req, res) => {
     try {
+        // Log Cloudinary config for debugging
+        console.log('Cloudinary config in upload route:', {
+            cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+            api_key: process.env.CLOUDINARY_API_KEY,
+            api_secret: process.env.CLOUDINARY_API_SECRET
+        });
+
         if (!req.files || req.files.length === 0) {
             return res.status(400).json({ success: false, message: 'No files uploaded' });
         }
@@ -23,14 +30,23 @@ router.post('/upload', upload.array('images', 5), async (req, res) => {
         // Upload each file to Cloudinary and get URLs
         const imagePaths = [];
         for (const file of req.files) {
-            const url = await uploadToCloudinary(file.path);
-            imagePaths.push(url);
+            try {
+                const url = await uploadToCloudinary(file.path);
+                imagePaths.push(url);
+            } catch (uploadErr) {
+                console.error('Cloudinary upload error:', uploadErr);
+                throw uploadErr;
+            }
         }
         res.json({ 
             success: true, 
             message: `${req.files.length} image(s) uploaded successfully`,
             imagePaths: imagePaths 
         });
+    } catch (error) {
+        console.error('Upload route error:', error);
+        res.status(500).json({ success: false, message: error.message });
+    }
 });
 
 // ============ SEED DATABASE (ONE-TIME SETUP - NO AUTH) ============
