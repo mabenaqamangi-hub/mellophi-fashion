@@ -21,15 +21,15 @@ router.post('/upload', upload.array('images', 5), async (req, res) => {
         }
 
         // Upload each file to Cloudinary and get URLs
-        const imageUrls = [];
+        const imagePaths = [];
         for (const file of req.files) {
             const url = await uploadToCloudinary(file.path);
-            imageUrls.push(url);
+            imagePaths.push(url);
         }
         res.json({ 
             success: true, 
             message: `${req.files.length} image(s) uploaded successfully`,
-            imageUrls: imageUrls 
+            imagePaths: imagePaths 
         });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
