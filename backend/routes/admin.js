@@ -165,25 +165,38 @@ router.post('/products', upload.array('images', 5), async (req, res) => {
                 imageUrls.push(url);
             }
             productData.images = imageUrls;
-        } else {
-            // No images uploaded, set empty array
-            productData.images = [];
-        }
-        
-        const product = await Product.create(productData);
-        res.status(201).json({ success: true, message: 'Product created', data: product });
-    } catch (error) {
-        res.status(500).json({ success: false, message: error.message });
-    }
-});
+        try {
+            // Log Cloudinary config for debugging
+            console.log('Cloudinary config in upload route:', {
+                cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+                api_key: process.env.CLOUDINARY_API_KEY,
+                api_secret: process.env.CLOUDINARY_API_SECRET
+            });
 
-// PUT update product
-router.put('/products/:productId', upload.array('images', 5), async (req, res) => {
-    try {
-        const product = await Product.findOne({ where: { productId: req.params.productId } });
-        
-        if (!product) {
-            return res.status(404).json({ success: false, message: 'Product not found' });
+            if (!req.files || req.files.length === 0) {
+                return res.status(400).json({ success: false, message: 'No files uploaded' });
+            }
+
+            // Upload each file to Cloudinary and get URLs
+            const imagePaths = [];
+            for (const file of req.files) {
+                try {
+                    const url = await uploadToCloudinary(file.path);
+                    imagePaths.push(url);
+                } catch (uploadErr) {
+                    console.error('Cloudinary upload error:', uploadErr);
+                    throw uploadErr;
+                }
+            }
+            res.json({ 
+                success: true, 
+                message: `${req.files.length} image(s) uploaded successfully`,
+                imagePaths: imagePaths 
+            });
+        } catch (error) {
+            console.error('Upload route error:', error);
+            res.status(500).json({ success: false, message: error.message });
+        }
         }
 
         // Parse JSON fields if they come as strings
