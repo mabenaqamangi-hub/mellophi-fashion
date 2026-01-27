@@ -13,35 +13,53 @@ const fs = require('fs');
 
 // ============ PUBLIC ENDPOINTS (NO AUTH REQUIRED) ============
 
-// POST upload product images
-router.post('/upload', upload.array('images', 5), async (req, res) => {
+// POST upload product images (secure signature, backend only)
+const crypto = require('crypto');
+const multerUpload = upload.single('images');
+
+router.post('/upload', multerUpload, async (req, res) => {
     try {
-        // Log Cloudinary config for debugging
-        console.log('Cloudinary config in upload route:', {
-            cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+        if (!req.file) {
+            return res.status(400).json({ success: false, message: 'No file uploaded' });
+        }
+
+        const cloudinary = require('cloudinary').v2;
+        const timestamp = Math.floor(Date.now() / 1000);
+        const folder = 'products';
+        const use_filename = true;
+        const unique_filename = false;
+        const overwrite = false;
+
+        // Build params for signature (sorted alphabetically)
+        const paramsToSign = {
+            folder,
+            overwrite: overwrite ? 1 : 0,
+            timestamp,
+            unique_filename: unique_filename ? 1 : 0,
+            use_filename: use_filename ? 1 : 0
+        };
+        const sortedKeys = Object.keys(paramsToSign).sort();
+        const paramString = sortedKeys.map(key => `${key}=${paramsToSign[key]}`).join('&');
+        const toSign = paramString + process.env.CLOUDINARY_API_SECRET;
+        const signature = crypto.createHash('sha1').update(toSign).digest('hex');
+
+        // Upload to Cloudinary with signature
+        cloudinary.uploader.upload(req.file.path, {
             api_key: process.env.CLOUDINARY_API_KEY,
-            api_secret: process.env.CLOUDINARY_API_SECRET
-        });
-
-        if (!req.files || req.files.length === 0) {
-            return res.status(400).json({ success: false, message: 'No files uploaded' });
-        }
-
-        // Upload each file to Cloudinary and get URLs
-        const imagePaths = [];
-        for (const file of req.files) {
-            try {
-                const url = await uploadToCloudinary(file.path);
-                imagePaths.push(url);
-            } catch (uploadErr) {
-                console.error('Cloudinary upload error:', uploadErr);
-                throw uploadErr;
+            timestamp,
+            signature,
+            folder,
+            use_filename,
+            unique_filename,
+            overwrite
+        }, (error, result) => {
+            // Remove local file after upload
+            try { require('fs').unlinkSync(req.file.path); } catch (e) {}
+            if (error) {
+                console.error('Cloudinary upload error:', error);
+                return res.status(500).json({ success: false, message: error.message });
             }
-        }
-        res.json({ 
-            success: true, 
-            message: `${req.files.length} image(s) uploaded successfully`,
-            imagePaths: imagePaths 
+            res.json({ success: true, imagePaths: [result.secure_url] });
         });
     } catch (error) {
         console.error('Upload route error:', error);
