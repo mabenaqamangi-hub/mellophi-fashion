@@ -1,3 +1,4 @@
+console.log('Server starting...');
 require('./utils/cloudinary');
 const express = require('express');
 const cors = require('cors');
