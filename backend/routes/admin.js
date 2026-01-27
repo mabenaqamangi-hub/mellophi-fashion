@@ -7,6 +7,7 @@ const { authenticate, isAdmin } = require('../middleware/auth');
 const { Op } = require('sequelize');
 const sequelize = require('../config/database');
 const upload = require('../middleware/upload');
+const uploadToCloudinary = require('../utils/uploadToCloudinary');
 const path = require('path');
 const fs = require('fs');
 
@@ -19,13 +20,16 @@ router.post('/upload', upload.array('images', 5), async (req, res) => {
             return res.status(400).json({ success: false, message: 'No files uploaded' });
         }
 
-        // Return array of image paths that can be stored in the database
-        const imagePaths = req.files.map(file => `images/PRODUCTS/${file.filename}`);
-        
+        // Upload each file to Cloudinary and get URLs
+        const imageUrls = [];
+        for (const file of req.files) {
+            const url = await uploadToCloudinary(file.path);
+            imageUrls.push(url);
+        }
         res.json({ 
             success: true, 
             message: `${req.files.length} image(s) uploaded successfully`,
-            imagePaths: imagePaths 
+            imageUrls: imageUrls 
         });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
@@ -156,10 +160,14 @@ router.post('/products', upload.array('images', 5), async (req, res) => {
         if (typeof productData.sizes === 'string') productData.sizes = JSON.parse(productData.sizes);
         if (typeof productData.colors === 'string') productData.colors = JSON.parse(productData.colors);
         
-        // Handle uploaded images
+        // Handle uploaded images (Cloudinary)
         if (req.files && req.files.length > 0) {
-            const uploadedPaths = req.files.map(file => `images/PRODUCTS/${file.filename}`);
-            productData.images = uploadedPaths;
+            const imageUrls = [];
+            for (const file of req.files) {
+                const url = await uploadToCloudinary(file.path);
+                imageUrls.push(url);
+            }
+            productData.images = imageUrls;
         } else {
             // No images uploaded, set empty array
             productData.images = [];
@@ -187,11 +195,15 @@ router.put('/products/:productId', upload.array('images', 5), async (req, res) =
         if (typeof updateData.colors === 'string') updateData.colors = JSON.parse(updateData.colors);
         if (typeof updateData.images === 'string') updateData.images = JSON.parse(updateData.images);
         
-        // Add uploaded images to existing images
+        // Add uploaded images to existing images (Cloudinary)
         if (req.files && req.files.length > 0) {
-            const uploadedPaths = req.files.map(file => `images/PRODUCTS/${file.filename}`);
+            const imageUrls = [];
+            for (const file of req.files) {
+                const url = await uploadToCloudinary(file.path);
+                imageUrls.push(url);
+            }
             const existingImages = updateData.images || product.images || [];
-            updateData.images = [...existingImages, ...uploadedPaths];
+            updateData.images = [...existingImages, ...imageUrls];
         }
 
         await product.update(updateData);
