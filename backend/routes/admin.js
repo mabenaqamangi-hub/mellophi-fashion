@@ -31,9 +31,6 @@ router.post('/upload', upload.array('images', 5), async (req, res) => {
             message: `${req.files.length} image(s) uploaded successfully`,
             imagePaths: imagePaths 
         });
-    } catch (error) {
-        res.status(500).json({ success: false, message: error.message });
-    }
 });
 
 // ============ SEED DATABASE (ONE-TIME SETUP - NO AUTH) ============
