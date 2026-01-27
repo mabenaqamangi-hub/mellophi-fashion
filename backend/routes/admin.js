@@ -328,20 +328,35 @@ router.get('/users', async (req, res) => {
 
 // GET dashboard statistics
 router.get('/stats', async (req, res) => {
+
     try {
         const totalProducts = await Product.count();
         const totalOrders = await Order.count();
         const totalUsers = await User.count();
-        
         const revenue = await Order.findAll({
             where: { paymentStatus: 'paid' },
             attributes: [[sequelize.fn('SUM', sequelize.col('total')), 'total']]
         });
-
         const recentOrders = await Order.findAll({
             order: [['createdAt', 'DESC']],
             limit: 10
         });
-
         const lowStockProducts = await Product.findAll({ where: { stock: { [Op.lt]: 10 } } });
+        res.json({
+            success: true,
+            data: {
+                totalProducts,
+                totalOrders,
+                totalUsers,
+                totalRevenue: revenue[0]?.dataValues?.total || 0,
+                recentOrders,
+                lowStockProducts
+            }
+        });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+});
+
+module.exports = router;
 
