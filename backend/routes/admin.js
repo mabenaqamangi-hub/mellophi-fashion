@@ -235,6 +235,61 @@ router.post('/products', upload.array('images', 5), async (req, res) => {
     }
 });
 
+// PUT update product
+router.put('/products/:productId', upload.array('images', 5), async (req, res) => {
+    try {
+        const product = await Product.findOne({ where: { productId: req.params.productId } });
+        if (!product) {
+            return res.status(404).json({ success: false, message: 'Product not found' });
+        }
+        const updateData = { ...req.body };
+        if (typeof updateData.sizes === 'string') updateData.sizes = JSON.parse(updateData.sizes);
+        if (typeof updateData.colors === 'string') updateData.colors = JSON.parse(updateData.colors);
+        if (typeof updateData.images === 'string') updateData.images = JSON.parse(updateData.images);
+        // Secure Cloudinary upload for images
+        if (req.files && req.files.length > 0) {
+            const crypto = require('crypto');
+            const cloudinary = require('cloudinary').v2;
+            const imageUrls = [];
+            for (const file of req.files) {
+                const timestamp = Math.floor(Date.now() / 1000);
+                const folder = 'products';
+                const use_filename = true;
+                const unique_filename = false;
+                const overwrite = false;
+                const paramsToSign = {
+                    folder,
+                    overwrite: overwrite ? 1 : 0,
+                    timestamp,
+                    unique_filename: unique_filename ? 1 : 0,
+                    use_filename: use_filename ? 1 : 0
+                };
+                const sortedKeys = Object.keys(paramsToSign).sort();
+                const paramString = sortedKeys.map(key => `${key}=${paramsToSign[key]}`).join('&');
+                const toSign = paramString + process.env.CLOUDINARY_API_SECRET;
+                const signature = crypto.createHash('sha1').update(toSign).digest('hex');
+                const result = await cloudinary.uploader.upload(file.path, {
+                    api_key: process.env.CLOUDINARY_API_KEY,
+                    timestamp,
+                    signature,
+                    folder,
+                    use_filename,
+                    unique_filename,
+                    overwrite
+                });
+                try { require('fs').unlinkSync(file.path); } catch (e) {}
+                imageUrls.push(result.secure_url);
+            }
+            const existingImages = updateData.images || product.images || [];
+            updateData.images = [...existingImages, ...imageUrls];
+        }
+        await product.update(updateData);
+        res.json({ success: true, message: 'Product updated', data: product });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+});
+
 // DELETE product
 router.delete('/products/:productId', async (req, res) => {
     try {
