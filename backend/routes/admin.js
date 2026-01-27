@@ -190,54 +190,46 @@ router.post('/products', upload.array('images', 5), async (req, res) => {
         const productData = { ...req.body };
         if (typeof productData.sizes === 'string') productData.sizes = JSON.parse(productData.sizes);
         if (typeof productData.colors === 'string') productData.colors = JSON.parse(productData.colors);
-        
-        // Handle uploaded images (Cloudinary)
+        // Secure Cloudinary upload for images
         if (req.files && req.files.length > 0) {
+            const crypto = require('crypto');
+            const cloudinary = require('cloudinary').v2;
             const imageUrls = [];
             for (const file of req.files) {
-                const url = await uploadToCloudinary(file.path);
-                imageUrls.push(url);
+                const timestamp = Math.floor(Date.now() / 1000);
+                const folder = 'products';
+                const use_filename = true;
+                const unique_filename = false;
+                const overwrite = false;
+                const paramsToSign = {
+                    folder,
+                    overwrite: overwrite ? 1 : 0,
+                    timestamp,
+                    unique_filename: unique_filename ? 1 : 0,
+                    use_filename: use_filename ? 1 : 0
+                };
+                const sortedKeys = Object.keys(paramsToSign).sort();
+                const paramString = sortedKeys.map(key => `${key}=${paramsToSign[key]}`).join('&');
+                const toSign = paramString + process.env.CLOUDINARY_API_SECRET;
+                const signature = crypto.createHash('sha1').update(toSign).digest('hex');
+                const result = await cloudinary.uploader.upload(file.path, {
+                    api_key: process.env.CLOUDINARY_API_KEY,
+                    timestamp,
+                    signature,
+                    folder,
+                    use_filename,
+                    unique_filename,
+                    overwrite
+                });
+                try { require('fs').unlinkSync(file.path); } catch (e) {}
+                imageUrls.push(result.secure_url);
             }
             productData.images = imageUrls;
-        try {
-            // Log Cloudinary config for debugging
-            console.log('Cloudinary config in upload route:', {
-                cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-                api_key: process.env.CLOUDINARY_API_KEY,
-                api_secret: process.env.CLOUDINARY_API_SECRET
-            });
-
-            if (!req.files || req.files.length === 0) {
-                return res.status(400).json({ success: false, message: 'No files uploaded' });
-            }
-
-            // Upload each file to Cloudinary and get URLs
-            const imagePaths = [];
-            for (const file of req.files) {
-                try {
-                    const url = await uploadToCloudinary(file.path);
-                    imagePaths.push(url);
-                } catch (uploadErr) {
-                    console.error('Cloudinary upload error:', uploadErr);
-                    throw uploadErr;
-                }
-            }
-            res.json({ 
-                success: true, 
-                message: `${req.files.length} image(s) uploaded successfully`,
-                imagePaths: imagePaths 
-            });
-        } catch (error) {
-            console.error('Upload route error:', error);
-            res.status(500).json({ success: false, message: error.message });
+        } else {
+            productData.images = [];
         }
-        }
-
-        // Parse JSON fields if they come as strings
-        const updateData = { ...req.body };
-        if (typeof updateData.sizes === 'string') updateData.sizes = JSON.parse(updateData.sizes);
-        if (typeof updateData.colors === 'string') updateData.colors = JSON.parse(updateData.colors);
-        if (typeof updateData.images === 'string') updateData.images = JSON.parse(updateData.images);
+        const product = await Product.create(productData);
+        res.status(201).json({ success: true, message: 'Product created', data: product });
         
         // Add uploaded images to existing images (Cloudinary)
         if (req.files && req.files.length > 0) {
@@ -353,20 +345,3 @@ router.get('/stats', async (req, res) => {
 
         const lowStockProducts = await Product.findAll({ where: { stock: { [Op.lt]: 10 } } });
 
-        res.json({
-            success: true,
-            data: {
-                totalProducts,
-                totalOrders,
-                totalUsers,
-                totalRevenue: revenue[0]?.dataValues?.total || 0,
-                recentOrders,
-                lowStockProducts
-            }
-        });
-    } catch (error) {
-        res.status(500).json({ success: false, message: error.message });
-    }
-});
-
-module.exports = router;
