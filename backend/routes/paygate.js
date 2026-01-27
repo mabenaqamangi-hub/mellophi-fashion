@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const crypto = require('crypto');
 const Order = require('../models/Order');
+const { sendOrderConfirmationEmail } = require('../utils/email');
+const logger = require('../utils/logger');
 require('dotenv').config();
 
 // PayGate credentials from environment variables
@@ -14,8 +16,8 @@ const PAYGATE_NOTIFY_URL = process.env.PAYGATE_NOTIFY_URL || 'http://localhost:5
 
 // Validate PayGate configuration
 if (!PAYGATE_ID || !PAYGATE_SECRET) {
-    console.error('⚠️  WARNING: PayGate credentials not configured!');
-    console.error('   Set PAYGATE_ID and PAYGATE_SECRET in .env file');
+    logger.error('⚠️  WARNING: PayGate credentials not configured!');
+    logger.error('   Set PAYGATE_ID and PAYGATE_SECRET in .env file');
 }
 
 /**
@@ -144,7 +146,7 @@ router.post('/initiate', async (req, res) => {
         });
 
     } catch (error) {
-        console.error('PayGate initiate error:', error);
+        logger.error('PayGate initiate error:', error);
         res.status(500).json({ 
             success: false, 
             message: 'Payment initiation failed',
@@ -196,6 +198,12 @@ router.post('/return', async (req, res) => {
                 status: 'processing',
                 transactionId: paygateReturn.TRANSACTION_ID
             });
+            // Send confirmation email
+            try {
+                await sendOrderConfirmationEmail(order.customerInfo.email, order);
+            } catch (emailErr) {
+                logger.error('Order confirmation email failed:', emailErr);
+            }
         } else if (transactionStatus === '2') {
             // Payment declined
             await order.update({
@@ -218,7 +226,7 @@ router.post('/return', async (req, res) => {
         });
 
     } catch (error) {
-        console.error('PayGate return error:', error);
+        logger.error('PayGate return error:', error);
         res.status(500).json({ 
             success: false, 
             message: 'Payment verification failed',
@@ -255,7 +263,7 @@ router.get('/status/:reference', async (req, res) => {
         });
 
     } catch (error) {
-        console.error('Status check error:', error);
+        logger.error('Status check error:', error);
         res.status(500).json({ 
             success: false, 
             message: 'Failed to check payment status',
