@@ -230,20 +230,6 @@ router.post('/products', upload.array('images', 5), async (req, res) => {
         }
         const product = await Product.create(productData);
         res.status(201).json({ success: true, message: 'Product created', data: product });
-        
-        // Add uploaded images to existing images (Cloudinary)
-        if (req.files && req.files.length > 0) {
-            const imageUrls = [];
-            for (const file of req.files) {
-                const url = await uploadToCloudinary(file.path);
-                imageUrls.push(url);
-            }
-            const existingImages = updateData.images || product.images || [];
-            updateData.images = [...existingImages, ...imageUrls];
-        }
-
-        await product.update(updateData);
-        res.json({ success: true, message: 'Product updated', data: product });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
     }
