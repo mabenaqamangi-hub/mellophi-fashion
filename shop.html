@@ -377,6 +377,31 @@
     </footer>
 
     <script src="js/main.js?v=2.2"></script>
-    <script src="js/shop.js?v=2.2"></script>
+        <script src="js/shop.js?v=2.2"></script>
+        <script>
+        // Ensure wishlist and cart icons are always clickable and show the correct panel
+        document.addEventListener('DOMContentLoaded', function() {
+            var wishlistBtn = document.getElementById('wishlist-btn');
+            var cartBtn = document.getElementById('cart-btn');
+            if (wishlistBtn) {
+                wishlistBtn.onclick = function(e) {
+                    e.preventDefault();
+                    if (typeof renderWishlistPanel === 'function') renderWishlistPanel();
+                    var panel = document.getElementById('wishlist-panel');
+                    if (panel) panel.style.display = 'block';
+                    document.body.style.overflow = 'hidden';
+                };
+            }
+            if (cartBtn) {
+                cartBtn.onclick = function(e) {
+                    e.preventDefault();
+                    if (typeof renderCartPanel === 'function') renderCartPanel();
+                    var panel = document.getElementById('cart-panel');
+                    if (panel) panel.style.display = 'block';
+                    document.body.style.overflow = 'hidden';
+                };
+            }
+        });
+        </script>
 </body>
 </html>

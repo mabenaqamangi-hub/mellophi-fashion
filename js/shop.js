@@ -330,16 +330,19 @@ async function loadProductsFromAPI() {
                 products = apiProducts;
                 filteredProducts = [...products];
                 console.log('✅ Loaded', products.length, 'products from API');
+                removeFallbackWarning();
                 return;
             }
         }
         
         // If we get here, use fallback
         console.log('⚠️ API returned no products, using local fallback products');
+        showFallbackWarning('API returned no products, using local fallback products');
         filteredProducts = [...products];
         
     } catch (error) {
         console.log('⚠️ Using fallback products, API not available:', error.message);
+        showFallbackWarning('API not available, using local fallback products');
         // Keep using hardcoded products as fallback
         filteredProducts = [...products];
     }
@@ -352,6 +355,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }).catch(() => {
         // Even if API fails, initialize with fallback products
         filteredProducts = [...products];
+        showFallbackWarning('API not available, using local fallback products');
         initShop();
     });
 });
@@ -409,25 +413,14 @@ function createProductCard(product) {
     const card = document.createElement('div');
     card.className = 'product-card';
     card.dataset.productId = product.id;
-    
     // Get first image
     const productImage = product.images && product.images.length > 0 ? product.images[0] : 'images/PRODUCTS/A1 front.png';
     const productName = product.title || product.name || 'Product';
-    
     // Get color swatches
     const colors = getColorSwatches(product);
-    
     // Check stock status
     const stockClass = product.stock === 0 ? 'out-of-stock' : '';
     const stockBadge = product.stock === 0 ? '<span class="stock-badge">Out of Stock</span>' : '';
-    
-        <a href="product.html?id=${product.id}" class="product-link">
-            <div class="product-image ${stockClass}">
-                <img src="${productImage}" alt="${productName}" onerror="this.src='images/PRODUCTS/A1 front.png'">
-                ${stockBadge}
-                <button class="wishlist-btn" onclick="event.preventDefault(); event.stopPropagation();">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
     card.innerHTML = `
         <a href="product.html?id=${product.id}" class="product-link">
             <div class="product-image ${stockClass}">
