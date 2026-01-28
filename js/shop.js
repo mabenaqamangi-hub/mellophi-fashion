@@ -465,23 +465,21 @@ function addToWishlistFromCard(id, name, price, image, size, color) {
 function getColorSwatches(product) {
     // If product has colors array (new format)
     if (product.colors && product.colors.length > 0) {
-        return product.colors.map(color => 
-            `<span class="color-dot" style="background: ${color.value}" title="${color.name}"></span>`
-        ).join('');
+        return product.colors.map(function(color) {
+            return '<span class="color-dot" style="background: ' + color.value + '" title="' + color.name + '"></span>';
+        }).join('');
     }
-    
     // Fallback for old format with single color
     if (product.color) {
-        const colorMap = {
+        var colorMap = {
             'beige': '#D4BBA8',
             'cream': '#F5EBE0',
             'sand': '#d6c5b7',
             'taupe': '#B8A08E',
             'champagne': '#D4AF7A'
         };
-        return `<span class="color-dot" style="background: ${colorMap[product.color] || product.color}"></span>`;
+        return '<span class="color-dot" style="background: ' + (colorMap[product.color] || product.color) + '"></span>';
     }
-    
     return '';
 }
 
@@ -505,79 +503,31 @@ function applyFilters() {
     const sizeFilters = Array.from(document.querySelectorAll('input[name="size"]:checked')).map(el => el.value.toUpperCase());
     const maxPrice = parseInt(document.getElementById('price-slider').value);
     
-    filteredProducts = products.filter(product => {
+    filteredProducts = products.filter(function(product) {
         // Category filter
-        const categoryMatch = categoryFilters.length === 0 || 
+        var categoryMatch = categoryFilters.length === 0 || 
                              categoryFilters.includes('all') || 
                              categoryFilters.includes(product.category);
-        
         // Color filter - check both old format (color string) and new format (colors array)
-        let colorMatch = colorFilters.length === 0;
+        var colorMatch = colorFilters.length === 0;
         if (!colorMatch && product.colors && product.colors.length > 0) {
-            colorMatch = product.colors.some(color => 
-                colorFilters.includes(color.name.toLowerCase())
-            );
+            colorMatch = product.colors.some(function(color) {
+                return colorFilters.includes(color.name.toLowerCase());
+            });
         } else if (!colorMatch && product.color) {
             colorMatch = colorFilters.includes(product.color.toLowerCase());
         } else if (colorFilters.length === 0) {
             colorMatch = true;
         }
-        
         // Size filter - check both 'size' and 'sizes' properties
-        const productSizes = product.sizes || product.size || [];
-        const sizeMatch = sizeFilters.length === 0 || 
-                         productSizes.some(size => sizeFilters.includes(size));
-        
-        // Get color swatches
-        const colors = getColorSwatches(product);
-        // Check stock status
-        const stockClass = product.stock === 0 ? 'out-of-stock' : '';
-        const stockBadge = product.stock === 0 ? '<span class="stock-badge">Out of Stock</span>' : '';
-        card.innerHTML = `
-            <a href="product.html?id=${product.id}" class="product-link">
-                <div class="product-image ${stockClass}">
-                    <img src="${productImage}" alt="${productName}" onerror="this.src='images/PRODUCTS/A1 front.png'">
-                    ${stockBadge}
-                    <button class="wishlist-btn" onclick="event.preventDefault(); event.stopPropagation(); addToWishlistFromCard('${product.id}', '${productName.replace(/'/g, "\'")}', '${product.price}', '${productImage}', '${product.sizes ? product.sizes[0] : ''}', '${product.colors && product.colors[0] ? product.colors[0].name : ''}')">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                        </svg>
-                    </button>
-                </div>
-                <div class="product-info">
-                    <h3 class="product-name">${productName}</h3>
-                    <p class="product-price">R ${product.price.toFixed(2)}</p>
-                    <div class="product-colors">
-                        ${colors}
-                    </div>
-                </div>
-            </a>
-        `;
-                filteredProducts.sort((a, b) => b.price - a.price);
-                break;
-            case 'newest':
-                filteredProducts.sort((a, b) => b.id - a.id);
-                break;
-            case 'popular':
-                // Sort by stock availability first, then by review rating
-                filteredProducts.sort((a, b) => {
-                    if (a.stock === 0 && b.stock > 0) return 1;
-                    if (a.stock > 0 && b.stock === 0) return -1;
-                    return 0;
-                });
-                break;
-            default:
-                // Default: newest first (by id)
-                filteredProducts.sort((a, b) => {
-                    const aNum = parseInt(a.id.replace(/\D/g, '')) || 0;
-                    const bNum = parseInt(b.id.replace(/\D/g, '')) || 0;
-                    return aNum - bNum;
-                });
-        }
-        
-        currentPage = 1;
-        renderProducts();
+        var productSizes = product.sizes || product.size || [];
+        var sizeMatch = sizeFilters.length === 0 || 
+                         productSizes.some(function(size) { return sizeFilters.includes(size); });
+        // Price filter
+        var priceMatch = !isNaN(maxPrice) ? (parseFloat(product.price) <= maxPrice) : true;
+        return categoryMatch && colorMatch && sizeMatch && priceMatch;
     });
+    renderProducts();
 }
 
 // Initialize price slider
