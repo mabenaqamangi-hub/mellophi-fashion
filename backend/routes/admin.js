@@ -30,7 +30,7 @@ router.post('/upload', multerUpload, async (req, res) => {
         const unique_filename = false;
         const overwrite = false;
 
-        // Build params for signature (sorted alphabetically)
+        // Build params for signature (sorted alphabetically, no extra spaces)
         const paramsToSign = {
             folder,
             overwrite: overwrite ? 1 : 0,
@@ -40,7 +40,7 @@ router.post('/upload', multerUpload, async (req, res) => {
         };
         const sortedKeys = Object.keys(paramsToSign).sort();
         const paramString = sortedKeys.map(key => `${key}=${paramsToSign[key]}`).join('&');
-        const toSign = paramString + process.env.CLOUDINARY_API_SECRET;
+        const toSign = paramString + process.env.CLOUDINARY_API_SECRET; // No extra space or 'and'
         const signature = crypto.createHash('sha1').update(toSign).digest('hex');
 
         // Upload to Cloudinary with signature
