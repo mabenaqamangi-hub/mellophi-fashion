@@ -634,7 +634,7 @@ function showQuickViewModal(product, backendUrl) {
             ? product.images[0] 
             : product.images[0].startsWith('images/') 
                 ? `${backendUrl}/${product.images[0]}`
-                : product.images[0])
+                : `images/PRODUCTS/${product.images[0]}`)
         : 'images/PRODUCTS/A1 front.png';
     
     document.getElementById('qv-product-image').src = imagePath;
