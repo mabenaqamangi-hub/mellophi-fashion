@@ -723,12 +723,12 @@
                 <div class="form-group-inline">
                     <div class="form-group">
                         <label for="sizes">Sizes (comma-separated)</label>
-                        <input type="text" id="sizes" placeholder="S, M, L, XL">
+                        <input type="text" id="sizes" name="sizes" placeholder="S, M, L, XL" autocomplete="off">
                     </div>
                     
                     <div class="form-group">
                         <label for="stock">Stock Quantity *</label>
-                        <input type="number" id="stock" required value="0">
+                        <input type="number" id="stock" name="stock" required value="0" autocomplete="off">
                     </div>
                 </div>
                 
@@ -736,15 +736,15 @@
                     <label>Product Tags</label>
                     <div class="checkbox-group">
                         <label class="checkbox-label" for="isFeatured">
-                            <input type="checkbox" id="isFeatured" name="isFeatured">
+                            <input type="checkbox" id="isFeatured" name="isFeatured" autocomplete="off">
                             <span>Featured</span>
                         </label>
                         <label class="checkbox-label" for="isNewArrival">
-                            <input type="checkbox" id="isNewArrival" name="isNewArrival">
+                            <input type="checkbox" id="isNewArrival" name="isNewArrival" autocomplete="off">
                             <span>New Arrival</span>
                         </label>
                         <label class="checkbox-label" for="isBestSeller">
-                            <input type="checkbox" id="isBestSeller" name="isBestSeller">
+                            <input type="checkbox" id="isBestSeller" name="isBestSeller" autocomplete="off">
                             <span>Best Seller</span>
                         </label>
                     </div>
