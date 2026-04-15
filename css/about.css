@@ -1,0 +1,258 @@
+/* ========================================
+   ABOUT PAGE STYLES
+   ======================================== */
+
+.about-hero {
+    background: linear-gradient(135deg, var(--nude-light), var(--nude-primary));
+    padding: 5rem 0 4rem;
+    text-align: center;
+}
+
+/* === STORY SECTION === */
+.story-section {
+    padding: 5rem 0;
+}
+
+.story-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+}
+
+.story-text h2 {
+    margin-bottom: 2rem;
+    color: var(--text-primary);
+}
+
+.story-text p {
+    margin-bottom: 1.5rem;
+    line-height: 1.8;
+    font-size: 1.05rem;
+}
+
+.story-image {
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.image-placeholder {
+    width: 100%;
+    height: 500px;
+    background: linear-gradient(135deg, var(--nude-secondary), var(--nude-dark));
+    background-image: url('../images/about-story.jpg');
+    background-size: cover;
+    background-position: center;
+}
+
+/* === VALUES SECTION === */
+.values-section {
+    padding: 5rem 0;
+    background-color: var(--nude-light);
+}
+
+.values-section .section-title {
+    text-align: center;
+    margin-bottom: 4rem;
+}
+
+.values-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 3rem;
+}
+
+.value-card {
+    text-align: center;
+    padding: 2.5rem;
+    background-color: var(--off-white);
+    border-radius: 20px;
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition);
+}
+
+.value-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-lg);
+}
+
+.value-icon {
+    margin-bottom: 1.5rem;
+    color: var(--champagne);
+}
+
+.value-card h3 {
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+}
+
+.value-card p {
+    line-height: 1.6;
+}
+
+/* === MISSION SECTION === */
+.mission-section {
+    padding: 5rem 0;
+}
+
+.mission-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+}
+
+.mission-image {
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.mission-text h2 {
+    margin-bottom: 2rem;
+    color: var(--text-primary);
+}
+
+.mission-text p {
+    margin-bottom: 1.5rem;
+    line-height: 1.8;
+    font-size: 1.05rem;
+}
+
+.mission-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    margin-top: 3rem;
+    padding: 2rem;
+    background-color: var(--nude-light);
+    border-radius: 15px;
+}
+
+.stat {
+    text-align: center;
+}
+
+.stat h3 {
+    font-size: 2.5rem;
+    color: var(--champagne);
+    margin-bottom: 0.5rem;
+}
+
+.stat p {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+}
+
+/* === TEAM SECTION === */
+.team-section {
+    padding: 5rem 0;
+    background-color: var(--nude-light);
+}
+
+.team-section .section-title {
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.team-section .section-subtitle {
+    text-align: center;
+    margin-bottom: 4rem;
+}
+
+.team-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 3rem;
+}
+
+.team-member {
+    text-align: center;
+    background-color: var(--off-white);
+    padding: 2rem;
+    border-radius: 20px;
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition);
+}
+
+.team-member:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-lg);
+}
+
+.member-image {
+    width: 150px;
+    height: 150px;
+    margin: 0 auto 1.5rem;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--nude-secondary), var(--champagne));
+    background-image: url('../images/team-placeholder.jpg');
+    background-size: cover;
+    background-position: center;
+}
+
+.team-member h3 {
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+}
+
+.member-role {
+    color: var(--champagne);
+    font-weight: 500;
+    margin-bottom: 1rem;
+}
+
+.member-bio {
+    line-height: 1.6;
+    font-size: 0.95rem;
+}
+
+/* === CTA SECTION === */
+.cta-section {
+    padding: 5rem 0;
+    text-align: center;
+    background: linear-gradient(135deg, var(--nude-primary), var(--nude-secondary));
+}
+
+.cta-section h2 {
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+}
+
+.cta-section p {
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+    color: var(--text-secondary);
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 1024px) {
+    .story-content,
+    .mission-content {
+        grid-template-columns: 1fr;
+        gap: 3rem;
+    }
+    
+    .mission-content .mission-image {
+        order: -1;
+    }
+    
+    .mission-stats {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .about-hero {
+        padding: 3rem 0 2rem;
+    }
+    
+    .values-grid,
+    .team-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .image-placeholder {
+        height: 350px;
+    }
+}

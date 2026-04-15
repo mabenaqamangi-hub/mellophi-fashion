@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - Mellophi Fashion</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/checkout.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header class="sticky-header">
+        <div class="container">
+            <nav class="navbar">
+                <div class="logo">
+                    <h1><a href="index.html">MELLOPHI FASHION</a></h1>
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="shop.html">Shop</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                </ul>
+                <div class="nav-icons">
+                    <button class="icon-btn" id="cart-btn">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="9" cy="21" r="1"></circle>
+                            <circle cx="20" cy="21" r="1"></circle>
+                            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                        </svg>
+                        <span class="badge" id="cart-count">0</span>
+                    </button>
+                    <button class="mobile-toggle" id="mobile-toggle">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </button>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Checkout Section -->
+    <section class="checkout-section">
+        <div class="container">
+            <h1 class="page-title">Checkout</h1>
+            
+            <div class="checkout-layout">
+                <!-- Checkout Form -->
+                <div class="checkout-form-container">
+                    <form id="checkout-form">
+                        <!-- Shipping Information -->
+                        <div class="form-section">
+                            <h2 class="section-heading">Shipping Information</h2>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="first-name">First Name *</label>
+                                    <input type="text" id="first-name" name="first-name" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="last-name">Last Name *</label>
+                                    <input type="text" id="last-name" name="last-name" required>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="email">Email *</label>
+                                <input type="email" id="email" name="email" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="phone">Phone Number *</label>
+                                <input type="tel" id="phone" name="phone" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="address">Street Address *</label>
+                                <input type="text" id="address" name="address" required>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="city">City *</label>
+                                    <input type="text" id="city" name="city" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="province">Province *</label>
+                                    <select id="province" name="province" required>
+                                        <option value="">Select Province</option>
+                                        <option value="gauteng">Gauteng</option>
+                                        <option value="western-cape">Western Cape</option>
+                                        <option value="kwazulu-natal">KwaZulu-Natal</option>
+                                        <option value="eastern-cape">Eastern Cape</option>
+                                        <option value="free-state">Free State</option>
+                                        <option value="limpopo">Limpopo</option>
+                                        <option value="mpumalanga">Mpumalanga</option>
+                                        <option value="north-west">North West</option>
+                                        <option value="northern-cape">Northern Cape</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="postal-code">Postal Code *</label>
+                                <input type="text" id="postal-code" name="postal-code" required>
+                            </div>
+                        </div>
+
+                        <!-- Shipping Method -->
+                        <div class="form-section">
+                            <h2 class="section-heading">Shipping Method</h2>
+                            
+                            <div class="shipping-options">
+                                <label class="shipping-option">
+                                    <input type="radio" name="shipping" value="standard" checked>
+                                    <div class="option-content">
+                                        <div>
+                                            <strong>Standard Shipping</strong>
+                                            <p>3-5 business days</p>
+                                        </div>
+                                        <span class="shipping-price">R 80.00</span>
+                                    </div>
+                                </label>
+
+                                <label class="shipping-option">
+                                    <input type="radio" name="shipping" value="express">
+                                    <div class="option-content">
+                                        <div>
+                                            <strong>Express Shipping</strong>
+                                            <p>1-2 business days</p>
+                                        </div>
+                                        <span class="shipping-price">R 150.00</span>
+                                    </div>
+                                </label>
+
+                                <label class="shipping-option">
+                                    <input type="radio" name="shipping" value="pickup">
+                                    <div class="option-content">
+                                        <div>
+                                            <strong>Store Pickup</strong>
+                                            <p>Pick up from our store - FREE</p>
+                                        </div>
+                                        <span class="shipping-price">FREE</span>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Payment Method -->
+                        <div class="form-section">
+                            <h2 class="section-heading">Payment Method</h2>
+                            
+                            <div class="payment-options">
+                                <label class="payment-option">
+                                    <input type="radio" name="payment" value="payfast" checked>
+                                    <div class="option-content">
+                                        <strong>PayGate (Recommended)</strong>
+                                        <p>Secure payment via PayGate - Cards, EFT & More</p>
+                                    </div>
+                                </label>
+
+                                <label class="payment-option">
+                                    <input type="radio" name="payment" value="card">
+                                    <div class="option-content">
+                                        <strong>Credit/Debit Card</strong>
+                                        <p>Visa, Mastercard, Amex via PayGate</p>
+                                    </div>
+                                </label>
+
+                                <label class="payment-option">
+                                    <input type="radio" name="payment" value="eft">
+                                    <div class="option-content">
+                                        <strong>Bank Transfer (EFT)</strong>
+                                        <p>Manual verification required</p>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <!-- PayGate Info (shown when PayGate is selected) -->
+                            <div class="payfast-info" id="payfast-info" style="display: block;">
+                                <div class="payfast-info-box">
+                                    <h3>PayGate Secure Payment</h3>
+                                    <p class="payfast-note">You will be redirected to PayGate's secure payment page to complete your payment.</p>
+                                    
+                                    <div class="payfast-features">
+                                        <div class="feature-item">
+                                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                                            </svg>
+                                            <span>Secure & encrypted payment</span>
+                                        </div>
+                                        <div class="feature-item">
+                                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <rect x="2" y="5" width="20" height="14" rx="2"></rect>
+                                                <line x1="2" y1="10" x2="22" y2="10"></line>
+                                            </svg>
+                                            <span>All major cards accepted</span>
+                                        </div>
+                                        <div class="feature-item">
+                                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <polyline points="20 6 9 17 4 12"></polyline>
+                                            </svg>
+                                            <span>Instant payment confirmation</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="payfast-logos">
+                                        <p>Accepted payment methods:</p>
+                                        <div class="payment-logos">
+                                            <span class="logo-badge">Visa</span>
+                                            <span class="logo-badge">Mastercard</span>
+                                            <span class="logo-badge">EFT</span>
+                                            <span class="logo-badge">Instant EFT</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Card Payment Form (shown when Card is selected) -->
+                            <div class="card-payment-form" id="card-payment-form" style="display: none;">
+                                <div class="card-form-box">
+                                    <h3>Card Details</h3>
+                                    
+                                    <div class="form-group">
+                                        <label for="card-number">Card Number *</label>
+                                        <input type="text" id="card-number" name="card-number" placeholder="1234 5678 9012 3456" maxlength="19">
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="card-name">Cardholder Name *</label>
+                                        <input type="text" id="card-name" name="card-name" placeholder="Name on card">
+                                    </div>
+                                    
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="card-expiry">Expiry Date *</label>
+                                            <input type="text" id="card-expiry" name="card-expiry" placeholder="MM/YY" maxlength="5">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="card-cvv">CVV *</label>
+                                            <input type="text" id="card-cvv" name="card-cvv" placeholder="123" maxlength="4">
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="card-icons">
+                                        <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/Visa.svg" alt="Visa" style="height: 30px;">
+                                        <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" style="height: 30px;">
+                                        <img src="https://upload.wikimedia.org/wikipedia/commons/3/30/American_Express_logo.svg" alt="Amex" style="height: 30px;">
+                                    </div>
+                                    
+                                    <div class="security-note">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                                        </svg>
+                                        <span>Your payment information is secure and encrypted</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Banking Details (shown when EFT is selected) -->
+                            <div class="banking-details" id="banking-details" style="display: none;">
+                                <div class="banking-info-box">
+                                    <h3>Banking Details</h3>
+                                    <p class="banking-note">Please use the following banking details to make your payment:</p>
+                                    
+                                    <div class="bank-detail-item">
+                                        <label>Bank Name:</label>
+                                        <span>FNB (First National Bank)</span>
+                                    </div>
+                                    
+                                    <div class="bank-detail-item">
+                                        <label>Account Name:</label>
+                                        <span>Mellophi Fashion</span>
+                                    </div>
+                                    
+                                    <div class="bank-detail-item">
+                                        <label>Account Number:</label>
+                                        <span class="copy-text">62 XXXX XXXX XX</span>
+                                        <button type="button" class="btn-copy" onclick="copyToClipboard('62XXXXXXXXXX')">Copy</button>
+                                    </div>
+                                    
+                                    <div class="bank-detail-item">
+                                        <label>Branch Code:</label>
+                                        <span class="copy-text">250655</span>
+                                        <button type="button" class="btn-copy" onclick="copyToClipboard('250655')">Copy</button>
+                                    </div>
+                                    
+                                    <div class="bank-detail-item">
+                                        <label>Account Type:</label>
+                                        <span>Business Cheque Account</span>
+                                    </div>
+                                    
+                                    <div class="bank-detail-item">
+                                        <label>Reference:</label>
+                                        <span class="copy-text" id="payment-reference">Your Order Number</span>
+                                        <button type="button" class="btn-copy" onclick="copyReference()">Copy</button>
+                                    </div>
+                                    
+                                    <div class="banking-instructions">
+                                        <p><strong>Important Instructions:</strong></p>
+                                        <ul>
+                                            <li>Please use your order number as the payment reference</li>
+                                            <li>After making the payment, email proof of payment to: payments@mellophi.co.za</li>
+                                            <li>Your order will be processed within 24 hours of payment verification</li>
+                                            <li>Keep your payment reference for tracking purposes</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn-checkout">
+                            <span style="font-size: 1em;">Complete Order</span>
+                            <span id="btn-total" style="display: block; font-size: 1.3em; font-weight: bold; margin-top: 5px;">R 0.00</span>
+                        </button>
+                    </form>
+
+                    <div class="trust-badges">
+                        <div class="badge-item">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                            </svg>
+                            <span>Secure Checkout</span>
+                        </div>
+                        <div class="badge-item">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                                <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                            </svg>
+                            <span>Easy Returns</span>
+                        </div>
+                        <div class="badge-item">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M3 9h18v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9Z"></path>
+                                <path d="M3 9V7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2"></path>
+                            </svg>
+                            <span>Fast Delivery</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Order Summary -->
+                <div class="order-summary">
+                    <h2>Order Summary</h2>
+                    
+                    <div class="cart-items" id="cart-items">
+                        <!-- Cart items will be loaded here -->
+                    </div>
+
+                    <div class="promo-code">
+                        <input type="text" id="promo-input" placeholder="Enter promo code (WELCOME10 for first-time customers)">
+                        <button class="btn-apply-promo" id="apply-promo">Apply</button>
+                    </div>
+                    
+                    <p style="font-size: 0.85em; color: #7f8c8d; margin: 10px 0; text-align: center;">
+                        🎉 First-time customers get 10% off with code: <strong>WELCOME10</strong>
+                    </p>
+
+                    <div class="order-totals">
+                        <h3 style="margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px; font-size: 1.2em;">Payment Breakdown</h3>
+                        <div class="total-row" style="padding: 8px 0;">
+                            <span style="color: #7f8c8d;">Products Subtotal</span>
+                            <span id="subtotal" style="font-weight: 600; color: #2c3e50;">R 0.00</span>
+                        </div>
+                        <div class="total-row" style="padding: 8px 0;">
+                            <span style="color: #7f8c8d;">Shipping Cost</span>
+                            <span id="shipping-cost" style="font-weight: 600; color: #2c3e50;">R 80.00</span>
+                        </div>
+                        <div class="total-row discount-row" id="discount-row" style="display: none; color: #27ae60; padding: 8px 0; background-color: #e8f5e9; margin: 5px -10px; padding: 8px 10px; border-radius: 8px;">
+                            <span style="font-weight: 600;">💰 Discount Applied</span>
+                            <span id="discount-amount" style="font-weight: 700;">-R 0.00</span>
+                        </div>
+                        <div class="total-row total" style="font-size: 1.4em; font-weight: bold; margin-top: 15px; padding-top: 15px; border-top: 2px solid #2c3e50; background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%); margin: 15px -10px 0; padding: 15px 10px; border-radius: 10px;">
+                            <span style="color: #2c3e50;">TOTAL TO PAY</span>
+                            <span id="total" style="color: #27ae60;">R 0.00</span>
+                        </div>
+                        <p style="font-size: 0.85em; color: #7f8c8d; margin-top: 15px; text-align: center; font-style: italic;">
+                            💳 Secure checkout - Your payment is protected
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>MELLOPHI</h3>
+                    <p>Affordable luxury in nude tones</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Help</h4>
+                    <ul>
+                        <li><a href="shipping.html">Shipping Info</a></li>
+                        <li><a href="returns.html">Returns</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Mellophi Fashion. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+    <script src="js/checkout.js"></script>
+    
+    <script>
+        // Additional payment method toggle script
+        document.addEventListener('DOMContentLoaded', function() {
+            const paymentRadios = document.querySelectorAll('input[name="payment"]');
+            const bankingDetails = document.getElementById('banking-details');
+            const cardPaymentForm = document.getElementById('card-payment-form');
+            const payfastInfo = document.getElementById('payfast-info');
+            
+            console.log('Payment radios found:', paymentRadios.length);
+            console.log('Banking details:', bankingDetails);
+            console.log('Card form:', cardPaymentForm);
+            console.log('PayFast info:', payfastInfo);
+            
+            paymentRadios.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    console.log('Selected payment:', this.value);
+                    
+                    // Hide all forms
+                    if (bankingDetails) bankingDetails.style.display = 'none';
+                    if (cardPaymentForm) cardPaymentForm.style.display = 'none';
+                    if (payfastInfo) payfastInfo.style.display = 'none';
+                    
+                    // Show selected form
+                    if (this.value === 'eft' && bankingDetails) {
+                        bankingDetails.style.display = 'block';
+                        const ref = 'MELL' + Date.now().toString().slice(-8);
+                        const refEl = document.getElementById('payment-reference');
+                        if (refEl) refEl.textContent = ref;
+                    } else if (this.value === 'card' && cardPaymentForm) {
+                        cardPaymentForm.style.display = 'block';
+                    } else if (this.value === 'payfast' && payfastInfo) {
+                        payfastInfo.style.display = 'block';
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

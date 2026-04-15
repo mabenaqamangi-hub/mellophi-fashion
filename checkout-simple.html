@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - Mellophi Fashion</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        .checkout-simple {
+            max-width: 800px;
+            margin: 100px auto 50px;
+            padding: 40px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        .checkout-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 40px;
+            color: #2c3e50;
+        }
+        
+        .order-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #d4af7a;
+            padding-bottom: 10px;
+        }
+        
+        .product-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+        }
+        
+        .product-name {
+            font-size: 1.1rem;
+            color: #2c3e50;
+            font-weight: 500;
+        }
+        
+        .product-price {
+            font-size: 1.3rem;
+            color: #27ae60;
+            font-weight: 700;
+        }
+        
+        .shipping-options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .shipping-option {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .shipping-option:hover {
+            border-color: #d4af7a;
+            background: #fafafa;
+        }
+        
+        .shipping-option input[type="radio"] {
+            width: 20px;
+            height: 20px;
+            margin-right: 15px;
+            cursor: pointer;
+        }
+        
+        .shipping-option.selected {
+            border-color: #27ae60;
+            background: #e8f5e9;
+        }
+        
+        .shipping-info {
+            flex: 1;
+        }
+        
+        .shipping-name {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        
+        .shipping-time {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+        }
+        
+        .shipping-cost {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #27ae60;
+        }
+        
+        .total-section {
+            background: linear-gradient(135deg, #f5f5f5, #e8e8e8);
+            padding: 25px;
+            border-radius: 15px;
+            margin: 30px 0;
+        }
+        
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            font-size: 1.1rem;
+        }
+        
+        .total-row.final {
+            border-top: 3px solid #2c3e50;
+            margin-top: 15px;
+            padding-top: 20px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+        
+        .total-amount {
+            color: #27ae60;
+            font-size: 1.8rem;
+        }
+        
+        .payment-section {
+            opacity: 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: all 0.5s ease;
+        }
+        
+        .payment-section.show {
+            opacity: 1;
+            max-height: 1000px;
+            margin-top: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #d4af7a;
+        }
+        
+        .btn-submit {
+            width: 100%;
+            padding: 18px;
+            background: #27ae60;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.3rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-submit:hover {
+            background: #229954;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(39, 174, 96, 0.3);
+        }
+        
+        .empty-cart {
+            text-align: center;
+            padding: 60px 20px;
+        }
+        
+        .empty-cart h2 {
+            color: #7f8c8d;
+            margin: 20px 0;
+        }
+        
+        .btn-shop {
+            display: inline-block;
+            padding: 15px 40px;
+            background: #d4af7a;
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: 600;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-shop:hover {
+            background: #c19a6b;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="sticky-header">
+        <div class="container">
+            <nav class="navbar">
+                <div class="logo">
+                    <h1><a href="index.html">MELLOPHI FASHION</a></h1>
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="shop.html">Shop</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                </ul>
+                <div class="nav-icons">
+                    <button class="icon-btn" id="cart-btn">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="9" cy="21" r="1"></circle>
+                            <circle cx="20" cy="21" r="1"></circle>
+                            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                        </svg>
+                        <span class="badge" id="cart-count">0</span>
+                    </button>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <div class="checkout-simple">
+        <h1 class="checkout-title">Checkout</h1>
+        
+        <div id="checkout-content">
+            <!-- Content will be loaded by JavaScript -->
+        </div>
+    </div>
+
+    <script>
+        // Get cart from localStorage
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        let selectedShipping = 80; // Default Standard shipping
+
+        // Initialize checkout
+        document.addEventListener('DOMContentLoaded', function() {
+            loadCheckout();
+            updateCartCount();
+        });
+
+        function loadCheckout() {
+            const content = document.getElementById('checkout-content');
+            
+            if (cart.length === 0) {
+                content.innerHTML = `
+                    <div class="empty-cart">
+                        <svg width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="#d4af7a" stroke-width="1.5">
+                            <circle cx="9" cy="21" r="1"></circle>
+                            <circle cx="20" cy="21" r="1"></circle>
+                            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                        </svg>
+                        <h2>Your cart is empty</h2>
+                        <p style="color: #7f8c8d;">Start shopping to add items to your cart</p>
+                        <a href="shop.html" class="btn-shop">Start Shopping</a>
+                    </div>
+                `;
+                return;
+            }
+
+            // Calculate product subtotal
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+            // Build checkout HTML
+            let html = `
+                <!-- Products Section -->
+                <div class="order-section">
+                    <h2 class="section-title">📦 Your Order</h2>
+                    ${cart.map(item => `
+                        <div class="product-item">
+                            <div>
+                                <div class="product-name">${item.name}</div>
+                                <div style="color: #7f8c8d; font-size: 0.9rem;">Qty: ${item.quantity} | Size: ${item.size || 'N/A'}</div>
+                            </div>
+                            <div class="product-price">R ${(item.price * item.quantity).toFixed(2)}</div>
+                        </div>
+                    `).join('')}
+                </div>
+
+                <!-- Shipping Options -->
+                <div class="order-section">
+                    <h2 class="section-title">🚚 Shipping Options</h2>
+                    <div class="shipping-options">
+                        <label class="shipping-option" onclick="selectShipping(0, this)">
+                            <input type="radio" name="shipping" value="0">
+                            <div class="shipping-info">
+                                <div class="shipping-name">Store Pickup</div>
+                                <div class="shipping-time">Pick up from our store</div>
+                            </div>
+                            <div class="shipping-cost">FREE</div>
+                        </label>
+                        
+                        <label class="shipping-option selected" onclick="selectShipping(80, this)">
+                            <input type="radio" name="shipping" value="80" checked>
+                            <div class="shipping-info">
+                                <div class="shipping-name">Standard Delivery</div>
+                                <div class="shipping-time">3-5 business days</div>
+                            </div>
+                            <div class="shipping-cost">R 80.00</div>
+                        </label>
+                        
+                        <label class="shipping-option" onclick="selectShipping(150, this)">
+                            <input type="radio" name="shipping" value="150">
+                            <div class="shipping-info">
+                                <div class="shipping-name">Express Delivery</div>
+                                <div class="shipping-time">1-2 business days</div>
+                            </div>
+                            <div class="shipping-cost">R 150.00</div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Total Section -->
+                <div class="total-section">
+                    <div class="total-row">
+                        <span>Products Subtotal</span>
+                        <span id="subtotal-amount">R ${subtotal.toFixed(2)}</span>
+                    </div>
+                    <div class="total-row">
+                        <span>Shipping Fee</span>
+                        <span id="shipping-amount">R 80.00</span>
+                    </div>
+                    <div class="total-row final">
+                        <span>TOTAL TO PAY</span>
+                        <span class="total-amount" id="total-amount">R ${(subtotal + 80).toFixed(2)}</span>
+                    </div>
+                </div>
+
+                <!-- Payment Section (shown after total is displayed) -->
+                <div class="payment-section show">
+                    <div class="order-section">
+                        <h2 class="section-title">💳 Payment Details</h2>
+                        
+                        <form id="payment-form" onsubmit="handleSubmit(event)">
+                            <div class="form-group">
+                                <label for="name">Full Name *</label>
+                                <input type="text" id="name" required placeholder="Enter your full name">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="email">Email Address *</label>
+                                <input type="email" id="email" required placeholder="your@email.com">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="phone">Phone Number *</label>
+                                <input type="tel" id="phone" required placeholder="0XX XXX XXXX">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="address">Delivery Address *</label>
+                                <input type="text" id="address" required placeholder="Street address">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="payment-method">Payment Method *</label>
+                                <select id="payment-method" required>
+                                    <option value="">Select payment method</option>
+                                    <option value="card">Credit/Debit Card</option>
+                                    <option value="eft">Bank Transfer (EFT)</option>
+                                    <option value="paygate">PayGate</option>
+                                </select>
+                            </div>
+                            
+                            <button type="submit" class="btn-submit">
+                                Complete Order - <span id="btn-total">R ${(subtotal + 80).toFixed(2)}</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            `;
+
+            content.innerHTML = html;
+        }
+
+        function selectShipping(cost, element) {
+            // Update selected shipping cost
+            selectedShipping = cost;
+            
+            // Update visual selection
+            document.querySelectorAll('.shipping-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            element.classList.add('selected');
+            
+            // Update totals
+            updateTotals();
+        }
+
+        function updateTotals() {
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const total = subtotal + selectedShipping;
+            
+            // Update shipping display
+            const shippingEl = document.getElementById('shipping-amount');
+            if (selectedShipping === 0) {
+                shippingEl.textContent = 'FREE';
+                shippingEl.style.color = '#27ae60';
+                shippingEl.style.fontWeight = '700';
+            } else {
+                shippingEl.textContent = `R ${selectedShipping.toFixed(2)}`;
+                shippingEl.style.color = '';
+                shippingEl.style.fontWeight = '';
+            }
+            
+            // Update total
+            document.getElementById('total-amount').textContent = `R ${total.toFixed(2)}`;
+            
+            // Update button total
+            const btnTotal = document.getElementById('btn-total');
+            if (btnTotal) {
+                btnTotal.textContent = `R ${total.toFixed(2)}`;
+            }
+        }
+
+        function handleSubmit(event) {
+            event.preventDefault();
+            
+            const orderData = {
+                cart: cart,
+                shipping: selectedShipping,
+                subtotal: cart.reduce((sum, item) => sum + (item.price * item.quantity), 0),
+                total: cart.reduce((sum, item) => sum + (item.price * item.quantity), 0) + selectedShipping,
+                customer: {
+                    name: document.getElementById('name').value,
+                    email: document.getElementById('email').value,
+                    phone: document.getElementById('phone').value,
+                    address: document.getElementById('address').value,
+                    paymentMethod: document.getElementById('payment-method').value
+                },
+                orderDate: new Date().toISOString()
+            };
+            
+            console.log('Order submitted:', orderData);
+            
+            alert(`✅ Order Confirmed!\n\nTotal: R ${orderData.total.toFixed(2)}\n\nThank you for your order!`);
+            
+            // Clear cart
+            localStorage.removeItem('cart');
+            
+            // Redirect to success page or home
+            window.location.href = 'index.html';
+        }
+
+        function updateCartCount() {
+            const cartCount = document.getElementById('cart-count');
+            if (cartCount) {
+                const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+                cartCount.textContent = totalItems;
+            }
+        }
+    </script>
+
+    <script src="js/main.js"></script>
+</body>
+</html>
