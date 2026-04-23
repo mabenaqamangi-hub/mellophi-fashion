@@ -285,11 +285,75 @@ let products = [
 ];
 
 let filteredProducts = [...products];
-let currentPage = 1;
-const productsPerPage = 12;
+const initialVisibleProducts = Number.MAX_SAFE_INTEGER;
+let visibleProductsCount = initialVisibleProducts;
+
+function resolveShopImagePath(imagePath) {
+    if (!imagePath) return 'images/PRODUCTS/A1 front.png';
+    if (imagePath.startsWith('http') || imagePath.startsWith('data:')) return imagePath;
+    if (imagePath.startsWith('../')) return imagePath.substring(3);
+    if (imagePath.startsWith('/')) return imagePath.substring(1);
+
+    const fileName = imagePath.split('/').pop().replace(/^\d+-/, '');
+    if (imagePath.startsWith('images/')) {
+        return `images/PRODUCTS/${fileName}`;
+    }
+    return `images/PRODUCTS/${fileName}`;
+}
+
+function normalizeShopProduct(product) {
+    const image = resolveShopImagePath(product.image || (Array.isArray(product.images) && product.images.length > 0 ? product.images[0] : 'images/PRODUCTS/A1 front.png'));
+    return {
+        ...product,
+        id: product.id || product.productId,
+        name: product.name || product.title || 'Product',
+        title: product.title || product.name || 'Product',
+        image,
+        images: Array.isArray(product.images) && product.images.length > 0
+            ? product.images.map(resolveShopImagePath)
+            : [image],
+        price: parseFloat(product.price) || 0,
+        category: product.category || 'dresses',
+        stock: product.stock !== undefined ? product.stock : 0,
+        sizes: product.sizes || ['S', 'M', 'L'],
+        colors: product.colors || []
+    };
+}
+
+function loadProductsFromLocalStorage() {
+    const stored = localStorage.getItem('mellophiProducts');
+    if (!stored) return false;
+    try {
+        const localProducts = JSON.parse(stored);
+        if (!Array.isArray(localProducts) || localProducts.length === 0) return false;
+        products = localProducts.map(normalizeShopProduct);
+        filteredProducts = [...products];
+        removeFallbackWarning();
+        return true;
+    } catch (error) {
+        console.log('Failed to parse local products:', error.message);
+        return false;
+    }
+}
+
+function showFallbackWarning(message) {
+    // Intentionally no-op: fallback still works without showing a banner.
+    return;
+}
+
+function removeFallbackWarning() {
+    // Intentionally no-op.
+    return;
+}
 
 // Load products from API
 async function loadProductsFromAPI() {
+    // Use admin dashboard products first so shop and dashboard stay in sync.
+    if (loadProductsFromLocalStorage()) {
+        console.log('✅ Loaded', products.length, 'products from localStorage');
+        return;
+    }
+
     try {
         const response = await fetch(`${shopApiUrl}/products`);
         
@@ -301,7 +365,13 @@ async function loadProductsFromAPI() {
         
         if (result.success && result.data && result.data.length > 0) {
             // Convert API products to shop format
-            const backendBaseURL = shopApiUrl.replace('/api', '');
+            // Strip timestamp prefix from filename and map to local images folder
+            function resolveImg(img) {
+                if (!img) return 'images/PRODUCTS/A1 front.png';
+                if (img.startsWith('http')) return img;
+                const filename = img.split('/').pop();
+                return 'images/PRODUCTS/' + filename.replace(/^\d+-/, '');
+            }
             const apiProducts = result.data.map(p => ({
                 id: p.productId || p.id,
                 title: p.name,
@@ -314,8 +384,9 @@ async function loadProductsFromAPI() {
                         : p.category + 's',
                 sub: 'casual',
                 images: p.images && p.images.length > 0 
-                    ? p.images.map(img => img.startsWith('http') ? img : `${backendBaseURL}/${img}`)
+                    ? p.images.map(resolveImg)
                     : ['images/PRODUCTS/A1 front.png'],
+                image: p.images && p.images.length > 0 ? resolveImg(p.images[0]) : 'images/PRODUCTS/A1 front.png',
                 sizes: p.sizes || ['S', 'M', 'L'],
                 colors: p.colors || [],
                 stock: p.stock !== undefined ? p.stock : 12,
@@ -327,8 +398,9 @@ async function loadProductsFromAPI() {
             
             // Only use API products if they have valid data
             if (apiProducts.length > 0) {
-                products = apiProducts;
+                products = apiProducts.map(normalizeShopProduct);
                 filteredProducts = [...products];
+                localStorage.setItem('mellophiProducts', JSON.stringify(products));
                 console.log('✅ Loaded', products.length, 'products from API');
                 removeFallbackWarning();
                 return;
@@ -367,6 +439,27 @@ function initShop() {
     initPriceSlider();
     initLoadMore();
     initMobileFilters();
+    initLocalStorageProductSync();
+}
+
+function initLocalStorageProductSync() {
+    // Sync when products are changed from dashboard in another tab/window.
+    window.addEventListener('storage', function(event) {
+        if (event.key === 'mellophiProducts') {
+            if (loadProductsFromLocalStorage()) {
+                visibleProductsCount = initialVisibleProducts;
+                applyFilters();
+            }
+        }
+    });
+
+    // Sync when user returns to this tab after editing products elsewhere.
+    window.addEventListener('focus', function() {
+        if (loadProductsFromLocalStorage()) {
+            visibleProductsCount = initialVisibleProducts;
+            applyFilters();
+        }
+    });
 }
 
 // Render products
@@ -378,9 +471,8 @@ function renderProducts() {
     
     grid.innerHTML = '';
     
-    const startIndex = 0;
-    const endIndex = currentPage * productsPerPage;
-    const displayProducts = filteredProducts.slice(startIndex, endIndex);
+    const endIndex = Math.min(visibleProductsCount, filteredProducts.length);
+    const displayProducts = filteredProducts.slice(0, endIndex);
     
     displayProducts.forEach(product => {
         const productCard = createProductCard(product);
@@ -395,7 +487,7 @@ function renderProducts() {
     // Show/hide load more button
     const loadMoreBtn = document.getElementById('load-more-btn');
     if (loadMoreBtn) {
-        if (endIndex >= filteredProducts.length) {
+        if (visibleProductsCount >= filteredProducts.length) {
             loadMoreBtn.style.display = 'none';
         } else {
             loadMoreBtn.style.display = 'inline-block';
@@ -414,7 +506,7 @@ function createProductCard(product) {
     card.className = 'product-card';
     card.dataset.productId = product.id;
     // Get first image
-    const productImage = product.images && product.images.length > 0 ? product.images[0] : 'images/PRODUCTS/A1 front.png';
+    const productImage = product.image || resolveShopImagePath(product.images && product.images[0]);
     const productName = product.title || product.name || 'Product';
     // Get color swatches
     const colors = getColorSwatches(product);
@@ -456,10 +548,6 @@ function addToWishlistFromCard(id, name, price, image, size, color) {
     localStorage.setItem('wishlist', JSON.stringify(wishlist));
     updateWishlistCount();
     alert('Added to wishlist!');
-}
-    `;
-    
-    return card;
 }
 
 function getColorSwatches(product) {
@@ -527,7 +615,48 @@ function applyFilters() {
         var priceMatch = !isNaN(maxPrice) ? (parseFloat(product.price) <= maxPrice) : true;
         return categoryMatch && colorMatch && sizeMatch && priceMatch;
     });
+
+    // Reset visible count after filter changes so load more works consistently.
+    visibleProductsCount = initialVisibleProducts;
     renderProducts();
+}
+
+function resetFilters() {
+    // Reset category to "all"
+    const categoryInputs = document.querySelectorAll('input[name="category"]');
+    categoryInputs.forEach(function(input) {
+        input.checked = input.value === 'all';
+    });
+
+    // Clear color and size selections
+    document.querySelectorAll('input[name="color"], input[name="size"]').forEach(function(input) {
+        input.checked = false;
+    });
+
+    // Reset price slider display
+    const priceSlider = document.getElementById('price-slider');
+    const maxPriceDisplay = document.getElementById('max-price');
+    if (priceSlider) {
+        priceSlider.value = priceSlider.max || 1000;
+    }
+    if (maxPriceDisplay && priceSlider) {
+        maxPriceDisplay.textContent = `R ${priceSlider.value}`;
+    }
+
+    // Reset mobile category state if present
+    const catBtns = document.querySelectorAll('.mobile-category-bar .cat-btn');
+    if (catBtns.length > 0) {
+        catBtns.forEach(function(btn) { btn.classList.remove('active'); });
+        const allBtn = document.querySelector('.mobile-category-bar .cat-btn[data-category="all"]');
+        if (allBtn) {
+            allBtn.classList.add('active');
+        } else {
+            catBtns[0].classList.add('active');
+        }
+    }
+
+    visibleProductsCount = initialVisibleProducts;
+    applyFilters();
 }
 
 // Initialize price slider
@@ -548,15 +677,20 @@ function initPriceSlider() {
 function initLoadMore() {
     const loadMoreBtn = document.getElementById('load-more-btn');
     if (!loadMoreBtn) return;
+
+    // All products are shown by default, so load more is not needed.
+    loadMoreBtn.style.display = 'none';
+    return;
     
     loadMoreBtn.addEventListener('click', function() {
-        currentPage++;
+        const previousVisibleCount = visibleProductsCount;
+        visibleProductsCount += initialVisibleProducts;
         renderProducts();
         
         // Scroll to new products
         const grid = document.getElementById('products-grid');
         if (grid) {
-            const newProductIndex = (currentPage - 1) * productsPerPage;
+            const newProductIndex = previousVisibleCount;
             const productCards = grid.children;
             if (productCards[newProductIndex]) {
                 productCards[newProductIndex].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -629,13 +763,7 @@ function showQuickViewModal(product, backendUrl) {
     const modal = document.getElementById('quickViewModal');
     
     // Update product image
-    const imagePath = product.images && product.images.length > 0 
-        ? (product.images[0].startsWith('http') 
-            ? product.images[0] 
-            : product.images[0].startsWith('images/') 
-                ? `${backendUrl}/${product.images[0]}`
-                : `images/PRODUCTS/${product.images[0]}`)
-        : 'images/PRODUCTS/A1 front.png';
+    const imagePath = product.image || resolveShopImagePath(product.images && product.images[0]);
     
     document.getElementById('qv-product-image').src = imagePath;
     document.getElementById('qv-product-image').alt = product.name || product.title;
@@ -849,7 +977,7 @@ function addToCartFromQV() {
         size: selectedQVSize,
         color: selectedQVColor || 'Default',
         quantity: quantity,
-        image: currentQuickViewProduct.images ? currentQuickViewProduct.images[0] : 'images/PRODUCTS/A1 front.png'
+        image: currentQuickViewProduct.image || resolveShopImagePath(currentQuickViewProduct.images && currentQuickViewProduct.images[0])
     };
     
     // Add to cart (using localStorage)
