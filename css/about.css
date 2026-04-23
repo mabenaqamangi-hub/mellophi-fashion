@@ -1,3 +1,65 @@
+/* === ABOUT PAGE POLISH === */
+.about-main-title {
+    font-size: 2.8rem;
+    font-family: 'Cormorant Garamond', serif;
+    color: var(--text-primary);
+    margin-bottom: 1.2rem;
+    letter-spacing: 1px;
+}
+.about-divider {
+    border: none;
+    border-top: 2px solid #e8d5c4;
+    margin: 3rem 0 2.5rem 0;
+}
+.about-quote {
+    font-style: italic;
+    color: var(--text-secondary);
+    background: #f9f6f3;
+    border-left: 4px solid #d4a574;
+    padding: 1.2rem 2rem;
+    margin: 2rem 0 2rem 0;
+    font-size: 1.1rem;
+    border-radius: 8px;
+}
+.about-quote span {
+    display: block;
+    margin-top: 0.7rem;
+    font-size: 0.98rem;
+    color: var(--text-light);
+    font-style: normal;
+    text-align: right;
+}
+/* === VISION & MISSION SECTION === */
+.vision-mission-section {
+    background: #f9f6f3;
+    padding: 4rem 0;
+}
+.vision-mission-section .container {
+    max-width: 1100px;
+    margin: 0 auto;
+}
+.vision-mission-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: flex-start;
+}
+.vision-block h2, .mission-block h2 {
+    color: #d4a574;
+    margin-bottom: 1rem;
+    font-size: 2rem;
+}
+.vision-block p, .mission-block p {
+    font-size: 1.08rem;
+    color: #333;
+    line-height: 1.7;
+}
+@media (max-width: 900px) {
+    .vision-mission-grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+}
 /* ========================================
    ABOUT PAGE STYLES
    ======================================== */
