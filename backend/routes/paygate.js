@@ -7,12 +7,12 @@ const logger = require('../utils/logger');
 require('dotenv').config();
 
 // PayGate credentials from environment variables
-const PAYGATE_ID = process.env.PAYGATE_ID || '12975260';
-const PAYGATE_SECRET = process.env.PAYGATE_SECRET || 'lnyyjkfuaiwyr';
+const PAYGATE_ID = process.env.PAYGATE_ID;
+const PAYGATE_SECRET = process.env.PAYGATE_SECRET;
 const PAYGATE_INITIATE_URL = process.env.PAYGATE_INITIATE_URL || 'https://secure.paygate.co.za/payweb3/initiate.trans';
 const PAYGATE_PROCESS_URL = process.env.PAYGATE_PROCESS_URL || 'https://secure.paygate.co.za/payweb3/process.trans';
-const PAYGATE_RETURN_URL = process.env.PAYGATE_RETURN_URL || 'http://localhost:5500/payment-return.html';
-const PAYGATE_NOTIFY_URL = process.env.PAYGATE_NOTIFY_URL || 'http://localhost:5000/api/paygate/notify';
+const PAYGATE_RETURN_URL = process.env.PAYGATE_RETURN_URL || 'https://mabenaqamangi-hub.github.io/mellophi-fashion/payment-return.html';
+const PAYGATE_NOTIFY_URL = process.env.PAYGATE_NOTIFY_URL;
 
 // Validate PayGate configuration
 if (!PAYGATE_ID || !PAYGATE_SECRET) {
@@ -24,6 +24,9 @@ if (!PAYGATE_ID || !PAYGATE_SECRET) {
  * Generate MD5 checksum for PayGate
  */
 function generateChecksum(data) {
+    if (!PAYGATE_SECRET) {
+        throw new Error('PAYGATE_SECRET is not configured');
+    }
     const checksumString = Object.values(data).join('') + PAYGATE_SECRET;
     return crypto.createHash('md5').update(checksumString).digest('hex');
 }
@@ -34,6 +37,13 @@ function generateChecksum(data) {
  */
 router.post('/initiate', async (req, res) => {
     try {
+        if (!PAYGATE_ID || !PAYGATE_SECRET) {
+            return res.status(500).json({
+                success: false,
+                message: 'PayGate is not configured on the server'
+            });
+        }
+
         const { 
             amount, 
             reference, 
@@ -80,7 +90,7 @@ router.post('/initiate', async (req, res) => {
             REFERENCE: reference,
             AMOUNT: amountInCents,
             CURRENCY: 'ZAR',
-            RETURN_URL: `${process.env.FRONTEND_URL || 'http://localhost:3000'}/payment-return`,
+            RETURN_URL: PAYGATE_RETURN_URL,
             TRANSACTION_DATE: new Date().toISOString().slice(0, 19).replace('T', ' '),
             LOCALE: 'en-za',
             COUNTRY: 'ZAF',
@@ -92,6 +102,10 @@ router.post('/initiate', async (req, res) => {
 
         // Generate checksum
         paygateData.CHECKSUM = generateChecksum(paygateData);
+
+        if (PAYGATE_NOTIFY_URL) {
+            paygateData.NOTIFY_URL = PAYGATE_NOTIFY_URL;
+        }
 
         // Send request to PayGate
         const fetch = (await import('node-fetch')).default;
