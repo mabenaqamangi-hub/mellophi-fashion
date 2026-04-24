@@ -197,9 +197,13 @@
     <script src="js/config.js"></script>
     <script src="js/main.js"></script>
     <script>
-        const API_URL = window.API_URL || 'https://mellophi-fashion.onrender.com/api';
+        let API_URL = window.API_URL || 'https://mellophi-fashion.onrender.com/api';
 
         document.addEventListener('DOMContentLoaded', async function() {
+            if (window.getApiUrl) {
+                API_URL = await window.getApiUrl();
+            }
+
             // Get URL parameters
             const urlParams = new URLSearchParams(window.location.search);
             const payRequestId = urlParams.get('PAY_REQUEST_ID');

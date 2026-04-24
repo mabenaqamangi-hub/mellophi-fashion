@@ -645,7 +645,9 @@ function processPayment(orderData) {
 
 async function processPayGatePayment(orderData, submitBtn, originalText) {
     try {
-        const checkoutJsApiUrl = window.API_URL || 'http://localhost:5000/api';
+        const checkoutJsApiUrl = window.getApiUrl
+            ? await window.getApiUrl()
+            : (window.API_URL || 'http://localhost:5000/api');
         
         // Generate unique reference
         const reference = 'MELL' + Date.now();
