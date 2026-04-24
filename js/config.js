@@ -17,7 +17,7 @@
 
 // 🚨 UPDATE THIS BEFORE DEPLOYING TO PRODUCTION 🚨
 // Replace with your actual backend URL after deployment
-const PRODUCTION_API_URL = 'https://mellophi-api.onrender.com/api';
+const PRODUCTION_API_URL = 'https://mellophi-fashion.onrender.com/api';
 
 // Automatically detect environment
 const isDevelopment = window.location.hostname === 'localhost' || 

@@ -31,7 +31,7 @@ services:
       
       # Frontend URL - Update with your actual domain
       - key: FRONTEND_URL
-        value: https://mellophi-fashion.onrender.com
+        value: https://mabenaqamangi-hub.github.io/mellophi-fashion
       
       # JWT Secret - Generate and set in dashboard
       - key: JWT_SECRET
@@ -56,10 +56,10 @@ services:
       
       # PayGate URLs - Update after deployment
       - key: PAYGATE_RETURN_URL
-        value: https://mellophi-fashion.onrender.com/payment-return.html
+        value: https://mabenaqamangi-hub.github.io/mellophi-fashion/payment-return.html
       
       - key: PAYGATE_NOTIFY_URL
-        value: https://mellophi-api.onrender.com/api/paygate/notify
+        value: https://mellophi-fashion.onrender.com/api/paygate/notify
       
       # File Upload
       - key: MAX_FILE_SIZE
