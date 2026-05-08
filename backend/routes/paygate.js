@@ -100,12 +100,12 @@ router.post('/initiate', async (req, res) => {
             ...(lastName && { LAST_NAME: lastName })
         };
 
-        // Generate checksum
-        paygateData.CHECKSUM = generateChecksum(paygateData);
-
         if (PAYGATE_NOTIFY_URL) {
             paygateData.NOTIFY_URL = PAYGATE_NOTIFY_URL;
         }
+
+        // Generate checksum
+        paygateData.CHECKSUM = generateChecksum(paygateData);
 
         // Send request to PayGate
         const fetch = (await import('node-fetch')).default;
@@ -130,32 +130,51 @@ router.post('/initiate', async (req, res) => {
             paygateResponse[key] = decodeURIComponent(value || '');
         });
 
-        // Verify checksum
-        const returnedChecksum = paygateResponse.CHECKSUM;
-        delete paygateResponse.CHECKSUM;
-        const calculatedChecksum = generateChecksum(paygateResponse);
-
-        if (returnedChecksum !== calculatedChecksum) {
-            await order.update({ 
+        if (paygateResponse.ERROR || paygateResponse.RESULT_CODE) {
+            await order.update({
                 paymentStatus: 'failed',
-                status: 'cancelled'
+                orderStatus: 'cancelled'
             });
-            return res.status(400).json({ 
-                success: false, 
-                message: 'Invalid checksum from PayGate' 
+
+            return res.status(400).json({
+                success: false,
+                message: 'PayGate rejected initiation request',
+                paygate: {
+                    resultCode: paygateResponse.RESULT_CODE || null,
+                    error: paygateResponse.ERROR || null,
+                    raw: responseText
+                }
+            });
+        }
+
+        const payRequestId = paygateResponse.PAY_REQUEST_ID;
+        const responseChecksum = paygateResponse.CHECKSUM;
+
+        if (!payRequestId || !responseChecksum) {
+            await order.update({
+                paymentStatus: 'failed',
+                orderStatus: 'cancelled'
+            });
+
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid response from PayGate',
+                paygate: {
+                    raw: responseText
+                }
             });
         }
 
         // Update order with PayGate reference
         await order.update({ 
-            paygateId: paygateResponse.PAY_REQUEST_ID 
+            paygateId: payRequestId 
         });
 
         // Return payment URL
         res.json({
             success: true,
-            payRequestId: paygateResponse.PAY_REQUEST_ID,
-            paymentUrl: `${PAYGATE_PROCESS_URL}?PAY_REQUEST_ID=${paygateResponse.PAY_REQUEST_ID}`,
+            payRequestId: payRequestId,
+            paymentUrl: `${PAYGATE_PROCESS_URL}?PAY_REQUEST_ID=${encodeURIComponent(payRequestId)}&CHECKSUM=${encodeURIComponent(responseChecksum)}`,
             reference: reference
         });
 
@@ -209,7 +228,7 @@ router.post('/return', async (req, res) => {
             // Payment approved
             await order.update({
                 paymentStatus: 'completed',
-                status: 'processing',
+                orderStatus: 'processing',
                 transactionId: paygateReturn.TRANSACTION_ID
             });
             // Send confirmation email
@@ -222,13 +241,13 @@ router.post('/return', async (req, res) => {
             // Payment declined
             await order.update({
                 paymentStatus: 'failed',
-                status: 'cancelled'
+                orderStatus: 'cancelled'
             });
         } else {
             // Payment cancelled or other status
             await order.update({
                 paymentStatus: 'cancelled',
-                status: 'cancelled'
+                orderStatus: 'cancelled'
             });
         }
 
@@ -272,7 +291,7 @@ router.get('/status/:reference', async (req, res) => {
             success: true,
             reference: reference,
             paymentStatus: order.paymentStatus,
-            orderStatus: order.status,
+            orderStatus: order.orderStatus,
             transactionId: order.transactionId
         });
 
