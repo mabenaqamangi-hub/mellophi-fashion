@@ -17,8 +17,8 @@
 
 // Production API candidates. The app will auto-select a healthy one.
 const PRODUCTION_API_CANDIDATES = [
-    'https://mellophi-fashion.onrender.com/api',
-    'https://mellophi-fashion-api.onrender.com/api'
+    'https://mellophi-fashion-api.onrender.com/api',
+    'https://mellophi-fashion.onrender.com/api'
 ];
 
 const PRODUCTION_API_URL = PRODUCTION_API_CANDIDATES[0];
