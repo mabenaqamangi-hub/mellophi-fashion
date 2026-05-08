@@ -635,14 +635,21 @@
             initializeCardFormatting();
         });
 
-        function toggleCardFields() {
+        function togglePaymentFields() {
             const cardFields = document.getElementById('card-payment-fields');
+            const eftDetails = document.getElementById('eft-details');
             const paymentMethod = document.querySelector('input[name="payment-method"]:checked').value;
             
             if (paymentMethod === 'card') {
                 cardFields.style.display = 'block';
-            } else {
+                eftDetails.style.display = 'none';
+            } else if (paymentMethod === 'eft') {
                 cardFields.style.display = 'none';
+                eftDetails.style.display = 'block';
+            } else {
+                // PayFast Online
+                cardFields.style.display = 'none';
+                eftDetails.style.display = 'none';
             }
         }
 
@@ -826,7 +833,7 @@
                                         <label>Payment Method</label>
                                         <div class="payment-methods">
                                             <label class="payment-method-option">
-                                                <input type="radio" name="payment-method" value="payfast" checked onchange="toggleCardFields()">
+                                                <input type="radio" name="payment-method" value="payfast" checked onchange="togglePaymentFields()">
                                                 <div class="payment-method-card">
                                                     <div class="payment-icon">🌐</div>
                                                     <div class="payment-info">
@@ -836,7 +843,17 @@
                                                 </div>
                                             </label>
                                             <label class="payment-method-option">
-                                                <input type="radio" name="payment-method" value="eft" onchange="toggleCardFields()">
+                                                <input type="radio" name="payment-method" value="card" onchange="togglePaymentFields()">
+                                                <div class="payment-method-card">
+                                                    <div class="payment-icon">💳</div>
+                                                    <div class="payment-info">
+                                                        <div class="payment-name">Card Payment</div>
+                                                        <div class="payment-desc">Debit or credit card</div>
+                                                    </div>
+                                                </div>
+                                            </label>
+                                            <label class="payment-method-option">
+                                                <input type="radio" name="payment-method" value="eft" onchange="togglePaymentFields()">
                                                 <div class="payment-method-card">
                                                     <div class="payment-icon">🏦</div>
                                                     <div class="payment-info">
