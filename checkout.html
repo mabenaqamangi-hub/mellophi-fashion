@@ -826,12 +826,12 @@
                                         <label>Payment Method</label>
                                         <div class="payment-methods">
                                             <label class="payment-method-option">
-                                                <input type="radio" name="payment-method" value="card" checked onchange="toggleCardFields()">
+                                                <input type="radio" name="payment-method" value="payfast" checked onchange="toggleCardFields()">
                                                 <div class="payment-method-card">
-                                                    <div class="payment-icon">💳</div>
+                                                    <div class="payment-icon">🌐</div>
                                                     <div class="payment-info">
-                                                        <div class="payment-name">Card Payment</div>
-                                                        <div class="payment-desc">Credit or Debit Card</div>
+                                                        <div class="payment-name">PayFast Online</div>
+                                                        <div class="payment-desc">Secure online payment</div>
                                                     </div>
                                                 </div>
                                             </label>
@@ -849,26 +849,26 @@
                                     </div>
                                     
                                     <!-- Card Payment Fields -->
-                                    <div id="card-payment-fields" style="display: block;">
+                                    <div id="card-payment-fields" style="display: none;">
                                         <div class="form-group">
                                             <label for="cardholder-name">Cardholder Name *</label>
-                                            <input type="text" id="cardholder-name" placeholder="Name as it appears on card" required>
+                                            <input type="text" id="cardholder-name" placeholder="Name as it appears on card">
                                         </div>
                                         
                                         <div class="form-group">
                                             <label for="card-number">Card Number *</label>
-                                            <input type="text" id="card-number" placeholder="1234 5678 9012 3456" maxlength="19" required inputmode="numeric">
+                                            <input type="text" id="card-number" placeholder="1234 5678 9012 3456" maxlength="19" inputmode="numeric">
                                         </div>
                                         
                                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
                                             <div class="form-group">
                                                 <label for="expiry-date">Expiry Date *</label>
-                                                <input type="text" id="expiry-date" placeholder="MM/YY" maxlength="5" required inputmode="numeric">
+                                                <input type="text" id="expiry-date" placeholder="MM/YY" maxlength="5" inputmode="numeric">
                                             </div>
                                             
                                             <div class="form-group">
                                                 <label for="cvv">CVV *</label>
-                                                <input type="text" id="cvv" placeholder="123" maxlength="4" required inputmode="numeric">
+                                                <input type="text" id="cvv" placeholder="123" maxlength="4" inputmode="numeric">
                                             </div>
                                         </div>
                                     </div>
