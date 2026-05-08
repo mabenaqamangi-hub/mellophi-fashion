@@ -32,6 +32,38 @@ function generateChecksum(data) {
 }
 
 /**
+ * Generate checksum for PayWeb3 initiate request using documented field order.
+ */
+function generateInitiateChecksum(data) {
+    const orderedFields = [
+        'PAYGATE_ID',
+        'REFERENCE',
+        'AMOUNT',
+        'CURRENCY',
+        'RETURN_URL',
+        'TRANSACTION_DATE',
+        'LOCALE',
+        'COUNTRY',
+        'EMAIL',
+        'PAY_METHOD',
+        'PAY_METHOD_DETAIL',
+        'NOTIFY_URL',
+        'USER1',
+        'USER2',
+        'USER3',
+        'VAULT',
+        'VAULT_ID'
+    ];
+
+    const checksumString = orderedFields
+        .filter((field) => data[field] !== undefined && data[field] !== null && data[field] !== '')
+        .map((field) => String(data[field]))
+        .join('') + PAYGATE_SECRET;
+
+    return crypto.createHash('md5').update(checksumString).digest('hex');
+}
+
+/**
  * Initiate PayGate payment
  * POST /api/paygate/initiate
  */
@@ -94,10 +126,7 @@ router.post('/initiate', async (req, res) => {
             TRANSACTION_DATE: new Date().toISOString().slice(0, 19).replace('T', ' '),
             LOCALE: 'en-za',
             COUNTRY: 'ZAF',
-            EMAIL: email,
-            // Optional fields
-            ...(firstName && { FIRST_NAME: firstName }),
-            ...(lastName && { LAST_NAME: lastName })
+            EMAIL: email
         };
 
         if (PAYGATE_NOTIFY_URL) {
@@ -105,7 +134,7 @@ router.post('/initiate', async (req, res) => {
         }
 
         // Generate checksum
-        paygateData.CHECKSUM = generateChecksum(paygateData);
+        paygateData.CHECKSUM = generateInitiateChecksum(paygateData);
 
         // Send request to PayGate
         const fetch = (await import('node-fetch')).default;
