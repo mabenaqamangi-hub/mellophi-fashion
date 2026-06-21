@@ -18,6 +18,7 @@ const PAYGATE_PROCESS_URL = process.env.PAYGATE_PROCESS_URL || (PAYGATE_TEST_MOD
 const PAYGATE_RETURN_URL = process.env.PAYGATE_RETURN_URL || 'https://mabenaqamangi-hub.github.io/mellophi-fashion/payment-return.html';
 const PAYGATE_CANCEL_URL = process.env.PAYGATE_CANCEL_URL || PAYGATE_RETURN_URL;
 const PAYGATE_NOTIFY_URL = process.env.PAYGATE_NOTIFY_URL || '';
+const fallbackOrders = new Map();
 
 if (!PAYGATE_ID || !PAYGATE_SECRET) {
     if (!PAYGATE_TEST_MODE) {
@@ -53,7 +54,7 @@ async function ensureDatabaseForPayments() {
         logger.error('Payment database unavailable', {
             message: error.message
         });
-        throw new Error('Payment service database unavailable');
+        return false;
     }
 }
 
@@ -135,7 +136,7 @@ async function applyOrderPaymentUpdate(order, mappedStatus, transactionId) {
 }
 
 async function processPaygateUpdate(payload, source = 'unknown') {
-    await ensureDatabaseForPayments();
+    const databaseAvailable = await ensureDatabaseForPayments();
 
     const reference = payload.m_payment_id || payload.REFERENCE;
     if (!reference) {
@@ -166,15 +167,29 @@ async function processPaygateUpdate(payload, source = 'unknown') {
         }
     }
 
-    const order = await Order.findOne({ where: { orderNumber: reference } });
-    if (!order) {
-        throw new Error(`Order not found: ${reference}`);
-    }
-
     const mappedStatus = mapGatewayStatus(payload);
     const transactionId = payload.pf_payment_id || payload.TRANSACTION_ID || null;
 
-    await applyOrderPaymentUpdate(order, mappedStatus, transactionId);
+    if (databaseAvailable) {
+        const order = await Order.findOne({ where: { orderNumber: reference } });
+        if (!order) {
+            throw new Error(`Order not found: ${reference}`);
+        }
+        await applyOrderPaymentUpdate(order, mappedStatus, transactionId);
+    } else {
+        const current = fallbackOrders.get(reference) || {
+            reference,
+            paymentStatus: 'pending',
+            orderStatus: 'pending',
+            transactionId: null,
+            updatedAt: new Date().toISOString()
+        };
+        current.paymentStatus = mappedStatus;
+        current.orderStatus = mappedStatus === 'completed' ? 'processing' : (mappedStatus === 'pending' ? 'pending' : 'cancelled');
+        current.transactionId = transactionId || current.transactionId;
+        current.updatedAt = new Date().toISOString();
+        fallbackOrders.set(reference, current);
+    }
 
     logger.info('Payment update applied', {
         source,
@@ -193,7 +208,7 @@ async function processPaygateUpdate(payload, source = 'unknown') {
 
 router.post('/initiate', async (req, res) => {
     try {
-        await ensureDatabaseForPayments();
+        const databaseAvailable = await ensureDatabaseForPayments();
 
         logger.info('Payment initiation request received', {
             mode: PAYGATE_TEST_MODE ? 'test' : 'live',
@@ -236,6 +251,9 @@ router.post('/initiate', async (req, res) => {
 
         let order = null;
         try {
+            if (!databaseAvailable) {
+                throw new Error('Database unavailable');
+            }
             order = await Order.create({
                 orderNumber: reference,
                 customerInfo: {
@@ -256,6 +274,15 @@ router.post('/initiate', async (req, res) => {
             });
         } catch (dbError) {
             console.warn('Database unavailable for order creation. Continuing with payment initiation:', dbError.message);
+            fallbackOrders.set(reference, {
+                reference,
+                paymentStatus: 'pending',
+                orderStatus: 'pending',
+                transactionId: null,
+                email,
+                total: Number(parseFloat(amount || 0)).toFixed(2),
+                updatedAt: new Date().toISOString()
+            });
         }
 
         if (PAYGATE_TEST_MODE) {
@@ -363,9 +390,23 @@ router.get('/status/:reference', async (req, res) => {
     try {
         const { reference } = req.params;
 
-        const order = await Order.findOne({ where: { orderNumber: reference } });
+        const databaseAvailable = await ensureDatabaseForPayments();
+        const order = databaseAvailable
+            ? await Order.findOne({ where: { orderNumber: reference } })
+            : null;
 
         if (!order) {
+            const fallback = fallbackOrders.get(reference);
+            if (fallback) {
+                return res.json({
+                    success: true,
+                    reference,
+                    paymentStatus: fallback.paymentStatus,
+                    orderStatus: fallback.orderStatus,
+                    transactionId: fallback.transactionId || null,
+                    fallback: true
+                });
+            }
             return res.status(404).json({
                 success: false,
                 message: 'Order not found'
