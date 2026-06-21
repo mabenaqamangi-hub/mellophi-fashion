@@ -184,6 +184,26 @@
             <!-- Orders Section -->
             <section id="orders" class="section">
                 <h2>Orders Management</h2>
+                <div class="orders-filters">
+                    <select id="filterOrderStatus" aria-label="Filter orders by order status">
+                        <option value="">All Order Statuses</option>
+                        <option value="pending">Pending</option>
+                        <option value="processing">Processing</option>
+                        <option value="shipped">Shipped</option>
+                        <option value="delivered">Delivered</option>
+                        <option value="cancelled">Cancelled</option>
+                    </select>
+                    <select id="filterPaymentStatus" aria-label="Filter orders by payment status">
+                        <option value="">All Payment Statuses</option>
+                        <option value="pending">Pending</option>
+                        <option value="completed">Completed</option>
+                        <option value="paid">Paid</option>
+                        <option value="failed">Failed</option>
+                        <option value="cancelled">Cancelled</option>
+                        <option value="refunded">Refunded</option>
+                    </select>
+                    <button id="refreshOrdersBtn" class="btn-secondary" type="button">Refresh Orders</button>
+                </div>
                 <table class="orders-table full-width">
                     <thead>
                         <tr>
@@ -192,7 +212,8 @@
                             <th>Email</th>
                             <th>Items</th>
                             <th>Amount</th>
-                            <th>Status</th>
+                            <th>Order Status</th>
+                            <th>Payment</th>
                             <th>Date</th>
                             <th>Action</th>
                         </tr>

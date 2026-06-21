@@ -1,13 +1,13 @@
 console.log('Server starting...');
+const path = require('path');
+const dotenv = require('dotenv');
+
+dotenv.config({ path: path.resolve(__dirname, '.env') });
 require('./utils/cloudinary');
 const express = require('express');
 const cors = require('cors');
-const dotenv = require('dotenv');
-const path = require('path');
 const sequelize = require('./config/database');
 
-// Load environment variables
-dotenv.config();
 
 // Import routes
 const productRoutes = require('./routes/products');

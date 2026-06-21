@@ -12,6 +12,7 @@ let products = [];
 let filteredProducts = [];
 let currentEditingProductId = null;
 let pendingConfirmAction = null;
+let orders = [];
 
 // DOM Elements Cache
 const sections = {
@@ -38,6 +39,7 @@ const logoutBtn = document.getElementById('logoutBtn');
 document.addEventListener('DOMContentLoaded', () => {
     loadProducts();
     setupEventListeners();
+    loadOrders();
     loadMockData();
     updateDashboard();
 });
@@ -79,6 +81,15 @@ function setupEventListeners() {
     // Search and Filter
     document.getElementById('searchProducts').addEventListener('input', filterProducts);
     document.getElementById('filterCategory').addEventListener('change', filterProducts);
+
+    // Orders filters
+    const filterOrderStatus = document.getElementById('filterOrderStatus');
+    const filterPaymentStatus = document.getElementById('filterPaymentStatus');
+    const refreshOrdersBtn = document.getElementById('refreshOrdersBtn');
+
+    if (filterOrderStatus) filterOrderStatus.addEventListener('change', loadOrders);
+    if (filterPaymentStatus) filterPaymentStatus.addEventListener('change', loadOrders);
+    if (refreshOrdersBtn) refreshOrdersBtn.addEventListener('click', loadOrders);
 
     // Logout
     logoutBtn.addEventListener('click', () => {
@@ -181,7 +192,7 @@ function saveProductsLocal() {
 }
 
 function resolveDashboardImagePath(imagePath) {
-    if (!imagePath) return '../images/PRODUCTS/A1 front.png';
+    if (!imagePath) return encodeURI('../images/PRODUCTS/A1 front.png');
     if (imagePath.startsWith('data:')) {
         return imagePath;
     }
@@ -191,31 +202,28 @@ function resolveDashboardImagePath(imagePath) {
         return fileName ? fileName.replace(/^\d+-/, '') : value;
     };
 
-    if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
-        // Keep remote CDN links unchanged, but normalize local server image URLs with timestamped names.
-        if (imagePath.includes('/images/PRODUCTS/')) {
-            return `../images/PRODUCTS/${stripTimestamp(imagePath)}`;
+    let normalizedPath = imagePath;
+    if (normalizedPath.startsWith('http://') || normalizedPath.startsWith('https://')) {
+        if (normalizedPath.includes('/images/PRODUCTS/')) {
+            normalizedPath = `../images/PRODUCTS/${stripTimestamp(normalizedPath)}`;
         }
-        return imagePath;
+    } else if (normalizedPath.startsWith('../')) {
+        normalizedPath = normalizedPath.includes('/images/PRODUCTS/')
+            ? `../images/PRODUCTS/${stripTimestamp(normalizedPath)}`
+            : normalizedPath;
+    } else if (normalizedPath.startsWith('/')) {
+        normalizedPath = normalizedPath.includes('/images/PRODUCTS/')
+            ? `../images/PRODUCTS/${stripTimestamp(normalizedPath)}`
+            : normalizedPath;
+    } else if (normalizedPath.startsWith('images/')) {
+        normalizedPath = normalizedPath.includes('images/PRODUCTS/')
+            ? `../images/PRODUCTS/${stripTimestamp(normalizedPath)}`
+            : `../${normalizedPath}`;
+    } else {
+        normalizedPath = `../images/PRODUCTS/${stripTimestamp(normalizedPath)}`;
     }
-    if (imagePath.startsWith('../')) {
-        return imagePath.includes('/images/PRODUCTS/')
-            ? `../images/PRODUCTS/${stripTimestamp(imagePath)}`
-            : imagePath;
-    }
-    if (imagePath.startsWith('/')) {
-        if (imagePath.includes('/images/PRODUCTS/')) {
-            return `../images/PRODUCTS/${stripTimestamp(imagePath)}`;
-        }
-        return imagePath;
-    }
-    if (imagePath.startsWith('images/')) {
-        if (imagePath.includes('images/PRODUCTS/')) {
-            return `../images/PRODUCTS/${stripTimestamp(imagePath)}`;
-        }
-        return `../${imagePath}`;
-    }
-    return `../images/PRODUCTS/${stripTimestamp(imagePath)}`;
+
+    return encodeURI(normalizedPath);
 }
 
 async function handleAddProduct(e) {
@@ -534,25 +542,176 @@ function updateDashboard() {
     }
 }
 
+async function loadOrders() {
+    const orderStatus = document.getElementById('filterOrderStatus')?.value || '';
+    const paymentStatus = document.getElementById('filterPaymentStatus')?.value || '';
+
+    const params = new URLSearchParams();
+    if (orderStatus) params.append('status', orderStatus);
+    if (paymentStatus) params.append('paymentStatus', paymentStatus);
+
+    try {
+        const query = params.toString();
+        const response = await fetch(`${API_URL}/orders${query ? `?${query}` : ''}`);
+        const result = await response.json();
+
+        if (!result.success || !Array.isArray(result.data)) {
+            throw new Error(result.message || 'Could not load orders');
+        }
+
+        orders = result.data;
+        renderOrdersTable(orders);
+        renderRecentOrders(orders);
+    } catch (error) {
+        console.error('Failed to load orders:', error);
+        renderOrdersTable([]);
+        renderRecentOrders([]);
+    }
+}
+
+function renderRecentOrders(orderList) {
+    const recentOrdersTable = document.getElementById('recentOrdersTable');
+    if (!recentOrdersTable) return;
+
+    if (!orderList.length) {
+        recentOrdersTable.innerHTML = `
+            <tr>
+                <td colspan="5" style="text-align:center;color:#777;padding:18px;">No orders yet.</td>
+            </tr>
+        `;
+        return;
+    }
+
+    recentOrdersTable.innerHTML = orderList.slice(0, 5).map(order => `
+        <tr>
+            <td>${order.orderNumber || '-'}</td>
+            <td>${order.customerInfo?.fullName || `${order.customerInfo?.firstName || ''} ${order.customerInfo?.lastName || ''}`.trim() || '-'}</td>
+            <td>${formatCurrency(Number(order.total || 0))}</td>
+            <td><span class="status-badge ${String(order.orderStatus || 'pending').toLowerCase()}">${order.orderStatus || 'pending'}</span></td>
+            <td>${new Date(order.createdAt).toLocaleDateString()}</td>
+        </tr>
+    `).join('');
+}
+
+function renderOrdersTable(orderList) {
+    const ordersTable = document.getElementById('ordersTable');
+    if (!ordersTable) return;
+
+    if (!orderList.length) {
+        ordersTable.innerHTML = `
+            <tr>
+                <td colspan="9" style="text-align:center;color:#777;padding:18px;">No orders found for selected filters.</td>
+            </tr>
+        `;
+        return;
+    }
+
+    ordersTable.innerHTML = orderList.map(order => {
+        const customerName = order.customerInfo?.fullName || `${order.customerInfo?.firstName || ''} ${order.customerInfo?.lastName || ''}`.trim() || '-';
+        const email = order.customerInfo?.email || '-';
+        const itemCount = Array.isArray(order.items) ? order.items.reduce((sum, item) => sum + Number(item.quantity || 0), 0) : 0;
+        const orderStatusClass = String(order.orderStatus || 'pending').toLowerCase();
+        const paymentStatusValue = String(order.paymentStatus || 'pending').toLowerCase();
+
+        return `
+            <tr>
+                <td>${order.orderNumber || '-'}</td>
+                <td>${customerName}</td>
+                <td>${email}</td>
+                <td>${itemCount}</td>
+                <td>${formatCurrency(Number(order.total || 0))}</td>
+                <td><span class="status-badge ${orderStatusClass}">${order.orderStatus || 'pending'}</span></td>
+                <td><span class="status-badge ${paymentStatusValue}">${order.paymentStatus || 'pending'}</span></td>
+                <td>${new Date(order.createdAt).toLocaleDateString()}</td>
+                <td>
+                    <button class="edit-btn" type="button" onclick="viewOrderDetails('${order.orderNumber || ''}')">View</button>
+                    <button class="edit-btn" type="button" data-sync-order="${order.orderNumber || ''}" onclick="checkPaymentStatus('${order.orderNumber || ''}')">Re-check</button>
+                </td>
+            </tr>
+        `;
+    }).join('');
+}
+
+function viewOrderDetails(orderNumber) {
+    const order = orders.find((item) => item.orderNumber === orderNumber);
+    if (!order) {
+        alert('Order not found. Refresh and try again.');
+        return;
+    }
+
+    alert(
+        `Order: ${order.orderNumber || '-'}\n` +
+        `Payment: ${order.paymentStatus || 'pending'}\n` +
+        `Order Status: ${order.orderStatus || 'pending'}\n` +
+        `Amount: ${formatCurrency(Number(order.total || 0))}`
+    );
+}
+
+async function checkPaymentStatus(orderNumber) {
+    if (!orderNumber) {
+        alert('Invalid order reference.');
+        return;
+    }
+
+    const syncButton = document.querySelector(`[data-sync-order="${orderNumber}"]`);
+    const originalButtonText = syncButton ? syncButton.textContent : '';
+    if (syncButton) {
+        syncButton.disabled = true;
+        syncButton.textContent = 'Checking...';
+    }
+
+    try {
+        const response = await fetch(`${API_URL}/paygate/status/${encodeURIComponent(orderNumber)}`);
+        const result = await response.json();
+
+        if (!result.success) {
+            throw new Error(result.message || 'Unable to check payment status');
+        }
+
+        const order = orders.find((item) => item.orderNumber === orderNumber);
+        if (order) {
+            order.paymentStatus = result.paymentStatus || order.paymentStatus;
+            order.orderStatus = result.orderStatus || order.orderStatus;
+            order.transactionId = result.transactionId || order.transactionId;
+        }
+
+        // If an admin token exists, try persisting status through admin endpoint.
+        const adminToken = localStorage.getItem('adminToken');
+        if (adminToken) {
+            await fetch(`${API_URL}/admin/orders/${encodeURIComponent(orderNumber)}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${adminToken}`
+                },
+                body: JSON.stringify({
+                    orderStatus: result.orderStatus,
+                    paymentStatus: result.paymentStatus
+                })
+            }).catch(() => {
+                // Ignore persistence errors and keep the refreshed UI state.
+            });
+        }
+
+        renderOrdersTable(orders);
+        renderRecentOrders(orders);
+        alert(`Updated: ${orderNumber}\nPayment: ${result.paymentStatus}\nOrder Status: ${result.orderStatus}`);
+    } catch (error) {
+        console.error('Payment status re-check failed:', error);
+        alert(`Failed to re-check payment: ${error.message}`);
+    } finally {
+        if (syncButton) {
+            syncButton.disabled = false;
+            syncButton.textContent = originalButtonText || 'Re-check';
+        }
+    }
+}
+
 // ===================================
 // MOCK DATA
 // ===================================
 function loadMockData() {
-    // New dashboard state: no seeded orders/customers.
-    const recentOrdersTable = document.getElementById('recentOrdersTable');
-    recentOrdersTable.innerHTML = `
-        <tr>
-            <td colspan="5" style="text-align:center;color:#777;padding:18px;">No orders yet.</td>
-        </tr>
-    `;
-
-    const ordersTable = document.getElementById('ordersTable');
-    ordersTable.innerHTML = `
-        <tr>
-            <td colspan="8" style="text-align:center;color:#777;padding:18px;">No orders yet.</td>
-        </tr>
-    `;
-
+    // Customer section remains mock/empty until customer endpoints are added.
     const customersTable = document.getElementById('customersTable');
     customersTable.innerHTML = `
         <tr>

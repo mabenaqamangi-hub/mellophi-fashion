@@ -3,11 +3,30 @@ const router = express.Router();
 const Order = require('../models/Order');
 const Product = require('../models/Product');
 const { authenticate } = require('../middleware/auth');
+const { Op } = require('sequelize');
 
 // GET /api/orders - Get all orders (Admin)
 router.get('/', async (req, res) => {
     try {
+        const { status, paymentStatus, startDate, endDate } = req.query;
+        const where = {};
+
+        if (status) {
+            where.orderStatus = status;
+        }
+
+        if (paymentStatus) {
+            where.paymentStatus = paymentStatus;
+        }
+
+        if (startDate || endDate) {
+            where.createdAt = {};
+            if (startDate) where.createdAt[Op.gte] = new Date(startDate);
+            if (endDate) where.createdAt[Op.lte] = new Date(endDate);
+        }
+
         const orders = await Order.findAll({ 
+            where,
             order: [['createdAt', 'DESC']] 
         });
 

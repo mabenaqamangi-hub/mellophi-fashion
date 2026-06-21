@@ -26,7 +26,8 @@ const PRODUCTION_API_URL = PRODUCTION_API_CANDIDATES[0];
 // Automatically detect environment
 const isDevelopment = window.location.hostname === 'localhost' || 
                      window.location.hostname === '127.0.0.1' ||
-                     window.location.hostname === '';
+                     window.location.hostname === '' ||
+                     window.location.protocol === 'file:';
 
 // Export the API URL
 const API_URL = isDevelopment

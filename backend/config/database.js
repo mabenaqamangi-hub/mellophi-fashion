@@ -1,7 +1,8 @@
 const { Sequelize } = require('sequelize');
 const dotenv = require('dotenv');
+const path = require('path');
 
-dotenv.config();
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 let sequelize;
 
@@ -13,35 +14,49 @@ console.log('   DATABASE_URL starts with:', process.env.DATABASE_URL ? process.e
 // Check if DATABASE_URL is provided (common in Heroku/Render)
 if (process.env.DATABASE_URL) {
     console.log('📊 Using DATABASE_URL for connection');
-    // Detect dialect from URL (postgres:// or mysql://)
-    const dialect = process.env.DATABASE_URL.startsWith('postgres') ? 'postgres' : 'mysql';
+    // Detect dialect from URL (postgres://, mysql://, sqlite:)
+    let dialect = 'mysql';
+    if (process.env.DATABASE_URL.startsWith('postgres')) {
+        dialect = 'postgres';
+    } else if (process.env.DATABASE_URL.startsWith('sqlite:')) {
+        dialect = 'sqlite';
+    }
     console.log('   Detected dialect:', dialect);
-    
-    sequelize = new Sequelize(process.env.DATABASE_URL, {
-        dialect: dialect,
-        logging: false, // Disable query logging in production
-        pool: {
-            max: 5,
-            min: 0,
-            acquire: 60000, // Increased timeout
-            idle: 10000
-        },
-        dialectOptions: {
-            ssl: process.env.NODE_ENV === 'production' ? {
-                require: true,
-                rejectUnauthorized: false // For cloud databases
-            } : false,
-            connectTimeout: 60000 // 60 seconds
-        },
-        retry: {
-            max: 5,
-            match: [
-                /ECONNREFUSED/,
-                /ETIMEDOUT/,
-                /EHOSTUNREACH/,
-            ]
-        }
-    });
+
+    if (dialect === 'sqlite') {
+        const sqliteStorage = process.env.DATABASE_URL.replace(/^sqlite:/, '') || './mellophi-dev.sqlite';
+        sequelize = new Sequelize({
+            dialect: 'sqlite',
+            storage: sqliteStorage,
+            logging: false
+        });
+    } else {
+        sequelize = new Sequelize(process.env.DATABASE_URL, {
+            dialect: dialect,
+            logging: false, // Disable query logging in production
+            pool: {
+                max: 5,
+                min: 0,
+                acquire: 60000, // Increased timeout
+                idle: 10000
+            },
+            dialectOptions: {
+                ssl: process.env.NODE_ENV === 'production' ? {
+                    require: true,
+                    rejectUnauthorized: false // For cloud databases
+                } : false,
+                connectTimeout: 60000 // 60 seconds
+            },
+            retry: {
+                max: 5,
+                match: [
+                    /ECONNREFUSED/,
+                    /ETIMEDOUT/,
+                    /EHOSTUNREACH/,
+                ]
+            }
+        });
+    }
 } else {
     // Use individual environment variables
     console.log('📊 Using individual DB credentials');

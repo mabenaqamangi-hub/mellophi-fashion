@@ -1,0 +1,19 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+
+# Logs and runtime files
+logs/
+backend/logs/
+*.log
+
+# Local databases
+backend/*.sqlite
+backend/*.sqlite-*
+
+# Node dependencies (backend has its own .gitignore too)
+backend/node_modules/
+
+# Local env files
+backend/.env
