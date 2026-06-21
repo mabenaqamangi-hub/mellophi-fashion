@@ -92,6 +92,7 @@ function renderCartPanel() {
         return;
     }
     container.innerHTML = cart.map(item => {
+        const price = Number(item.price) || 0;
         let imgSrc = Array.isArray(item.images) && item.images.length > 0 ? item.images[0] : (item.image || 'images/PRODUCTS/A1 front.png');
         return `
         <div style="display:flex;align-items:center;gap:15px;margin-bottom:20px;border-bottom:1px solid #eee;padding-bottom:15px;">
@@ -101,7 +102,7 @@ function renderCartPanel() {
                 ${item.size ? `<div style='font-size:0.95em;color:#666;'>Size: ${item.size}</div>` : ''}
                 ${item.color ? `<div style='font-size:0.95em;color:#666;'>Color: ${item.color}</div>` : ''}
                 <div style="font-size:0.95em;color:#666;">Quantity: ${item.quantity}</div>
-                <div style="font-size:0.95em;color:#666;">Price: R ${item.price.toFixed(2)}</div>
+                <div style="font-size:0.95em;color:#666;">Price: R ${price.toFixed(2)}</div>
             </div>
             <button onclick="removeFromCart('${item.id}','${item.size||''}','${item.color||''}')" style="background:none;border:none;color:#d9534f;font-size:1.3rem;cursor:pointer;">&times;</button>
         </div>
@@ -239,7 +240,7 @@ let products = [
    sizeGuide: {unit: "cm", measurements: [{size: "S", bust: "84-88", waist: "66-70", hips: "90-94", length: "108"}, {size: "M", bust: "88-92", waist: "70-74", hips: "94-98", length: "109"}, {size: "L", bust: "92-96", waist: "74-78", hips: "98-102", length: "110"}], notes: "Elegant fit. Professional dry clean recommended."} },
 
   {id:"C1", title:"C1 — Everyday Top", price:220, category:"tops", sub:"casual",
-   images:["images/PRODUCTS/C1 front.png","images/C1 back.png"], sizes:["S","M","L","XL"],
+   images:["images/PRODUCTS/C1 front.png","images/PRODUCTS/C1 back.png"], sizes:["S","M","L","XL"],
    fabricImages:["images/fabric_C1_1.jpg"], stock: 12, reviews: [4.5],
    sizeGuide: {unit: "cm", measurements: [{size: "S", bust: "84-88", waist: "66-70", length: "60"}, {size: "M", bust: "88-92", waist: "70-74", length: "61"}, {size: "L", bust: "92-96", waist: "74-78", length: "62"}, {size: "XL", bust: "96-100", waist: "78-82", length: "63"}], notes: "Relaxed fit. Model is 170cm wearing size M."} },
 
@@ -289,16 +290,14 @@ const initialVisibleProducts = Number.MAX_SAFE_INTEGER;
 let visibleProductsCount = initialVisibleProducts;
 
 function resolveShopImagePath(imagePath) {
-    if (!imagePath) return 'images/PRODUCTS/A1 front.png';
+    if (!imagePath) return encodeURI('images/PRODUCTS/A1 front.png');
     if (imagePath.startsWith('http') || imagePath.startsWith('data:')) return imagePath;
-    if (imagePath.startsWith('../')) return imagePath.substring(3);
-    if (imagePath.startsWith('/')) return imagePath.substring(1);
+    if (imagePath.startsWith('../')) imagePath = imagePath.substring(3);
+    if (imagePath.startsWith('/')) imagePath = imagePath.substring(1);
 
     const fileName = imagePath.split('/').pop().replace(/^\d+-/, '');
-    if (imagePath.startsWith('images/')) {
-        return `images/PRODUCTS/${fileName}`;
-    }
-    return `images/PRODUCTS/${fileName}`;
+    const normalized = `images/PRODUCTS/${fileName}`;
+    return encodeURI(normalized);
 }
 
 function normalizeShopProduct(product) {
@@ -367,10 +366,10 @@ async function loadProductsFromAPI() {
             // Convert API products to shop format
             // Strip timestamp prefix from filename and map to local images folder
             function resolveImg(img) {
-                if (!img) return 'images/PRODUCTS/A1 front.png';
+                if (!img) return encodeURI('images/PRODUCTS/A1 front.png');
                 if (img.startsWith('http')) return img;
-                const filename = img.split('/').pop();
-                return 'images/PRODUCTS/' + filename.replace(/^\d+-/, '');
+                const filename = img.split('/').pop().replace(/^\d+-/, '');
+                return encodeURI('images/PRODUCTS/' + filename);
             }
             const apiProducts = result.data.map(p => ({
                 id: p.productId || p.id,
@@ -433,13 +432,13 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function initShop() {
-    renderProducts();
     initFilters();
     initSort();
     initPriceSlider();
     initLoadMore();
     initMobileFilters();
     initLocalStorageProductSync();
+    renderProducts();
 }
 
 function initLocalStorageProductSync() {
@@ -585,6 +584,51 @@ function initFilters() {
     }
 }
 
+function initSort() {
+    const sortSelect = document.getElementById('sort-select');
+    if (!sortSelect) return;
+
+    sortSelect.addEventListener('change', function() {
+        sortProducts(this.value);
+        renderProducts();
+    });
+
+    sortProducts(sortSelect.value || 'featured');
+}
+
+function sortProducts(sortBy) {
+    if (!Array.isArray(filteredProducts)) return;
+
+    switch (sortBy) {
+        case 'price-low':
+            filteredProducts.sort((a, b) => a.price - b.price);
+            break;
+        case 'price-high':
+            filteredProducts.sort((a, b) => b.price - a.price);
+            break;
+        case 'newest':
+            filteredProducts.sort((a, b) => {
+                const aNew = a.isNewArrival ? 1 : 0;
+                const bNew = b.isNewArrival ? 1 : 0;
+                return bNew - aNew;
+            });
+            break;
+        case 'popular':
+            filteredProducts.sort((a, b) => {
+                const aRating = Array.isArray(a.reviews) && a.reviews.length > 0 ? a.reviews.reduce((sum, v) => sum + v, 0) / a.reviews.length : 0;
+                const bRating = Array.isArray(b.reviews) && b.reviews.length > 0 ? b.reviews.reduce((sum, v) => sum + v, 0) / b.reviews.length : 0;
+                return bRating - aRating;
+            });
+            break;
+        default:
+            filteredProducts.sort((a, b) => {
+                if (a.isFeatured === b.isFeatured) return 0;
+                return a.isFeatured ? -1 : 1;
+            });
+            break;
+    }
+}
+
 function applyFilters() {
     const categoryFilters = Array.from(document.querySelectorAll('input[name="category"]:checked')).map(el => el.value);
     const colorFilters = Array.from(document.querySelectorAll('input[name="color"]:checked')).map(el => el.value.toLowerCase());
@@ -618,6 +662,10 @@ function applyFilters() {
 
     // Reset visible count after filter changes so load more works consistently.
     visibleProductsCount = initialVisibleProducts;
+    const sortSelect = document.getElementById('sort-select');
+    if (sortSelect) {
+        sortProducts(sortSelect.value);
+    }
     renderProducts();
 }
 
@@ -657,6 +705,10 @@ function resetFilters() {
 
     visibleProductsCount = initialVisibleProducts;
     applyFilters();
+    const sortSelect = document.getElementById('sort-select');
+    if (sortSelect) {
+        sortProducts(sortSelect.value);
+    }
 }
 
 // Initialize price slider
@@ -826,9 +878,9 @@ function updateQuickViewSizeGuide(product) {
     const sizeGuideBtn = document.getElementById('qv-size-guide-btn');
     const sizeGuideTable = document.getElementById('qv-size-guide-table');
     
-    if (!product.sizeGuide) {
-        sizeGuideBtn.style.display = 'none';
-        sizeGuideTable.style.display = 'none';
+    if (!sizeGuideBtn || !sizeGuideTable || !product.sizeGuide) {
+        if (sizeGuideBtn) sizeGuideBtn.style.display = 'none';
+        if (sizeGuideTable) sizeGuideTable.style.display = 'none';
         return;
     }
     
@@ -886,6 +938,7 @@ function updateQuickViewSizeGuide(product) {
 function toggleSizeGuide() {
     const table = document.getElementById('qv-size-guide-table');
     const btn = document.getElementById('qv-size-guide-btn');
+    if (!table || !btn) return;
     
     if (table.style.display === 'none') {
         table.style.display = 'block';
@@ -973,7 +1026,7 @@ function addToCartFromQV() {
     const cartItem = {
         id: currentQuickViewProduct.id || currentQuickViewProduct.productId,
         name: currentQuickViewProduct.name || currentQuickViewProduct.title,
-        price: currentQuickViewProduct.price,
+        price: parseFloat(currentQuickViewProduct.price) || 0,
         size: selectedQVSize,
         color: selectedQVColor || 'Default',
         quantity: quantity,

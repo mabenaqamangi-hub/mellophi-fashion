@@ -655,6 +655,7 @@ async function processPayGatePayment(orderData, submitBtn, originalText) {
         // Prepare payment data
         const paymentData = {
             amount: orderData.total,
+            paymentMethod: orderData.customer.payment,
             reference: reference,
             email: orderData.customer.email,
             firstName: orderData.customer.firstName,

@@ -98,13 +98,59 @@ const products = [
    sizeGuide: {unit: "cm", measurements: [{size: "S", waist: "66-70", hips: "90-94", length: "75"}, {size: "M", waist: "70-74", hips: "94-98", length: "76"}, {size: "L", waist: "74-78", hips: "98-102", length: "77"}], notes: "Midi length. Model is 168cm wearing size S."}}
 ];
 
-document.addEventListener('DOMContentLoaded', function() {
-    loadProductData();
+document.addEventListener('DOMContentLoaded', async function() {
+    await loadProductData();
     initProductPage();
 });
 
+async function resolveProductApiUrl() {
+    let apiCandidate = null;
+
+    if (window.getApiUrl) {
+        try {
+            apiCandidate = await window.getApiUrl();
+        } catch (error) {
+            console.warn('Could not resolve API URL via getApiUrl():', error);
+        }
+    }
+
+    if (!apiCandidate) {
+        apiCandidate = window.API_URL || 'http://localhost:5000/api';
+    }
+
+    if (await isApiHealthy(apiCandidate)) {
+        return apiCandidate;
+    }
+
+    console.warn('API is unavailable:', apiCandidate);
+    return null;
+}
+
 // === LOAD PRODUCT DATA ===
-function loadProductData() {
+function getStoredProducts() {
+    try {
+        const stored = localStorage.getItem('mellophiProducts');
+        if (!stored) return [];
+        const parsed = JSON.parse(stored);
+        return Array.isArray(parsed) ? parsed : [];
+    } catch (error) {
+        console.warn('Failed to parse stored products:', error);
+        return [];
+    }
+}
+
+function findLocalProduct(productId) {
+    const productIdString = String(productId || '').trim();
+    if (!productIdString) return null;
+
+    let product = products.find(p => p.id === productIdString || p.productId === productIdString);
+    if (product) return product;
+
+    const storedProducts = getStoredProducts();
+    return storedProducts.find(p => p.id === productIdString || p.productId === productIdString);
+}
+
+async function loadProductData() {
     const urlParams = new URLSearchParams(window.location.search);
     const productId = urlParams.get('id');
     
@@ -115,47 +161,58 @@ function loadProductData() {
         return;
     }
     
-
     
     // Try to fetch from API first
-    const apiUrl = window.API_URL || 'http://localhost:5000/api';
+    const apiUrl = await resolveProductApiUrl();
     // URL encode the product ID to handle special characters like /
     const encodedProductId = encodeURIComponent(productId);
-    fetch(`${apiUrl}/products/${encodedProductId}`)
-        .then(response => response.json())
-        .then(result => {
-            if (result.success && result.data) {
-            
-                updateProductDisplay(result.data);
-            } else {
-                // Fallback to local array
-                const product = products.find(p => p.id === productId);
-                if (product) {
-                
-                    updateProductDisplay(product);
-                } else {
-                    console.error('Product not found:', productId);
-                    showProductNotFound();
-                }
-            }
-        })
-        .catch(error => {
-            console.error('Error fetching product:', error);
-            // Fallback to local array
-            const product = products.find(p => p.id === productId);
-            if (product) {
-            
-                updateProductDisplay(product);
-            } else {
-                console.error('Product not found:', productId);
-                showProductNotFound();
-            }
-        });
+
+    if (!apiUrl) {
+        const localProduct = findLocalProduct(productId);
+        if (localProduct) {
+            await updateProductDisplay(localProduct);
+            return;
+        }
+
+        console.error('API unavailable and local product not found:', productId);
+        showProductOfflineMessage();
+        return;
+    }
+
+    try {
+        const response = await fetch(`${apiUrl}/products/${encodedProductId}`);
+        const result = await response.json();
+
+        if (result.success && result.data) {
+            await updateProductDisplay(result.data);
+            return;
+        }
+
+        // Fallback to local array
+        const product = findLocalProduct(productId);
+        if (product) {
+            await updateProductDisplay(product);
+        } else {
+            console.error('Product not found:', productId);
+            showProductNotFound();
+        }
+    } catch (error) {
+        console.error('Error fetching product:', error);
+        // Fallback to local array
+        const product = findLocalProduct(productId);
+        if (product) {
+            await updateProductDisplay(product);
+        } else {
+            console.error('Product not found:', productId);
+            showProductNotFound();
+        }
+    }
 }
 
 // === UPDATE PRODUCT DISPLAY ===
-function updateProductDisplay(product) {
-    const backendUrl = window.API_URL ? window.API_URL.replace('/api', '') : 'http://localhost:5000';
+async function updateProductDisplay(product) {
+    const apiUrl = await resolveProductApiUrl();
+    const backendUrl = apiUrl ? apiUrl.replace(/\/api\/?$/, '') : '';
     
     // Update title and breadcrumb
     document.getElementById('product-title').textContent = product.title || product.name;
@@ -169,10 +226,10 @@ function updateProductDisplay(product) {
     const mainImage = document.getElementById('main-product-image');
     if (product.images && product.images.length > 0) {
         // Always show front image first (index 0)
-        const imagePath = product.images[0].startsWith('http') 
-            ? product.images[0] 
-            : product.images[0].startsWith('images/') 
-                ? `${backendUrl}/${product.images[0]}`
+        const imagePath = product.images[0].startsWith('http')
+            ? product.images[0]
+            : product.images[0].startsWith('images/')
+                ? (backendUrl ? `${backendUrl}/${product.images[0]}` : product.images[0])
                 : product.images[0];
         mainImage.src = imagePath;
         mainImage.alt = product.title || product.name;
@@ -192,10 +249,10 @@ function updateProductDisplay(product) {
         
         // Display all images as clickable thumbnails
         product.images.forEach((imgPath, index) => {
-            const imagePath = imgPath.startsWith('http') 
-                ? imgPath 
-                : imgPath.startsWith('images/') 
-                    ? `${backendUrl}/${imgPath}`
+            const imagePath = imgPath.startsWith('http')
+                ? imgPath
+                : imgPath.startsWith('images/')
+                    ? (backendUrl ? `${backendUrl}/${imgPath}` : imgPath)
                     : imgPath;
             
             const thumbnail = document.createElement('img');
@@ -440,6 +497,22 @@ function updateProductDisplay(product) {
     window.currentProduct = product;
 }
 
+// === SHOW PRODUCT OFFLINE MESSAGE ===
+function showProductOfflineMessage() {
+    const productSection = document.querySelector('.product-section');
+    if (productSection) {
+        productSection.innerHTML = `
+            <div class="container">
+                <div style="text-align: center; padding: 4rem 0;">
+                    <h2>Product Unavailable</h2>
+                    <p>Sorry, the product details are unavailable because the backend service is currently offline.</p>
+                    <a href="shop.html" class="btn-primary" style="display: inline-block; margin-top: 2rem;">Back to Shop</a>
+                </div>
+            </div>
+        `;
+    }
+}
+
 // === SHOW PRODUCT NOT FOUND ===
 function showProductNotFound() {
     const productSection = document.querySelector('.product-section');
@@ -517,7 +590,7 @@ function initColorSelection() {
     if (!colorBtns.length) return;
     
     colorBtns.forEach(btn => {
-        btn.addEventListener('click', function() {
+        btn.addEventListener('click', async function() {
             const selectedColor = this.dataset.color;
             const currentProduct = window.currentProduct;
             
@@ -536,7 +609,8 @@ function initColorSelection() {
             if (currentProduct && currentProduct.id) {
                 const productId = currentProduct.id;
                 const colorLower = selectedColor.toLowerCase();
-                const backendUrl = window.API_URL ? window.API_URL.replace('/api', '') : 'http://localhost:5000';
+                const apiUrl = await resolveProductApiUrl();
+                const backendUrl = apiUrl.replace(/\/api\/?$/, '') || window.location.origin;
                 
                 // Try to find color-specific images
                 // Example: A1 front.png, A1 back.png, A1 olive.jpg (for Olive color)
@@ -918,9 +992,17 @@ window.addEventListener('load', function() {
 
 // Load reviews for a product
 async function loadReviews(productId) {
-    const apiUrl = window.API_URL || 'http://localhost:5000/api';
+    const apiUrl = await resolveProductApiUrl();
     const encodedProductId = encodeURIComponent(productId);
+    const reviewListEl = document.getElementById('review-list');
     
+    if (!apiUrl) {
+        if (reviewListEl) {
+            reviewListEl.innerHTML = '<p style="padding: 2rem; text-align: center; color: #999;">Reviews are unavailable while the backend is offline.</p>';
+        }
+        return;
+    }
+
     try {
         const response = await fetch(`${apiUrl}/reviews/product/${encodedProductId}`);
         if (!response.ok) throw new Error('Failed to load reviews');
@@ -936,13 +1018,16 @@ async function loadReviews(productId) {
         }
     } catch (error) {
         console.error('Error loading reviews:', error);
-        document.getElementById('review-list').innerHTML = '<p style="padding: 2rem; text-align: center; color: #999;">No reviews yet. Be the first to review!</p>';
+        if (reviewListEl) {
+            reviewListEl.innerHTML = '<p style="padding: 2rem; text-align: center; color: #999;">No reviews yet. Be the first to review!</p>';
+        }
     }
 }
 
 // Display reviews
 function displayReviews(reviews) {
     const reviewList = document.getElementById('review-list');
+    if (!reviewList) return;
     
     if (!reviews || reviews.length === 0) {
         reviewList.innerHTML = '<p style="padding: 2rem; text-align: center; color: #999;">No reviews yet. Be the first to review!</p>';
@@ -1020,7 +1105,7 @@ if (reviewForm) {
         submitBtn.disabled = true;
         submitBtn.textContent = 'Submitting...';
         
-        const apiUrl = window.API_URL || 'http://localhost:5000/api';
+        const apiUrl = await resolveProductApiUrl();
         
         try {
             const response = await fetch(`${apiUrl}/reviews`, {
@@ -1034,7 +1119,7 @@ if (reviewForm) {
             const result = await response.json();
             
             if (response.ok) {
-                alert('âœ“ Thank you for your review!');
+                alert('✓ Thank you for your review!');
                 reviewForm.reset();
                 loadReviews(productId); // Reload reviews
             } else {

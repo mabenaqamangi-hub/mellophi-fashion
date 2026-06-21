@@ -587,6 +587,37 @@ body {
     margin-top: 20px;
 }
 
+.orders-filters {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+}
+
+.orders-filters select {
+    min-width: 220px;
+    padding: 10px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background: white;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.orders-filters .btn-secondary {
+    padding: 10px 14px;
+    border-radius: 6px;
+    border: 1px solid var(--secondary-color);
+    background: white;
+    color: var(--secondary-color);
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.orders-filters .btn-secondary:hover {
+    background: var(--secondary-color);
+    color: white;
+}
+
 .orders-table thead,
 .customers-table thead {
     background-color: var(--secondary-color);
@@ -639,6 +670,21 @@ body {
 .status-badge.cancelled {
     background-color: #f8d7da;
     color: var(--danger-color);
+}
+
+.status-badge.failed {
+    background-color: #f8d7da;
+    color: var(--danger-color);
+}
+
+.status-badge.paid {
+    background-color: #d4edda;
+    color: var(--success-color);
+}
+
+.status-badge.refunded {
+    background-color: #ece8ff;
+    color: #5b4bb7;
 }
 
 /* ===================================

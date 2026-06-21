@@ -1,6 +1,6 @@
 // backend/utils/cloudinary.js
 // Ensure dotenv is loaded before Cloudinary config
-require('dotenv').config();
+require('dotenv').config({ path: require('path').resolve(__dirname, '../.env') });
 const cloudinary = require('cloudinary').v2;
 
 cloudinary.config({

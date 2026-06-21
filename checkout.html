@@ -626,10 +626,18 @@
         cart = JSON.parse(localStorage.getItem('cart')) || [];
         let selectedShipping = 80; // Default Standard Delivery
         let selectedItems = new Set();
-        const checkoutApiUrl = window.API_URL || 'http://localhost:5000/api';
+        let checkoutApiUrl = window.API_URL || 'http://localhost:5000/api';
 
         // Initialize
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', async function() {
+            if (window.getApiUrl) {
+                try {
+                    checkoutApiUrl = await window.getApiUrl();
+                } catch (error) {
+                    console.warn('Using default API URL for checkout:', error);
+                }
+            }
+
             renderCart();
             updateCartCount();
             initializeCardFormatting();
@@ -637,19 +645,11 @@
 
         function togglePaymentFields() {
             const cardFields = document.getElementById('card-payment-fields');
-            const eftDetails = document.getElementById('eft-details');
-            const paymentMethod = document.querySelector('input[name="payment-method"]:checked').value;
+            const paymentMethod = document.querySelector('input[name="payment-method"]:checked');
+            const selectedMethod = paymentMethod ? paymentMethod.value : 'applepay';
             
-            if (paymentMethod === 'card') {
-                cardFields.style.display = 'block';
-                eftDetails.style.display = 'none';
-            } else if (paymentMethod === 'eft') {
-                cardFields.style.display = 'none';
-                eftDetails.style.display = 'block';
-            } else {
-                // PayFast Online
-                cardFields.style.display = 'none';
-                eftDetails.style.display = 'none';
+            if (cardFields) {
+                cardFields.style.display = selectedMethod === 'card' ? 'block' : 'none';
             }
         }
 
@@ -833,12 +833,12 @@
                                         <label>Payment Method</label>
                                         <div class="payment-methods">
                                             <label class="payment-method-option">
-                                                <input type="radio" name="payment-method" value="payfast" checked onchange="togglePaymentFields()">
+                                                <input type="radio" name="payment-method" value="applepay" checked onchange="togglePaymentFields()">
                                                 <div class="payment-method-card">
-                                                    <div class="payment-icon">🌐</div>
+                                                    <div class="payment-icon"></div>
                                                     <div class="payment-info">
-                                                        <div class="payment-name">PayFast Online</div>
-                                                        <div class="payment-desc">Secure online payment</div>
+                                                        <div class="payment-name">Apple Pay</div>
+                                                        <div class="payment-desc">Fast checkout with Apple Pay</div>
                                                     </div>
                                                 </div>
                                             </label>
@@ -848,17 +848,7 @@
                                                     <div class="payment-icon">💳</div>
                                                     <div class="payment-info">
                                                         <div class="payment-name">Card Payment</div>
-                                                        <div class="payment-desc">Debit or credit card</div>
-                                                    </div>
-                                                </div>
-                                            </label>
-                                            <label class="payment-method-option">
-                                                <input type="radio" name="payment-method" value="eft" onchange="togglePaymentFields()">
-                                                <div class="payment-method-card">
-                                                    <div class="payment-icon">🏦</div>
-                                                    <div class="payment-info">
-                                                        <div class="payment-name">EFT Transfer</div>
-                                                        <div class="payment-desc">Pay via bank transfer</div>
+                                                        <div class="payment-desc">Visa, Mastercard, Amex</div>
                                                     </div>
                                                 </div>
                                             </label>
@@ -890,20 +880,6 @@
                                         </div>
                                     </div>
 
-                                    <div id="eft-details" class="eft-details" style="display: none; background: #FAF8F5; border: 1px solid #E8D5C4; border-radius: 12px; padding: 16px; margin-bottom: 15px;">
-                                        <div style="font-weight: 700; color: #2c2416; margin-bottom: 10px;">Bank Transfer Details</div>
-                                        <div style="display: grid; gap: 6px; color: #4a4a4a; font-size: 0.95rem;">
-                                            <div><strong>Bank name:</strong> Standard Bank</div>
-                                            <div><strong>Branch name:</strong> HATFIELD</div>
-                                            <div><strong>Branch code:</strong> 1545</div>
-                                            <div><strong>Account holder:</strong> PPP INNOVATIONS (PTY) LTD</div>
-                                            <div><strong>Account number:</strong> 61 020 236 7</div>
-                                            <div><strong>Account type:</strong> CURRENT</div>
-                                        </div>
-                                        <div style="margin-top: 10px; color: #8B7B6E; font-size: 0.9rem;">
-                                            Use your order reference as payment reference and email proof of payment after transfer.
-                                        </div>
-                                    </div>
                                     
                                     <button type="submit" class="btn-complete" id="submit-btn">
                                         Complete Order - <span id="btn-total">R 0.00</span>
@@ -916,6 +892,7 @@
             `;
             
             // Initialize checkboxes and calculations
+            selectAllItems();
             updateSummary();
         }
 
@@ -1078,43 +1055,28 @@
         }
 
         function showCardFields() {
-            // Hide all payment-specific sections
-            document.getElementById('card-fields').style.display = 'block';
-            document.getElementById('eft-details').style.display = 'none';
+            const cardFields = document.getElementById('card-payment-fields');
+            if (cardFields) cardFields.style.display = 'block';
             
-            // Make card fields required
-            document.getElementById('card-number').required = true;
-            document.getElementById('card-expiry').required = true;
-            document.getElementById('card-cvv').required = true;
-            document.getElementById('card-name').required = true;
-            
-            // Show submit button immediately when card fields appear
             const submitBtn = document.getElementById('submit-btn');
             if (submitBtn) submitBtn.style.display = 'block';
         }
 
         function hideCardFields() {
-            document.getElementById('card-fields').style.display = 'none';
+            const cardFields = document.getElementById('card-payment-fields');
+            if (cardFields) cardFields.style.display = 'none';
             
-            // Remove required from card fields
-            document.getElementById('card-number').required = false;
-            document.getElementById('card-expiry').required = false;
-            document.getElementById('card-cvv').required = false;
-            document.getElementById('card-name').required = false;
+            const cardNumber = document.getElementById('card-number');
+            const cardExpiry = document.getElementById('expiry-date');
+            const cardCvv = document.getElementById('cvv');
+            const cardName = document.getElementById('cardholder-name');
+            if (cardNumber) cardNumber.required = false;
+            if (cardExpiry) cardExpiry.required = false;
+            if (cardCvv) cardCvv.required = false;
+            if (cardName) cardName.required = false;
             
-            // Show submit button immediately for EFT (no additional fields needed)
             const submitBtn = document.getElementById('submit-btn');
             if (submitBtn) submitBtn.style.display = 'block';
-            
-            // Show appropriate section based on selected payment method
-            const selectedMethod = document.querySelector('input[name="payment-method"]:checked');
-            if (selectedMethod) {
-                if (selectedMethod.value === 'eft') {
-                    document.getElementById('eft-details').style.display = 'block';
-                } else {
-                    document.getElementById('eft-details').style.display = 'none';
-                }
-            }
         }
 
         // Format card number with spaces
@@ -1137,7 +1099,7 @@
             }
             
             // Format expiry date
-            const expiryInput = document.getElementById('card-expiry');
+            const expiryInput = document.getElementById('expiry-date');
             if (expiryInput) {
                 expiryInput.addEventListener('input', function(e) {
                     let value = e.target.value.replace(/\//g, '');
@@ -1158,7 +1120,7 @@
             }
             
             // CVV validation
-            const cvvInput = document.getElementById('card-cvv');
+            const cvvInput = document.getElementById('cvv');
             if (cvvInput) {
                 cvvInput.addEventListener('input', function(e) {
                     // Only allow numbers
@@ -1171,7 +1133,7 @@
             }
             
             // Cardholder name validation
-            const cardNameInput = document.getElementById('card-name');
+            const cardNameInput = document.getElementById('cardholder-name');
             if (cardNameInput) {
                 cardNameInput.addEventListener('input', function(e) {
                     // Only allow letters and spaces
@@ -1246,7 +1208,8 @@
 
         // Validate expiry date
         function validateExpiryDate(expiry, isTyping) {
-            const input = document.getElementById('card-expiry');
+            const input = document.getElementById('expiry-date');
+            if (!input) return false;
             
             // Clear previous error
             input.style.borderColor = '';
@@ -1299,7 +1262,8 @@
 
         // Validate CVV
         function validateCVV(cvv) {
-            const input = document.getElementById('card-cvv');
+            const input = document.getElementById('cvv');
+            if (!input) return false;
             
             // Clear previous error
             input.style.borderColor = '';
@@ -1324,7 +1288,8 @@
 
         // Validate cardholder name
         function validateCardholderName(name) {
-            const input = document.getElementById('card-name');
+            const input = document.getElementById('cardholder-name');
+            if (!input) return false;
             
             // Clear previous error
             input.style.borderColor = '';
@@ -1457,33 +1422,9 @@
             submitBtn.innerHTML = 'Processing...';
             
             try {
-                if (paymentMethod === 'eft') {
-                    const selectedIndexes = Array.from(selectedItems).sort((a, b) => b - a);
-                    selectedIndexes.forEach(index => {
-                        if (index >= 0 && index < cart.length) {
-                            cart.splice(index, 1);
-                        }
-                    });
-
-                    saveCart();
-                    selectedItems = new Set();
-                    renderCart();
-                    updateCartCount();
-
-                    alert(
-                        '✅ EFT order placed!\n\n' +
-                        `Order Reference: ${orderReference}\n` +
-                        `Amount: R ${total.toFixed(2)}\n\n` +
-                        'Please transfer to:\n' +
-                        'Bank: Standard Bank\n' +
-                        'Branch: HATFIELD\n' +
-                        'Branch Code: 1545\n' +
-                        'Account Holder: PPP INNOVATIONS (PTY) LTD\n' +
-                        'Account Number: 61 020 236 7\n' +
-                        'Account Type: CURRENT\n\n' +
-                        'Use your order reference as payment reference.'
-                    );
-
+                // Only Apple Pay and Card checkout are supported here.
+                if (paymentMethod !== 'card' && paymentMethod !== 'applepay') {
+                    alert('Please select Apple Pay or Card payment to continue.');
                     submitBtn.disabled = false;
                     submitBtn.innerHTML = originalBtnText;
                     return;
@@ -1503,12 +1444,13 @@
                         email: customerEmail,
                         firstName: customerName.split(' ')[0],
                         lastName: customerName.split(' ').slice(1).join(' ') || customerName.split(' ')[0],
-                        cardDetails: {
+                        paymentMethod: paymentMethod,
+                        cardDetails: paymentMethod === 'card' ? {
                             cardholderName: cardholderName,
                             cardNumber: cardNumber,
                             expiryDate: expiryDate,
                             cvv: cvv
-                        },
+                        } : undefined,
                         orderDetails: {
                             items: selectedProducts,
                             shippingAddress: shippingAddress,

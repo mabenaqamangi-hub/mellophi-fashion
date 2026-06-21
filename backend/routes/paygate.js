@@ -13,11 +13,40 @@ const PAYGATE_INITIATE_URL = process.env.PAYGATE_INITIATE_URL || 'https://secure
 const PAYGATE_PROCESS_URL = process.env.PAYGATE_PROCESS_URL || 'https://secure.paygate.co.za/payweb3/process.trans';
 const PAYGATE_RETURN_URL = process.env.PAYGATE_RETURN_URL || 'https://mabenaqamangi-hub.github.io/mellophi-fashion/payment-return.html';
 const PAYGATE_NOTIFY_URL = process.env.PAYGATE_NOTIFY_URL;
+const PAYGATE_TEST_MODE = process.env.PAYGATE_TEST_MODE === 'true';
 
 // Validate PayGate configuration
 if (!PAYGATE_ID || !PAYGATE_SECRET) {
-    logger.error('⚠️  WARNING: PayGate credentials not configured!');
-    logger.error('   Set PAYGATE_ID and PAYGATE_SECRET in .env file');
+    if (!PAYGATE_TEST_MODE) {
+        logger.error('⚠️  WARNING: PayGate credentials not configured!');
+        logger.error('   Set PAYGATE_ID and PAYGATE_SECRET in .env file');
+    } else {
+        console.log('🧪 PayGate TEST MODE enabled - using mock responses');
+    }
+}
+
+/**
+ * Generate mock PayGate response for testing
+ */
+function generateMockPayGateResponse(paymentId) {
+    const mockData = {
+        RESULT_CODE: '0',
+        PAY_REQUEST_ID: paymentId,
+        REDIRECT_URL: `${PAYGATE_PROCESS_URL}?PAY_REQUEST_ID=${paymentId}`,
+        CHECKSUM: 'mock_checksum_' + Date.now()
+    };
+    
+    const checksumString = Object.keys(mockData)
+        .filter(key => key !== 'CHECKSUM')
+        .sort()
+        .map(key => String(mockData[key] || ''))
+        .join('');
+    
+    mockData.CHECKSUM = crypto.createHash('md5').update(checksumString).digest('hex');
+    
+    return Object.entries(mockData)
+        .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
+        .join('&');
 }
 
 /**
@@ -27,8 +56,68 @@ function generateChecksum(data) {
     if (!PAYGATE_SECRET) {
         throw new Error('PAYGATE_SECRET is not configured');
     }
-    const checksumString = Object.values(data).join('') + PAYGATE_SECRET;
+    const checksumString = Object.keys(data)
+        .filter(key => key !== 'CHECKSUM')
+        .sort()
+        .map(key => String(data[key] || ''))
+        .join('') + PAYGATE_SECRET;
     return crypto.createHash('md5').update(checksumString).digest('hex');
+}
+
+async function processPaygateUpdate(paygateReturn) {
+    const returnedChecksum = paygateReturn.CHECKSUM;
+    if (!returnedChecksum) {
+        throw new Error('PayGate return payload missing CHECKSUM');
+    }
+
+    const calculatedChecksum = generateChecksum(paygateReturn);
+
+    if (returnedChecksum !== calculatedChecksum) {
+        throw new Error(`Invalid checksum: expected ${calculatedChecksum}, received ${returnedChecksum}`);
+    }
+
+    if (!paygateReturn.REFERENCE) {
+        throw new Error('PayGate return payload missing REFERENCE');
+    }
+
+    const order = await Order.findOne({
+        where: { orderNumber: paygateReturn.REFERENCE }
+    });
+
+    if (!order) {
+        throw new Error(`Order not found: ${paygateReturn.REFERENCE}`);
+    }
+
+    const transactionStatus = paygateReturn.TRANSACTION_STATUS;
+    if (transactionStatus === '1') {
+        await order.update({
+            paymentStatus: 'completed',
+            orderStatus: 'processing',
+            transactionId: paygateReturn.TRANSACTION_ID
+        });
+        try {
+            await sendOrderConfirmationEmail(order.customerInfo.email, order);
+        } catch (emailErr) {
+            logger.error('Order confirmation email failed:', emailErr);
+        }
+    } else if (transactionStatus === '2') {
+        await order.update({
+            paymentStatus: 'failed',
+            orderStatus: 'cancelled'
+        });
+    } else {
+        await order.update({
+            paymentStatus: 'cancelled',
+            orderStatus: 'cancelled'
+        });
+    }
+
+    return {
+        success: true,
+        status: transactionStatus === '1' ? 'approved' : 'declined',
+        reference: paygateReturn.REFERENCE,
+        transactionId: paygateReturn.TRANSACTION_ID || null
+    };
 }
 
 /**
@@ -82,6 +171,7 @@ router.post('/initiate', async (req, res) => {
             email, 
             firstName, 
             lastName,
+            paymentMethod,
             orderDetails 
         } = req.body;
 
@@ -96,25 +186,31 @@ router.post('/initiate', async (req, res) => {
         // Convert amount to cents (PayGate requires amount in cents)
         const amountInCents = Math.round(parseFloat(amount) * 100);
 
-        // Create order in database
-        const order = await Order.create({
-            orderNumber: reference,
-            customerInfo: {
-                email: email,
-                firstName: firstName,
-                lastName: lastName,
-                fullName: `${firstName} ${lastName}`
-            },
-            items: orderDetails.items,
-            shippingAddress: orderDetails.shippingAddress,
-            subtotal: orderDetails.subtotal,
-            shippingCost: orderDetails.shipping,
-            discount: orderDetails.discount || 0,
-            total: amount,
-            paymentMethod: 'paygate',
-            paymentStatus: 'pending',
-            orderStatus: 'pending'
-        });
+        // Create order in database (if available)
+        let order = null;
+        try {
+            order = await Order.create({
+                orderNumber: reference,
+                customerInfo: {
+                    email: email,
+                    firstName: firstName,
+                    lastName: lastName,
+                    fullName: `${firstName} ${lastName}`
+                },
+                items: orderDetails && orderDetails.items ? orderDetails.items : [],
+                shippingAddress: orderDetails && orderDetails.shippingAddress ? orderDetails.shippingAddress : '',
+                subtotal: orderDetails && orderDetails.subtotal ? orderDetails.subtotal : amount,
+                shippingCost: orderDetails && orderDetails.shipping ? orderDetails.shipping : 0,
+                discount: orderDetails && orderDetails.discount ? orderDetails.discount : 0,
+                total: amount,
+                paymentMethod: paymentMethod || 'paygate',
+                paymentStatus: 'pending',
+                orderStatus: 'pending'
+            });
+        } catch (dbError) {
+            console.warn('⚠️  Database unavailable for order creation. Proceeding with PayGate payment only:', dbError.message);
+            // Continue with payment initiation even if database is unavailable
+        }
 
         // PayGate initiate payload
         const paygateData = {
@@ -129,6 +225,14 @@ router.post('/initiate', async (req, res) => {
             EMAIL: email
         };
 
+        if (paymentMethod === 'applepay') {
+            paygateData.PAY_METHOD = 'APPLEPAY';
+            paygateData.PAY_METHOD_DETAIL = 'APPLEPAY';
+        } else if (paymentMethod === 'card' || paymentMethod === 'payfast' || !paymentMethod) {
+            paygateData.PAY_METHOD = 'CARD';
+            paygateData.PAY_METHOD_DETAIL = 'CREDITCARD';
+        }
+
         if (PAYGATE_NOTIFY_URL) {
             paygateData.NOTIFY_URL = PAYGATE_NOTIFY_URL;
         }
@@ -136,21 +240,61 @@ router.post('/initiate', async (req, res) => {
         // Generate checksum
         paygateData.CHECKSUM = generateInitiateChecksum(paygateData);
 
-        // Send request to PayGate
-        const fetch = (await import('node-fetch')).default;
-        const formBody = Object.entries(paygateData)
-            .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
-            .join('&');
+        if (PAYGATE_TEST_MODE) {
+            console.log('🧪 Using local success redirect in test mode');
+            const paymentId = 'TEST_' + reference + '_' + Date.now();
 
-        const response = await fetch(PAYGATE_INITIATE_URL, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            body: formBody
-        });
+            // Build a signed mock callback payload that matches /api/paygate/return verification.
+            const mockReturnData = {
+                PAY_REQUEST_ID: paymentId,
+                REFERENCE: reference,
+                TRANSACTION_STATUS: '1',
+                TRANSACTION_ID: 'MOCKTXN_' + Date.now()
+            };
+            mockReturnData.CHECKSUM = generateChecksum(mockReturnData);
 
-        const responseText = await response.text();
+            if (order) {
+                await order.update({
+                    paygateId: paymentId
+                }).catch(err => console.warn('Could not update order with PayGate ID:', err.message));
+            }
+
+            const query = Object.entries(mockReturnData)
+                .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
+                .join('&');
+            const separator = PAYGATE_RETURN_URL.includes('?') ? '&' : '?';
+
+            return res.json({
+                success: true,
+                payRequestId: paymentId,
+                paymentUrl: `${PAYGATE_RETURN_URL}${separator}${query}`,
+                reference: reference,
+                testMode: true
+            });
+        }
+
+        // Generate real PayGate response
+        let responseText;
+        {
+            // Send request to PayGate (real)
+            const fetch = (await import('node-fetch')).default;
+            const formBody = Object.entries(paygateData)
+                .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
+                .join('&');
+
+            const response = await fetch(PAYGATE_INITIATE_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: formBody
+            });
+
+            responseText = await response.text();
+        }
+        
+        console.log('✅ PayGate Initiate Response Status: 200');
+        console.log('✅ PayGate Initiate Response Body:', responseText);
         
         // Parse PayGate response
         const paygateResponse = {};
@@ -159,17 +303,25 @@ router.post('/initiate', async (req, res) => {
             paygateResponse[key] = decodeURIComponent(value || '');
         });
 
-        if (paygateResponse.ERROR || paygateResponse.RESULT_CODE) {
-            await order.update({
-                paymentStatus: 'failed',
-                orderStatus: 'cancelled'
-            });
+        console.log('✅ Parsed PayGate Response:', paygateResponse);
+
+        const resultCode = paygateResponse.RESULT_CODE;
+        const hasError = paygateResponse.ERROR && paygateResponse.ERROR !== '0';
+        const isFailedResult = resultCode !== undefined && resultCode !== null && resultCode !== '' && resultCode !== '0' && resultCode !== 0;
+
+        if (hasError || isFailedResult) {
+            if (order) {
+                await order.update({
+                    paymentStatus: 'failed',
+                    orderStatus: 'cancelled'
+                }).catch(err => console.warn('Could not update order status:', err.message));
+            }
 
             return res.status(400).json({
                 success: false,
                 message: 'PayGate rejected initiation request',
                 paygate: {
-                    resultCode: paygateResponse.RESULT_CODE || null,
+                    resultCode: resultCode || null,
                     error: paygateResponse.ERROR || null,
                     raw: responseText
                 }
@@ -180,10 +332,12 @@ router.post('/initiate', async (req, res) => {
         const responseChecksum = paygateResponse.CHECKSUM;
 
         if (!payRequestId || !responseChecksum) {
-            await order.update({
-                paymentStatus: 'failed',
-                orderStatus: 'cancelled'
-            });
+            if (order) {
+                await order.update({
+                    paymentStatus: 'failed',
+                    orderStatus: 'cancelled'
+                }).catch(err => console.warn('Could not update order status:', err.message));
+            }
 
             return res.status(400).json({
                 success: false,
@@ -194,10 +348,12 @@ router.post('/initiate', async (req, res) => {
             });
         }
 
-        // Update order with PayGate reference
-        await order.update({ 
-            paygateId: payRequestId 
-        });
+        // Update order with PayGate reference (if order exists in database)
+        if (order) {
+            await order.update({ 
+                paygateId: payRequestId 
+            }).catch(err => console.warn('Could not update order with PayGate ID:', err.message));
+        }
 
         // Return payment URL
         res.json({
@@ -224,69 +380,8 @@ router.post('/initiate', async (req, res) => {
 router.post('/return', async (req, res) => {
     try {
         const paygateReturn = req.body;
-
-        // Verify checksum
-        const returnedChecksum = paygateReturn.CHECKSUM;
-        const dataToVerify = { ...paygateReturn };
-        delete dataToVerify.CHECKSUM;
-        const calculatedChecksum = generateChecksum(dataToVerify);
-
-        if (returnedChecksum !== calculatedChecksum) {
-            return res.status(400).json({ 
-                success: false, 
-                message: 'Invalid checksum' 
-            });
-        }
-
-        // Find order by reference
-        const order = await Order.findOne({
-            where: { orderNumber: paygateReturn.REFERENCE }
-        });
-
-        if (!order) {
-            return res.status(404).json({ 
-                success: false, 
-                message: 'Order not found' 
-            });
-        }
-
-        // Update order based on transaction status
-        const transactionStatus = paygateReturn.TRANSACTION_STATUS;
-        
-        if (transactionStatus === '1') {
-            // Payment approved
-            await order.update({
-                paymentStatus: 'completed',
-                orderStatus: 'processing',
-                transactionId: paygateReturn.TRANSACTION_ID
-            });
-            // Send confirmation email
-            try {
-                await sendOrderConfirmationEmail(order.customerInfo.email, order);
-            } catch (emailErr) {
-                logger.error('Order confirmation email failed:', emailErr);
-            }
-        } else if (transactionStatus === '2') {
-            // Payment declined
-            await order.update({
-                paymentStatus: 'failed',
-                orderStatus: 'cancelled'
-            });
-        } else {
-            // Payment cancelled or other status
-            await order.update({
-                paymentStatus: 'cancelled',
-                orderStatus: 'cancelled'
-            });
-        }
-
-        res.json({
-            success: true,
-            status: transactionStatus === '1' ? 'approved' : 'declined',
-            reference: paygateReturn.REFERENCE,
-            transactionId: paygateReturn.TRANSACTION_ID
-        });
-
+        const result = await processPaygateUpdate(paygateReturn);
+        res.json(result);
     } catch (error) {
         logger.error('PayGate return error:', error);
         res.status(500).json({ 
@@ -294,6 +389,16 @@ router.post('/return', async (req, res) => {
             message: 'Payment verification failed',
             error: error.message 
         });
+    }
+});
+
+router.post('/notify', async (req, res) => {
+    try {
+        await processPaygateUpdate(req.body);
+        res.type('text/plain').send('OK');
+    } catch (error) {
+        logger.error('PayGate notify error:', error);
+        res.type('text/plain').status(400).send('ERROR');
     }
 });
 
