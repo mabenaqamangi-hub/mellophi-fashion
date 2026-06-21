@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Checkout - Add Products</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            padding: 40px;
+            background: #f5f5f5;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            margin-bottom: 30px;
+            color: #2c3e50;
+        }
+        
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .product-card {
+            border: 2px solid #e0e0e0;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            transition: transform 0.2s;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-5px);
+            border-color: #3498db;
+        }
+        
+        .product-name {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+        
+        .product-price {
+            font-size: 1.5em;
+            color: #27ae60;
+            margin-bottom: 15px;
+        }
+        
+        .btn-add {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+        
+        .btn-add:hover {
+            background: #2980b9;
+        }
+        
+        .btn-checkout {
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.2em;
+            font-weight: bold;
+            display: block;
+            margin: 30px auto;
+        }
+        
+        .btn-checkout:hover {
+            background: #229954;
+        }
+        
+        .cart-summary {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 30px;
+        }
+        
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .total {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #e74c3c;
+            margin-top: 15px;
+            text-align: right;
+        }
+        
+        .success-msg {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 10px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🛍️ Test Checkout System - Add Products to Cart</h1>
+        
+        <div class="products-grid" id="products-grid">
+            <!-- Products will be loaded here -->
+        </div>
+        
+        <button class="btn-checkout" onclick="goToCheckout()">
+            Go to Checkout Page
+        </button>
+        
+        <div class="cart-summary">
+            <h2>🛒 Current Cart</h2>
+            <div id="cart-display">
+                <p style="color: #7f8c8d;">Cart is empty. Add products above.</p>
+            </div>
+            <div class="total" id="cart-total"></div>
+        </div>
+    </div>
+    
+    <script>
+        // Sample products
+        const products = [
+            { id: 'A1', name: 'Oversized Shirt', price: 299, image: 'images/PRODUCTS/A1 front.png' },
+            { id: 'A2', name: 'Beige Blazer', price: 459, image: 'images/PRODUCTS/A2 front.png' },
+            { id: 'A3', name: 'Cream Trousers', price: 349, image: 'images/PRODUCTS/A3 front.png' },
+            { id: 'B1', name: 'Tan Midi Dress', price: 399, image: 'images/PRODUCTS/B1 front.png' },
+            { id: 'B2', name: 'Caramel Sweater', price: 279, image: 'images/PRODUCTS/B2 front.png' },
+            { id: 'B3', name: 'Bodysuit', price: 229, image: 'images/PRODUCTS/B3 front.png' }
+        ];
+        
+        // Load products on page load
+        function loadProducts() {
+            const grid = document.getElementById('products-grid');
+            
+            products.forEach(product => {
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                card.innerHTML = `
+                    <div class="product-name">${product.name}</div>
+                    <div class="product-price">R ${product.price.toFixed(2)}</div>
+                    <button class="btn-add" onclick="addToCart('${product.id}')">
+                        Add to Cart
+                    </button>
+                    <div class="success-msg" id="msg-${product.id}">✓ Added to cart!</div>
+                `;
+                grid.appendChild(card);
+            });
+            
+            updateCartDisplay();
+        }
+        
+        // Add product to cart
+        function addToCart(productId) {
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+            
+            // Get existing cart
+            let cart = JSON.parse(localStorage.getItem('cart')) || [];
+            
+            // Check if product already in cart
+            const existingIndex = cart.findIndex(item => item.id === productId);
+            
+            if (existingIndex >= 0) {
+                // Increase quantity
+                cart[existingIndex].quantity += 1;
+            } else {
+                // Add new item
+                cart.push({
+                    id: product.id,
+                    name: product.name,
+                    price: product.price,
+                    quantity: 1,
+                    size: 'M',
+                    color: 'Nude',
+                    image: product.image
+                });
+            }
+            
+            // Save to localStorage
+            localStorage.setItem('cart', JSON.stringify(cart));
+            
+            // Show success message
+            const msg = document.getElementById('msg-' + productId);
+            msg.style.display = 'block';
+            setTimeout(() => {
+                msg.style.display = 'none';
+            }, 2000);
+            
+            // Update cart display
+            updateCartDisplay();
+        }
+        
+        // Update cart display
+        function updateCartDisplay() {
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const cartDisplay = document.getElementById('cart-display');
+            const cartTotal = document.getElementById('cart-total');
+            
+            if (cart.length === 0) {
+                cartDisplay.innerHTML = '<p style="color: #7f8c8d;">Cart is empty. Add products above.</p>';
+                cartTotal.textContent = '';
+                return;
+            }
+            
+            let html = '';
+            let total = 0;
+            
+            cart.forEach(item => {
+                const itemTotal = item.price * item.quantity;
+                total += itemTotal;
+                
+                html += `
+                    <div class="cart-item">
+                        <div>
+                            <strong>${item.name}</strong><br>
+                            <small>Qty: ${item.quantity} × R ${item.price.toFixed(2)}</small>
+                        </div>
+                        <div style="font-weight: bold; color: #27ae60;">
+                            R ${itemTotal.toFixed(2)}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            cartDisplay.innerHTML = html;
+            cartTotal.textContent = `TOTAL: R ${total.toFixed(2)}`;
+        }
+        
+        // Go to checkout page
+        function goToCheckout() {
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            
+            if (cart.length === 0) {
+                alert('Please add some products to cart first!');
+                return;
+            }
+            
+            window.location.href = 'checkout.html';
+        }
+        
+        // Clear cart function (for testing)
+        function clearCart() {
+            localStorage.removeItem('cart');
+            updateCartDisplay();
+        }
+        
+        // Load products on page load
+        loadProducts();
+        
+        // Update cart display every second to show changes
+        setInterval(updateCartDisplay, 1000);
+    </script>
+</body>
+</html>

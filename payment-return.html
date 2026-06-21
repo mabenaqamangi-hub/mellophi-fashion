@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Processing - Mellophi Fashion</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/checkout.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        .payment-result {
+            min-height: 60vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4rem 0;
+        }
+
+        .payment-result-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            padding: 3rem;
+            text-align: center;
+            max-width: 600px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .payment-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 2rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+        }
+
+        .payment-icon.success {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .payment-icon.failed {
+            background: #f44336;
+            color: white;
+        }
+
+        .payment-icon.processing {
+            background: #FF9800;
+            color: white;
+        }
+
+        .payment-result h2 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: #2c3e50;
+        }
+
+        .payment-result p {
+            color: #666;
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .order-details {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 2rem 0;
+            text-align: left;
+        }
+
+        .order-details-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.75rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .order-details-row:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .order-details-label {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .order-details-value {
+            color: #666;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #2c3e50;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 2rem auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="sticky-header">
+        <div class="container">
+            <nav class="navbar">
+                <div class="logo">
+                    <h1><a href="index.html">MELLOPHI FASHION</a></h1>
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="shop.html">Shop</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                </ul>
+                <div class="nav-icons">
+                    <button class="icon-btn" id="cart-btn">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="9" cy="21" r="1"></circle>
+                            <circle cx="20" cy="21" r="1"></circle>
+                            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                        </svg>
+                        <span class="badge" id="cart-count">0</span>
+                    </button>
+                    <button class="mobile-toggle" id="mobile-toggle">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </button>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Payment Result Section -->
+    <section class="payment-result">
+        <div class="container">
+            <div class="payment-result-card" id="payment-result-content">
+                <div class="spinner"></div>
+                <h2>Processing Payment...</h2>
+                <p>Please wait while we verify your payment.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>MELLOPHI FASHION</h3>
+                    <p>Premium South African fashion for the modern woman.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="shop.html">Shop</a></li>
+                        <li><a href="about.html">About Us</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                        <li><a href="returns.html">Returns</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Customer Service</h4>
+                    <ul>
+                        <li><a href="terms.html">Terms & Conditions</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Mellophi Fashion. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/config.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        let paymentApiUrl = window.API_URL || 'https://mellophi-fashion.onrender.com/api';
+        let returnPageInitialized = false;
+        let processingTimerId = null;
+        let processingStartMs = 0;
+
+        function startProcessingIndicator() {
+            const statusText = document.querySelector('#payment-result-content p');
+            if (!statusText) return;
+
+            processingStartMs = Date.now();
+            statusText.textContent = 'Please wait while we verify your payment. (0s)';
+
+            if (processingTimerId) {
+                clearInterval(processingTimerId);
+            }
+
+            processingTimerId = setInterval(() => {
+                const elapsedSeconds = Math.floor((Date.now() - processingStartMs) / 1000);
+                const textTarget = document.querySelector('#payment-result-content p');
+                if (textTarget) {
+                    textTarget.textContent = `Please wait while we verify your payment. (${elapsedSeconds}s)`;
+                }
+            }, 1000);
+        }
+
+        function stopProcessingIndicator() {
+            if (processingTimerId) {
+                clearInterval(processingTimerId);
+                processingTimerId = null;
+            }
+        }
+
+        async function initPaymentReturnPage() {
+            if (returnPageInitialized) return;
+            returnPageInitialized = true;
+            startProcessingIndicator();
+
+            try {
+                if (window.getApiUrl) {
+                    paymentApiUrl = await window.getApiUrl();
+                }
+            } catch (apiResolveError) {
+                console.error('Could not resolve API URL, using fallback:', apiResolveError);
+            }
+
+            // Get URL parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const payRequestId = urlParams.get('PAY_REQUEST_ID');
+            const reference = urlParams.get('REFERENCE');
+            const transactionStatus = urlParams.get('TRANSACTION_STATUS');
+
+            // If returning from PayGate
+            if (payRequestId && reference) {
+                await processPaymentReturn(reference, transactionStatus);
+            } else {
+                showError('Invalid payment response');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', initPaymentReturnPage);
+        // Failsafe for cases where DOMContentLoaded listener is missed by browser restore behavior.
+        initPaymentReturnPage();
+
+        async function fetchWithTimeout(url, options = {}, timeoutMs = 10000) {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+            try {
+                return await fetch(url, {
+                    ...options,
+                    signal: controller.signal
+                });
+            } finally {
+                clearTimeout(timeoutId);
+            }
+        }
+
+        async function processPaymentReturn(reference, transactionStatus) {
+            try {
+                const urlParams = new URLSearchParams(window.location.search);
+                const returnPayload = Object.fromEntries(urlParams.entries());
+
+                const response = await fetchWithTimeout(`${paymentApiUrl}/paygate/return`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(returnPayload)
+                }, 12000);
+
+                const data = await response.json();
+
+                if (data.success && data.status === 'approved') {
+                    showSuccess(reference, data.transactionId);
+                    // Clear cart on successful payment
+                    localStorage.removeItem('cart');
+                } else {
+                    await verifyPaymentStatusFallback(reference, transactionStatus);
+                }
+            } catch (error) {
+                console.error('Payment verification error:', error);
+                await verifyPaymentStatusFallback(reference, transactionStatus);
+            }
+        }
+
+        async function verifyPaymentStatusFallback(reference, transactionStatus) {
+            try {
+                const statusResponse = await fetchWithTimeout(`${paymentApiUrl}/paygate/status/${encodeURIComponent(reference)}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }, 10000);
+
+                const statusData = await statusResponse.json();
+                const paymentStatus = statusData && statusData.paymentStatus ? statusData.paymentStatus.toLowerCase() : '';
+                const isPaid = paymentStatus === 'completed' || paymentStatus === 'paid';
+
+                if (statusData.success && isPaid) {
+                    showSuccess(reference, statusData.transactionId);
+                    localStorage.removeItem('cart');
+                    return;
+                }
+
+                showFailure(reference);
+            } catch (fallbackError) {
+                console.error('Fallback payment status verification failed:', fallbackError);
+                // Final fallback (test-only): only trust query-string success for locally mocked test IDs.
+                const payRequestId = new URLSearchParams(window.location.search).get('PAY_REQUEST_ID') || '';
+                const isTestRequest = payRequestId.startsWith('TEST_');
+
+                if (transactionStatus === '1' && isTestRequest) {
+                    const transactionId = new URLSearchParams(window.location.search).get('TRANSACTION_ID');
+                    showSuccess(reference, transactionId || null);
+                    localStorage.removeItem('cart');
+                    return;
+                }
+
+                showError('Failed to verify payment. Please contact support with your order reference.');
+            }
+        }
+
+        function showSuccess(reference, transactionId) {
+            stopProcessingIndicator();
+            document.getElementById('payment-result-content').innerHTML = `
+                <div class="payment-icon success">✓</div>
+                <h2>Payment Successful!</h2>
+                <p>Thank you for your order. Your payment has been processed successfully.</p>
+                
+                <div class="order-details">
+                    <div class="order-details-row">
+                        <span class="order-details-label">Order Reference:</span>
+                        <span class="order-details-value">${reference}</span>
+                    </div>
+                    <div class="order-details-row">
+                        <span class="order-details-label">Transaction ID:</span>
+                        <span class="order-details-value">${transactionId || 'N/A'}</span>
+                    </div>
+                    <div class="order-details-row">
+                        <span class="order-details-label">Status:</span>
+                        <span class="order-details-value" style="color: #4CAF50;">Completed</span>
+                    </div>
+                </div>
+
+                <p>You will receive a confirmation email shortly with your order details.</p>
+
+                <div class="btn-group">
+                    <a href="shop.html" class="btn-primary">Continue Shopping</a>
+                    <a href="index.html" class="btn-secondary">Return Home</a>
+                </div>
+            `;
+        }
+
+        function showFailure(reference) {
+            stopProcessingIndicator();
+            document.getElementById('payment-result-content').innerHTML = `
+                <div class="payment-icon failed">✕</div>
+                <h2>Payment Failed</h2>
+                <p>Unfortunately, your payment could not be processed.</p>
+                
+                <div class="order-details">
+                    <div class="order-details-row">
+                        <span class="order-details-label">Order Reference:</span>
+                        <span class="order-details-value">${reference}</span>
+                    </div>
+                    <div class="order-details-row">
+                        <span class="order-details-label">Status:</span>
+                        <span class="order-details-value" style="color: #f44336;">Failed</span>
+                    </div>
+                </div>
+
+                <p>Please try again or contact our support team if the problem persists.</p>
+
+                <div class="btn-group">
+                    <a href="checkout.html" class="btn-primary">Try Again</a>
+                    <a href="contact.html" class="btn-secondary">Contact Support</a>
+                </div>
+            `;
+        }
+
+        function showError(message) {
+            stopProcessingIndicator();
+            document.getElementById('payment-result-content').innerHTML = `
+                <div class="payment-icon failed">!</div>
+                <h2>Error</h2>
+                <p>${message}</p>
+
+                <div class="btn-group">
+                    <a href="checkout.html" class="btn-primary">Back to Checkout</a>
+                    <a href="contact.html" class="btn-secondary">Contact Support</a>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>

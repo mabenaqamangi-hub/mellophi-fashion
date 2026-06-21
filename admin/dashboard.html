@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Mellophi Fashion</title>
+    <link rel="stylesheet" href="dashboard.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>MELLOPHI</h2>
+                <p>Admin Panel</p>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="#dashboard" class="nav-link active" data-section="dashboard">
+                        <span class="icon">📊</span> Dashboard
+                    </a></li>
+                    <li><a href="#products" class="nav-link" data-section="products">
+                        <span class="icon">📦</span> Products
+                    </a></li>
+                    <li><a href="#orders" class="nav-link" data-section="orders">
+                        <span class="icon">🛒</span> Orders
+                    </a></li>
+                    <li><a href="#customers" class="nav-link" data-section="customers">
+                        <span class="icon">👥</span> Customers
+                    </a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="top-header">
+                <div class="header-left">
+                    <h1>Admin Dashboard</h1>
+                </div>
+                <div class="header-right">
+                    <a href="../shop.html" class="view-site-btn" target="_blank" rel="noopener noreferrer">View Website</a>
+                    <button class="logout-btn" id="logoutBtn">Logout</button>
+                </div>
+            </header>
+
+            <!-- Dashboard Section -->
+            <section id="dashboard" class="section active">
+                <h2>Dashboard Overview</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>Total Sales</h3>
+                        <p class="stat-value">R 0</p>
+                        <span class="stat-label">This month</span>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Total Orders</h3>
+                        <p class="stat-value">0</p>
+                        <span class="stat-label">This month</span>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Total Revenue</h3>
+                        <p class="stat-value">R 0</p>
+                        <span class="stat-label">Year to date</span>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Products</h3>
+                        <p class="stat-value" id="totalProducts">0</p>
+                        <span class="stat-label">In inventory</span>
+                    </div>
+                </div>
+
+                <div class="dashboard-grid">
+                    <div class="dashboard-section">
+                        <h3>Recent Orders</h3>
+                        <table class="orders-table">
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Customer</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recentOrdersTable">
+                                <!-- Mock data will be inserted here -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="dashboard-section">
+                        <h3>Low Stock Alert</h3>
+                        <div id="lowStockAlert" class="low-stock-list">
+                            <!-- Low stock products will be shown here -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Products Section -->
+            <section id="products" class="section">
+                <h2>Product Management</h2>
+                
+                <!-- Add Product Form -->
+                <div class="form-container">
+                    <h3>Add New Product</h3>
+                    <form id="productForm" class="product-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="productName">Product Name</label>
+                                <input type="text" id="productName" placeholder="e.g., A1 — Casual Summer Dress" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="productPrice">Price</label>
+                                <input type="number" id="productPrice" placeholder="e.g., 380" min="0" step="0.01" required>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="productCategory">Category</label>
+                                <select id="productCategory" required>
+                                    <option value="">Select Category</option>
+                                    <option value="dresses">Dresses</option>
+                                    <option value="tops">Tops</option>
+                                    <option value="skirts">Skirts</option>
+                                    <option value="shorts-top-set">Co-ord Sets</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="productStock">Stock Quantity</label>
+                                <input type="number" id="productStock" placeholder="e.g., 12" min="0" required>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="productColors">Colors (comma-separated)</label>
+                                <input type="text" id="productColors" placeholder="e.g., Black, White, Beige">
+                            </div>
+                            <div class="form-group">
+                                <label for="productSizes">Sizes (comma-separated)</label>
+                                <input type="text" id="productSizes" placeholder="e.g., XS, S, M, L, XL">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="productImages">Product Images</label>
+                                <div class="image-upload">
+                                    <input type="file" id="productImages" multiple accept="image/*">
+                                    <span class="upload-hint">Upload up to 5 images (JPG, PNG)</span>
+                                    <div id="imagePreview" class="image-preview"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn-primary">Add Product</button>
+                    </form>
+                </div>
+
+                <!-- Products List -->
+                <div class="products-container">
+                    <h3>All Products</h3>
+                    <div class="products-filters">
+                        <input type="text" id="searchProducts" placeholder="Search products..." aria-label="Search products">
+                        <select id="filterCategory" aria-label="Filter products by category">
+                            <option value="">All Categories</option>
+                            <option value="dresses">Dresses</option>
+                            <option value="tops">Tops</option>
+                            <option value="skirts">Skirts</option>
+                            <option value="shorts-top-set">Co-ord Sets</option>
+                        </select>
+                    </div>
+                    <div id="productsList" class="products-grid">
+                        <!-- Products will be displayed here -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Orders Section -->
+            <section id="orders" class="section">
+                <h2>Orders Management</h2>
+                <div class="orders-filters">
+                    <select id="filterOrderStatus" aria-label="Filter orders by order status">
+                        <option value="">All Order Statuses</option>
+                        <option value="pending">Pending</option>
+                        <option value="processing">Processing</option>
+                        <option value="shipped">Shipped</option>
+                        <option value="delivered">Delivered</option>
+                        <option value="cancelled">Cancelled</option>
+                    </select>
+                    <select id="filterPaymentStatus" aria-label="Filter orders by payment status">
+                        <option value="">All Payment Statuses</option>
+                        <option value="pending">Pending</option>
+                        <option value="completed">Completed</option>
+                        <option value="paid">Paid</option>
+                        <option value="failed">Failed</option>
+                        <option value="cancelled">Cancelled</option>
+                        <option value="refunded">Refunded</option>
+                    </select>
+                    <button id="refreshOrdersBtn" class="btn-secondary" type="button">Refresh Orders</button>
+                </div>
+                <table class="orders-table full-width">
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Customer Name</th>
+                            <th>Email</th>
+                            <th>Items</th>
+                            <th>Amount</th>
+                            <th>Order Status</th>
+                            <th>Payment</th>
+                            <th>Date</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ordersTable">
+                        <!-- Mock orders data will be inserted here -->
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- Customers Section -->
+            <section id="customers" class="section">
+                <h2>Customer Management</h2>
+                <table class="customers-table">
+                    <thead>
+                        <tr>
+                            <th>Customer ID</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Total Orders</th>
+                            <th>Join Date</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="customersTable">
+                        <!-- Mock customers data will be inserted here -->
+                    </tbody>
+                </table>
+            </section>
+        </main>
+    </div>
+
+    <!-- Product Edit Modal -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Edit Product</h2>
+            <form id="editProductForm" class="product-form">
+                <input type="hidden" id="editProductId">
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="editProductName">Product Name</label>
+                        <input type="text" id="editProductName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editProductPrice">Price</label>
+                        <input type="number" id="editProductPrice" min="0" step="0.01" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="editProductCategory">Category</label>
+                        <select id="editProductCategory" required>
+                            <option value="dresses">Dresses</option>
+                            <option value="tops">Tops</option>
+                            <option value="skirts">Skirts</option>
+                            <option value="shorts-top-set">Co-ord Sets</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="editProductStock">Stock Quantity</label>
+                        <input type="number" id="editProductStock" min="0" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="editProductColors">Colors (comma-separated)</label>
+                        <input type="text" id="editProductColors">
+                    </div>
+                    <div class="form-group">
+                        <label for="editProductSizes">Sizes (comma-separated)</label>
+                        <input type="text" id="editProductSizes">
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">Save Changes</button>
+                    <button type="button" class="btn-secondary" id="cancelEditBtn">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div id="confirmModal" class="modal">
+        <div class="modal-content confirm-modal">
+            <p id="confirmMessage">Are you sure?</p>
+            <div class="modal-actions">
+                <button id="confirmBtn" class="btn-danger">Delete</button>
+                <button id="cancelConfirmBtn" class="btn-secondary">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="dashboard.js"></script>
+</body>
+</html>

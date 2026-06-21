@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Returns & Exchange Policy - Mellophi Fashion</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        .policy-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+        }
+
+        .policy-container h1 {
+            font-family: var(--font-heading);
+            font-size: 3rem;
+            color: var(--text-primary);
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .policy-intro {
+            text-align: center;
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            margin-bottom: 3rem;
+        }
+
+        .policy-section {
+            background: var(--cream);
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            border-radius: 20px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .policy-section h2 {
+            font-family: var(--font-heading);
+            font-size: 2rem;
+            color: var(--champagne);
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--nude-light);
+        }
+
+        .policy-section h3 {
+            font-family: var(--font-heading);
+            font-size: 1.4rem;
+            color: var(--text-primary);
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .policy-section p {
+            line-height: 1.8;
+            margin-bottom: 1rem;
+            color: var(--text-secondary);
+        }
+
+        .policy-section ul,
+        .policy-section ol {
+            margin-left: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .policy-section li {
+            line-height: 1.8;
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+        }
+
+        .policy-section strong {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .policy-section a {
+            color: var(--champagne);
+            text-decoration: underline;
+        }
+
+        .policy-section a:hover {
+            color: var(--text-primary);
+        }
+
+        .highlight-box {
+            background: var(--nude-light);
+            border-left: 4px solid var(--champagne);
+            padding: 1.5rem;
+            margin: 2rem 0;
+            border-radius: 10px;
+        }
+
+        .highlight-box strong {
+            font-size: 1.1rem;
+        }
+
+        @media (max-width: 768px) {
+            .policy-container {
+                padding: 2rem 1rem;
+            }
+
+            .policy-container h1 {
+                font-size: 2rem;
+            }
+
+            .policy-section {
+                padding: 1.5rem;
+            }
+
+            .policy-section h2 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="sticky-header">
+        <div class="container">
+            <nav class="navbar">
+                <div class="logo">
+                    <h1><a href="index.html">MELLOPHI FASHION</a></h1>
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="shop.html">Shop</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                </ul>
+                <div class="nav-icons">
+                    <button class="icon-btn" id="wishlist-btn">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                        </svg>
+                        <span class="badge" id="wishlist-count">0</span>
+                    </button>
+                    <button class="icon-btn" id="cart-btn">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="9" cy="21" r="1"></circle>
+                            <circle cx="20" cy="21" r="1"></circle>
+                            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                        </svg>
+                        <span class="badge" id="cart-count">0</span>
+                    </button>
+                    <button class="mobile-toggle" id="mobile-toggle">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </button>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Policy Content -->
+    <div class="policy-container">
+        <h1>Returns & Exchange Policy</h1>
+        <p class="policy-intro">At Mellophi Fashion, we value your support and want you to love every purchase.</p>
+
+        <!-- Important Notice -->
+        <div class="highlight-box">
+            <strong>Important:</strong> We do not offer returns or refunds. Exchanges are available within 3 days under the conditions outlined below.
+        </div>
+
+        <!-- Exchange Policy -->
+        <section class="policy-section">
+            <h2>Exchange Policy</h2>
+            
+            <h3>Eligibility for Exchange</h3>
+            <p>To be eligible for an exchange, your item must meet the following conditions:</p>
+            <ul>
+                <li>Exchange request made within <strong>3 days</strong> of delivery or collection</li>
+                <li>Items must be <strong>unworn, unwashed, and unused</strong></li>
+                <li>Items must be in their <strong>original condition with all tags attached</strong></li>
+                <li>Items must be in the original packaging</li>
+                <li>Proof of purchase (order number or receipt) must be provided</li>
+            </ul>
+
+            <h3>What Can Be Exchanged</h3>
+            <ul>
+                <li><strong>Size exchanges:</strong> Different size of the same item</li>
+                <li><strong>Color exchanges:</strong> Different color of the same item (subject to availability)</li>
+                <li><strong>Defective items:</strong> Items with manufacturing defects or damage during shipping</li>
+            </ul>
+
+            <h3>What Cannot Be Exchanged</h3>
+            <ul>
+                <li>Items worn, washed, or altered in any way</li>
+                <li>Items without original tags or packaging</li>
+                <li>Items purchased during clearance or final sale (if applicable)</li>
+                <li>Items requested for exchange after the 3-day window</li>
+            </ul>
+        </section>
+
+        <!-- Exchange Process -->
+        <section class="policy-section">
+            <h2>How to Request an Exchange</h2>
+            
+            <ol>
+                <li>
+                    <strong>Contact Us Within 3 Days:</strong>
+                    <p>Email us at <a href="mailto:info@mellophifashion.co.za">info@mellophifashion.co.za</a> or WhatsApp <a href="https://wa.me/27650458081">+27 650 458 081</a> with:</p>
+                    <ul>
+                        <li>Your order number</li>
+                        <li>Item(s) you wish to exchange</li>
+                        <li>Reason for exchange (size/color/defect)</li>
+                        <li>Photos of the item (if defective)</li>
+                    </ul>
+                </li>
+                <li>
+                    <strong>Await Confirmation:</strong>
+                    <p>We will confirm if the requested size/color is available and provide return instructions.</p>
+                </li>
+                <li>
+                    <strong>Return the Item:</strong>
+                    <p>Package the item securely in its original packaging and send it back to us. You are responsible for return shipping costs unless the item is defective or we sent the wrong item.</p>
+                </li>
+                <li>
+                    <strong>Inspection & Processing:</strong>
+                    <p>Once we receive your return, we'll inspect it within 2 business days. If approved, we'll ship your exchange item immediately.</p>
+                </li>
+                <li>
+                    <strong>Receive Your Exchange:</strong>
+                    <p>Your new item will be shipped to you at no additional cost (standard shipping).</p>
+                </li>
+            </ol>
+        </section>
+
+        <!-- Shipping & Costs -->
+        <section class="policy-section">
+            <h2>Shipping & Costs</h2>
+            
+            <h3>Return Shipping</h3>
+            <ul>
+                <li><strong>Customer responsibility:</strong> You pay for return shipping unless the item is defective or incorrect</li>
+                <li><strong>Our responsibility:</strong> We cover return shipping for defective or incorrect items</li>
+            </ul>
+
+            <h3>Exchange Shipping</h3>
+            <ul>
+                <li>We cover standard shipping for your exchange item</li>
+                <li>Express shipping available at an additional cost</li>
+            </ul>
+
+            <h3>Lost or Damaged Returns</h3>
+            <p>We recommend using a trackable shipping method. Mellophi Fashion is not responsible for items lost or damaged during return transit.</p>
+        </section>
+
+        <!-- No Returns/Refunds -->
+        <section class="policy-section">
+            <h2>No Returns & No Refunds</h2>
+            
+            <p><strong>Please note:</strong> We do not accept returns for refunds. All sales are final.</p>
+            
+            <h3>Why No Refunds?</h3>
+            <p>As a small business offering affordable luxury, this policy allows us to:</p>
+            <ul>
+                <li>Keep our prices competitive</li>
+                <li>Maintain quality control of our inventory</li>
+                <li>Ensure all items sold are in pristine condition</li>
+            </ul>
+
+            <h3>Exceptions</h3>
+            <p>Refunds will only be considered in the following circumstances:</p>
+            <ul>
+                <li>You received a completely different item than ordered</li>
+                <li>The item arrived with a significant defect that cannot be exchanged</li>
+                <li>We are unable to provide an exchange due to stock unavailability</li>
+            </ul>
+            <p>In such cases, please contact us at <a href="mailto:info@mellophifashion.co.za">info@mellophifashion.co.za</a> and we will review your request on a case-by-case basis.</p>
+        </section>
+
+        <!-- Contact Section -->
+        <section class="policy-section">
+            <h2>Questions About Exchanges?</h2>
+            
+            <p>We're here to help! Contact us:</p>
+            
+            <div style="margin-top: 1.5rem;">
+                <p><strong>Email:</strong> <a href="mailto:info@mellophifashion.co.za">info@mellophifashion.co.za</a></p>
+                <p><strong>WhatsApp:</strong> <a href="https://wa.me/27650458081">+27 650 458 081</a></p>
+                <p><strong>Business Hours:</strong> Monday – Saturday, 9:00 AM – 5:00 PM</p>
+            </div>
+
+            <p style="margin-top: 2rem;">For full terms and conditions, please visit our <a href="terms.html">Terms & Conditions</a> page.</p>
+        </section>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>MELLOPHI FASHION</h3>
+                    <p>South Africa</p>
+                    <div class="social-links">
+                        <a href="https://www.instagram.com/mellophi_fashion?utm_source=qr" target="_blank" aria-label="Instagram">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                            </svg>
+                        </a>
+                        <a href="https://www.facebook.com/mellophifashion" target="_blank" aria-label="Facebook">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                            </svg>
+                        </a>
+                        <a href="https://www.tiktok.com/@mellophifashion" target="_blank" aria-label="TikTok">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h4>Shop</h4>
+                    <ul>
+                        <li><a href="shop.html">All Products</a></li>
+                        <li><a href="shop.html?category=dresses">Dresses</a></li>
+                        <li><a href="shop.html?category=tops">Tops</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Help</h4>
+                    <ul>
+                        <li><a href="contact.html">Contact Us</a></li>
+                        <li><a href="returns.html">Returns & Exchanges</a></li>
+                        <li><a href="terms.html">Terms & Conditions</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Newsletter</h4>
+                    <p>Get updates on new arrivals</p>
+                    <form class="newsletter-form">
+                        <input type="email" placeholder="Your email" required>
+                        <button type="submit" class="btn-primary">Subscribe</button>
+                    </form>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Mellophi Fashion. All rights reserved.</p>
+                <div class="footer-links">
+                    <a href="terms.html">Privacy Policy</a>
+                    <a href="returns.html">Returns Policy</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+</body>
+</html>
