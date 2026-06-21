@@ -9,6 +9,7 @@
     "seed": "node scripts/seedProducts.js",
     "prod": "NODE_ENV=production node server.js",
     "payments:preflight": "node scripts/paymentsPreflight.js",
+    "payments:audit": "node scripts/paymentsAudit.js",
     "db:backup": "mysqldump -u root -p mellophi_fashion > backup_$(date +%Y%m%d).sql",
     "db:migrate": "node scripts/migrate.js",
     "test": "echo \"Error: no test specified\" && exit 1"

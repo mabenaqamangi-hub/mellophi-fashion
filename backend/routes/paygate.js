@@ -1,201 +1,248 @@
 const express = require('express');
 const router = express.Router();
 const crypto = require('crypto');
+const sequelize = require('../config/database');
 const Order = require('../models/Order');
 const { sendOrderConfirmationEmail } = require('../utils/email');
 const logger = require('../utils/logger');
 require('dotenv').config();
 
-// PayGate credentials from environment variables
 const PAYGATE_ID = process.env.PAYGATE_ID;
 const PAYGATE_SECRET = process.env.PAYGATE_SECRET;
-const PAYGATE_INITIATE_URL = process.env.PAYGATE_INITIATE_URL || 'https://secure.paygate.co.za/payweb3/initiate.trans';
-const PAYGATE_PROCESS_URL = process.env.PAYGATE_PROCESS_URL || 'https://secure.paygate.co.za/payweb3/process.trans';
-const PAYGATE_RETURN_URL = process.env.PAYGATE_RETURN_URL || 'https://mabenaqamangi-hub.github.io/mellophi-fashion/payment-return.html';
-const PAYGATE_NOTIFY_URL = process.env.PAYGATE_NOTIFY_URL;
-const PAYGATE_TEST_MODE = process.env.PAYGATE_TEST_MODE === 'true';
+const PAYGATE_PASSPHRASE = process.env.PAYGATE_PASSPHRASE || '';
+const PAYGATE_TEST_MODE = String(process.env.PAYGATE_TEST_MODE || '').toLowerCase() === 'true';
 
-// Validate PayGate configuration
+const PAYGATE_PROCESS_URL = process.env.PAYGATE_PROCESS_URL || (PAYGATE_TEST_MODE
+    ? 'https://sandbox.payfast.co.za/eng/process'
+    : 'https://www.payfast.co.za/eng/process');
+const PAYGATE_RETURN_URL = process.env.PAYGATE_RETURN_URL || 'https://mabenaqamangi-hub.github.io/mellophi-fashion/payment-return.html';
+const PAYGATE_CANCEL_URL = process.env.PAYGATE_CANCEL_URL || PAYGATE_RETURN_URL;
+const PAYGATE_NOTIFY_URL = process.env.PAYGATE_NOTIFY_URL || '';
+
 if (!PAYGATE_ID || !PAYGATE_SECRET) {
     if (!PAYGATE_TEST_MODE) {
-        logger.error('⚠️  WARNING: PayGate credentials not configured!');
-        logger.error('   Set PAYGATE_ID and PAYGATE_SECRET in .env file');
-    } else {
-        console.log('🧪 PayGate TEST MODE enabled - using mock responses');
+        logger.error('WARNING: Payment credentials not configured');
+        logger.error('Set PAYGATE_ID and PAYGATE_SECRET in .env');
     }
 }
 
-/**
- * Generate mock PayGate response for testing
- */
-function generateMockPayGateResponse(paymentId) {
-    const mockData = {
-        RESULT_CODE: '0',
-        PAY_REQUEST_ID: paymentId,
-        REDIRECT_URL: `${PAYGATE_PROCESS_URL}?PAY_REQUEST_ID=${paymentId}`,
-        CHECKSUM: 'mock_checksum_' + Date.now()
-    };
-    
-    const checksumString = Object.keys(mockData)
-        .filter(key => key !== 'CHECKSUM')
-        .sort()
-        .map(key => String(mockData[key] || ''))
-        .join('');
-    
-    mockData.CHECKSUM = crypto.createHash('md5').update(checksumString).digest('hex');
-    
-    return Object.entries(mockData)
-        .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
+function pfEncode(value) {
+    return encodeURIComponent(String(value))
+        .replace(/%20/g, '+')
+        .replace(/[!'()*]/g, (c) => `%${c.charCodeAt(0).toString(16).toUpperCase()}`);
+}
+
+function buildQueryString(fields) {
+    return Object.entries(fields)
+        .filter(([, value]) => value !== undefined && value !== null && String(value) !== '')
+        .map(([key, value]) => `${pfEncode(key)}=${pfEncode(String(value))}`)
         .join('&');
 }
 
-/**
- * Generate MD5 checksum for PayGate
- */
-function generateChecksum(data) {
-    if (!PAYGATE_SECRET) {
-        throw new Error('PAYGATE_SECRET is not configured');
+function maskValue(value, visible = 4) {
+    const str = String(value || '');
+    if (str.length <= visible) return '*'.repeat(str.length);
+    return `${'*'.repeat(str.length - visible)}${str.slice(-visible)}`;
+}
+
+async function ensureDatabaseForPayments() {
+    try {
+        await sequelize.authenticate();
+        return true;
+    } catch (error) {
+        logger.error('Payment database unavailable', {
+            message: error.message
+        });
+        throw new Error('Payment service database unavailable');
     }
-    const checksumString = Object.keys(data)
-        .filter(key => key !== 'CHECKSUM')
+}
+
+function generatePayfastSignature(data, passphrase = PAYGATE_PASSPHRASE) {
+    const sortedPairs = Object.keys(data)
+        .filter((key) => key !== 'signature' && key !== 'CHECKSUM')
+        .filter((key) => data[key] !== undefined && data[key] !== null && String(data[key]) !== '')
         .sort()
-        .map(key => String(data[key] || ''))
+        .map((key) => `${key}=${pfEncode(String(data[key]).trim())}`);
+
+    if (passphrase) {
+        sortedPairs.push(`passphrase=${pfEncode(passphrase)}`);
+    }
+
+    return crypto.createHash('md5').update(sortedPairs.join('&')).digest('hex');
+}
+
+function generateLegacyChecksum(data) {
+    const checksumString = Object.keys(data)
+        .filter((key) => key !== 'CHECKSUM')
+        .sort()
+        .map((key) => String(data[key] || ''))
         .join('') + PAYGATE_SECRET;
     return crypto.createHash('md5').update(checksumString).digest('hex');
 }
 
-async function processPaygateUpdate(paygateReturn) {
-    const returnedChecksum = paygateReturn.CHECKSUM;
-    if (!returnedChecksum) {
-        throw new Error('PayGate return payload missing CHECKSUM');
-    }
+function mapGatewayStatus(payload) {
+    const payfastStatus = String(payload.payment_status || '').toUpperCase();
+    if (payfastStatus === 'COMPLETE') return 'completed';
+    if (payfastStatus === 'PENDING') return 'pending';
+    if (payfastStatus === 'CANCELLED') return 'cancelled';
+    if (payfastStatus === 'FAILED') return 'failed';
 
-    const calculatedChecksum = generateChecksum(paygateReturn);
+    const legacy = String(payload.TRANSACTION_STATUS || '');
+    if (legacy === '1') return 'completed';
+    if (legacy === '2') return 'failed';
 
-    if (returnedChecksum !== calculatedChecksum) {
-        throw new Error(`Invalid checksum: expected ${calculatedChecksum}, received ${returnedChecksum}`);
-    }
+    return 'cancelled';
+}
 
-    if (!paygateReturn.REFERENCE) {
-        throw new Error('PayGate return payload missing REFERENCE');
-    }
-
-    const order = await Order.findOne({
-        where: { orderNumber: paygateReturn.REFERENCE }
-    });
-
-    if (!order) {
-        throw new Error(`Order not found: ${paygateReturn.REFERENCE}`);
-    }
-
-    const transactionStatus = paygateReturn.TRANSACTION_STATUS;
-    if (transactionStatus === '1') {
+async function applyOrderPaymentUpdate(order, mappedStatus, transactionId) {
+    if (mappedStatus === 'completed') {
         await order.update({
             paymentStatus: 'completed',
             orderStatus: 'processing',
-            transactionId: paygateReturn.TRANSACTION_ID
+            transactionId: transactionId || null
         });
         try {
             await sendOrderConfirmationEmail(order.customerInfo.email, order);
         } catch (emailErr) {
             logger.error('Order confirmation email failed:', emailErr);
         }
-    } else if (transactionStatus === '2') {
+        return;
+    }
+
+    if (mappedStatus === 'pending') {
+        await order.update({
+            paymentStatus: 'pending',
+            orderStatus: 'pending',
+            transactionId: transactionId || null
+        });
+        return;
+    }
+
+    if (mappedStatus === 'failed') {
         await order.update({
             paymentStatus: 'failed',
-            orderStatus: 'cancelled'
+            orderStatus: 'cancelled',
+            transactionId: transactionId || null
         });
-    } else {
-        await order.update({
-            paymentStatus: 'cancelled',
-            orderStatus: 'cancelled'
-        });
+        return;
     }
+
+    await order.update({
+        paymentStatus: 'cancelled',
+        orderStatus: 'cancelled',
+        transactionId: transactionId || null
+    });
+}
+
+async function processPaygateUpdate(payload, source = 'unknown') {
+    await ensureDatabaseForPayments();
+
+    const reference = payload.m_payment_id || payload.REFERENCE;
+    if (!reference) {
+        throw new Error('Payment payload missing order reference');
+    }
+
+    if (payload.signature) {
+        const calculatedSignature = generatePayfastSignature(payload);
+        if (payload.signature !== calculatedSignature) {
+            logger.warn('Payment signature mismatch', {
+                source,
+                reference,
+                provided: maskValue(payload.signature),
+                calculated: maskValue(calculatedSignature)
+            });
+            throw new Error('Invalid payment signature');
+        }
+    } else if (payload.CHECKSUM) {
+        const calculatedChecksum = generateLegacyChecksum(payload);
+        if (payload.CHECKSUM !== calculatedChecksum) {
+            logger.warn('Legacy checksum mismatch', {
+                source,
+                reference,
+                provided: maskValue(payload.CHECKSUM),
+                calculated: maskValue(calculatedChecksum)
+            });
+            throw new Error('Invalid legacy checksum');
+        }
+    }
+
+    const order = await Order.findOne({ where: { orderNumber: reference } });
+    if (!order) {
+        throw new Error(`Order not found: ${reference}`);
+    }
+
+    const mappedStatus = mapGatewayStatus(payload);
+    const transactionId = payload.pf_payment_id || payload.TRANSACTION_ID || null;
+
+    await applyOrderPaymentUpdate(order, mappedStatus, transactionId);
+
+    logger.info('Payment update applied', {
+        source,
+        reference,
+        mappedStatus,
+        transactionId: transactionId || null
+    });
 
     return {
         success: true,
-        status: transactionStatus === '1' ? 'approved' : 'declined',
-        reference: paygateReturn.REFERENCE,
-        transactionId: paygateReturn.TRANSACTION_ID || null
+        status: mappedStatus === 'completed' ? 'approved' : mappedStatus === 'pending' ? 'pending' : 'declined',
+        reference,
+        transactionId
     };
 }
 
-/**
- * Generate checksum for PayWeb3 initiate request using documented field order.
- */
-function generateInitiateChecksum(data) {
-    const orderedFields = [
-        'PAYGATE_ID',
-        'REFERENCE',
-        'AMOUNT',
-        'CURRENCY',
-        'RETURN_URL',
-        'TRANSACTION_DATE',
-        'LOCALE',
-        'COUNTRY',
-        'EMAIL',
-        'PAY_METHOD',
-        'PAY_METHOD_DETAIL',
-        'NOTIFY_URL',
-        'USER1',
-        'USER2',
-        'USER3',
-        'VAULT',
-        'VAULT_ID'
-    ];
-
-    const checksumString = orderedFields
-        .filter((field) => data[field] !== undefined && data[field] !== null && data[field] !== '')
-        .map((field) => String(data[field]))
-        .join('') + PAYGATE_SECRET;
-
-    return crypto.createHash('md5').update(checksumString).digest('hex');
-}
-
-/**
- * Initiate PayGate payment
- * POST /api/paygate/initiate
- */
 router.post('/initiate', async (req, res) => {
     try {
+        await ensureDatabaseForPayments();
+
+        logger.info('Payment initiation request received', {
+            mode: PAYGATE_TEST_MODE ? 'test' : 'live',
+            processUrl: PAYGATE_PROCESS_URL,
+            hasPassphrase: !!PAYGATE_PASSPHRASE,
+            hasNotifyUrl: !!PAYGATE_NOTIFY_URL
+        });
+
+        if (process.env.NODE_ENV === 'production' && PAYGATE_TEST_MODE) {
+            return res.status(500).json({
+                success: false,
+                message: 'Payment test mode is disabled in production'
+            });
+        }
+
         if (!PAYGATE_ID || !PAYGATE_SECRET) {
             return res.status(500).json({
                 success: false,
-                message: 'PayGate is not configured on the server'
+                message: 'Payment gateway is not configured on the server'
             });
         }
 
-        const { 
-            amount, 
-            reference, 
-            email, 
-            firstName, 
+        const {
+            amount,
+            reference,
+            email,
+            firstName,
             lastName,
             paymentMethod,
-            orderDetails 
+            orderDetails
         } = req.body;
 
-        // Validate required fields
         if (!amount || !reference || !email) {
-            return res.status(400).json({ 
-                success: false, 
-                message: 'Missing required fields' 
-            });
+            return res.status(400).json({ success: false, message: 'Missing required fields' });
         }
 
-        // Convert amount to cents (PayGate requires amount in cents)
-        const amountInCents = Math.round(parseFloat(amount) * 100);
+        if (!/^\d+(\.\d{1,2})?$/.test(String(amount))) {
+            return res.status(400).json({ success: false, message: 'Invalid amount format' });
+        }
 
-        // Create order in database (if available)
         let order = null;
         try {
             order = await Order.create({
                 orderNumber: reference,
                 customerInfo: {
-                    email: email,
-                    firstName: firstName,
-                    lastName: lastName,
-                    fullName: `${firstName} ${lastName}`
+                    email,
+                    firstName,
+                    lastName,
+                    fullName: `${firstName || ''} ${lastName || ''}`.trim()
                 },
                 items: orderDetails && orderDetails.items ? orderDetails.items : [],
                 shippingAddress: orderDetails && orderDetails.shippingAddress ? orderDetails.shippingAddress : '',
@@ -208,233 +255,136 @@ router.post('/initiate', async (req, res) => {
                 orderStatus: 'pending'
             });
         } catch (dbError) {
-            console.warn('⚠️  Database unavailable for order creation. Proceeding with PayGate payment only:', dbError.message);
-            // Continue with payment initiation even if database is unavailable
+            console.warn('Database unavailable for order creation. Continuing with payment initiation:', dbError.message);
         }
-
-        // PayGate initiate payload
-        const paygateData = {
-            PAYGATE_ID: PAYGATE_ID,
-            REFERENCE: reference,
-            AMOUNT: amountInCents,
-            CURRENCY: 'ZAR',
-            RETURN_URL: PAYGATE_RETURN_URL,
-            TRANSACTION_DATE: new Date().toISOString().slice(0, 19).replace('T', ' '),
-            LOCALE: 'en-za',
-            COUNTRY: 'ZAF',
-            EMAIL: email
-        };
-
-        if (paymentMethod === 'applepay') {
-            paygateData.PAY_METHOD = 'APPLEPAY';
-            paygateData.PAY_METHOD_DETAIL = 'APPLEPAY';
-        } else if (paymentMethod === 'card' || paymentMethod === 'payfast' || !paymentMethod) {
-            paygateData.PAY_METHOD = 'CARD';
-            paygateData.PAY_METHOD_DETAIL = 'CREDITCARD';
-        }
-
-        if (PAYGATE_NOTIFY_URL) {
-            paygateData.NOTIFY_URL = PAYGATE_NOTIFY_URL;
-        }
-
-        // Generate checksum
-        paygateData.CHECKSUM = generateInitiateChecksum(paygateData);
 
         if (PAYGATE_TEST_MODE) {
-            console.log('🧪 Using local success redirect in test mode');
-            const paymentId = 'TEST_' + reference + '_' + Date.now();
-
-            // Build a signed mock callback payload that matches /api/paygate/return verification.
-            const mockReturnData = {
-                PAY_REQUEST_ID: paymentId,
+            const mockPayload = {
+                PAY_REQUEST_ID: `TEST_${reference}_${Date.now()}`,
                 REFERENCE: reference,
                 TRANSACTION_STATUS: '1',
-                TRANSACTION_ID: 'MOCKTXN_' + Date.now()
+                TRANSACTION_ID: `MOCKTXN_${Date.now()}`
             };
-            mockReturnData.CHECKSUM = generateChecksum(mockReturnData);
+            mockPayload.CHECKSUM = generateLegacyChecksum(mockPayload);
 
             if (order) {
-                await order.update({
-                    paygateId: paymentId
-                }).catch(err => console.warn('Could not update order with PayGate ID:', err.message));
+                await order.update({ paygateId: mockPayload.PAY_REQUEST_ID }).catch(() => null);
             }
 
-            const query = Object.entries(mockReturnData)
-                .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
-                .join('&');
             const separator = PAYGATE_RETURN_URL.includes('?') ? '&' : '?';
-
             return res.json({
                 success: true,
-                payRequestId: paymentId,
-                paymentUrl: `${PAYGATE_RETURN_URL}${separator}${query}`,
-                reference: reference,
+                payRequestId: mockPayload.PAY_REQUEST_ID,
+                paymentUrl: `${PAYGATE_RETURN_URL}${separator}${buildQueryString(mockPayload)}`,
+                reference,
                 testMode: true
             });
         }
 
-        // Generate real PayGate response
-        let responseText;
-        {
-            // Send request to PayGate (real)
-            const fetch = (await import('node-fetch')).default;
-            const formBody = Object.entries(paygateData)
-                .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
-                .join('&');
+        const paymentPayload = {
+            merchant_id: PAYGATE_ID,
+            merchant_key: PAYGATE_SECRET,
+            return_url: PAYGATE_RETURN_URL,
+            cancel_url: PAYGATE_CANCEL_URL,
+            notify_url: PAYGATE_NOTIFY_URL,
+            name_first: firstName || 'Customer',
+            name_last: lastName || '',
+            email_address: email,
+            m_payment_id: reference,
+            amount: Number(parseFloat(amount || 0)).toFixed(2),
+            item_name: `Order ${reference}`,
+            item_description: `Mellophi Fashion order ${reference}`
+        };
 
-            const response = await fetch(PAYGATE_INITIATE_URL, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                body: formBody
-            });
+        paymentPayload.signature = generatePayfastSignature(paymentPayload);
 
-            responseText = await response.text();
-        }
-        
-        console.log('✅ PayGate Initiate Response Status: 200');
-        console.log('✅ PayGate Initiate Response Body:', responseText);
-        
-        // Parse PayGate response
-        const paygateResponse = {};
-        responseText.split('&').forEach(pair => {
-            const [key, value] = pair.split('=');
-            paygateResponse[key] = decodeURIComponent(value || '');
-        });
-
-        console.log('✅ Parsed PayGate Response:', paygateResponse);
-
-        const resultCode = paygateResponse.RESULT_CODE;
-        const hasError = paygateResponse.ERROR && paygateResponse.ERROR !== '0';
-        const isFailedResult = resultCode !== undefined && resultCode !== null && resultCode !== '' && resultCode !== '0' && resultCode !== 0;
-
-        if (hasError || isFailedResult) {
-            if (order) {
-                await order.update({
-                    paymentStatus: 'failed',
-                    orderStatus: 'cancelled'
-                }).catch(err => console.warn('Could not update order status:', err.message));
-            }
-
-            return res.status(400).json({
-                success: false,
-                message: 'PayGate rejected initiation request',
-                paygate: {
-                    resultCode: resultCode || null,
-                    error: paygateResponse.ERROR || null,
-                    raw: responseText
-                }
-            });
-        }
-
-        const payRequestId = paygateResponse.PAY_REQUEST_ID;
-        const responseChecksum = paygateResponse.CHECKSUM;
-
-        if (!payRequestId || !responseChecksum) {
-            if (order) {
-                await order.update({
-                    paymentStatus: 'failed',
-                    orderStatus: 'cancelled'
-                }).catch(err => console.warn('Could not update order status:', err.message));
-            }
-
-            return res.status(400).json({
-                success: false,
-                message: 'Invalid response from PayGate',
-                paygate: {
-                    raw: responseText
-                }
-            });
-        }
-
-        // Update order with PayGate reference (if order exists in database)
         if (order) {
-            await order.update({ 
-                paygateId: payRequestId 
-            }).catch(err => console.warn('Could not update order with PayGate ID:', err.message));
+            await order.update({ paygateId: reference }).catch(() => null);
         }
 
-        // Return payment URL
-        res.json({
+        return res.json({
             success: true,
-            payRequestId: payRequestId,
-            paymentUrl: `${PAYGATE_PROCESS_URL}?PAY_REQUEST_ID=${encodeURIComponent(payRequestId)}&CHECKSUM=${encodeURIComponent(responseChecksum)}`,
-            reference: reference
+            payRequestId: reference,
+            paymentUrl: `${PAYGATE_PROCESS_URL}?${buildQueryString(paymentPayload)}`,
+            reference
         });
-
     } catch (error) {
-        logger.error('PayGate initiate error:', error);
-        res.status(500).json({ 
-            success: false, 
+        logger.error('Payment initiate error', {
+            message: error.message,
+            stack: error.stack
+        });
+        return res.status(500).json({
+            success: false,
             message: 'Payment initiation failed',
-            error: error.message 
+            error: error.message
         });
     }
 });
 
-/**
- * Handle PayGate return/callback
- * POST /api/paygate/return
- */
 router.post('/return', async (req, res) => {
     try {
-        const paygateReturn = req.body;
-        const result = await processPaygateUpdate(paygateReturn);
+        logger.info('Payment return callback received', {
+            keys: Object.keys(req.body || {})
+        });
+        const result = await processPaygateUpdate(req.body, 'return');
         res.json(result);
     } catch (error) {
-        logger.error('PayGate return error:', error);
-        res.status(500).json({ 
-            success: false, 
+        logger.error('Payment return error', {
+            message: error.message,
+            stack: error.stack
+        });
+        res.status(500).json({
+            success: false,
             message: 'Payment verification failed',
-            error: error.message 
+            error: error.message
         });
     }
 });
 
 router.post('/notify', async (req, res) => {
     try {
-        await processPaygateUpdate(req.body);
+        logger.info('Payment notify received', {
+            ip: req.ip,
+            userAgent: req.get('user-agent') || 'unknown',
+            keys: Object.keys(req.body || {})
+        });
+        await processPaygateUpdate(req.body, 'notify');
         res.type('text/plain').send('OK');
     } catch (error) {
-        logger.error('PayGate notify error:', error);
+        logger.error('Payment notify error', {
+            message: error.message,
+            stack: error.stack
+        });
         res.type('text/plain').status(400).send('ERROR');
     }
 });
 
-/**
- * Get payment status
- * GET /api/paygate/status/:reference
- */
 router.get('/status/:reference', async (req, res) => {
     try {
         const { reference } = req.params;
 
-        const order = await Order.findOne({
-            where: { orderNumber: reference }
-        });
+        const order = await Order.findOne({ where: { orderNumber: reference } });
 
         if (!order) {
-            return res.status(404).json({ 
-                success: false, 
-                message: 'Order not found' 
+            return res.status(404).json({
+                success: false,
+                message: 'Order not found'
             });
         }
 
-        res.json({
+        return res.json({
             success: true,
-            reference: reference,
+            reference,
             paymentStatus: order.paymentStatus,
             orderStatus: order.orderStatus,
             transactionId: order.transactionId
         });
-
     } catch (error) {
         logger.error('Status check error:', error);
-        res.status(500).json({ 
-            success: false, 
+        return res.status(500).json({
+            success: false,
             message: 'Failed to check payment status',
-            error: error.message 
+            error: error.message
         });
     }
 });

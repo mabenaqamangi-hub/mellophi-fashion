@@ -31,7 +31,7 @@ services:
       
       # Frontend URL - Update with your actual domain
       - key: FRONTEND_URL
-        value: https://mabenaqamangi-hub.github.io/mellophi-fashion
+        value: https://mabenaqamangi-hub.github.io
       
       # JWT Secret - Generate and set in dashboard
       - key: JWT_SECRET
@@ -49,17 +49,23 @@ services:
         sync: false # Keep secret
       
       - key: PAYGATE_INITIATE_URL
-        value: https://secure.paygate.co.za/payweb3/initiate.trans
+        value: https://www.payfast.co.za/eng/process
       
       - key: PAYGATE_PROCESS_URL
-        value: https://secure.paygate.co.za/payweb3/process.trans
+        value: https://www.payfast.co.za/eng/process
       
       # PayGate URLs - Update after deployment
       - key: PAYGATE_RETURN_URL
         value: https://mabenaqamangi-hub.github.io/mellophi-fashion/payment-return.html
+
+      - key: PAYGATE_CANCEL_URL
+        value: https://mabenaqamangi-hub.github.io/mellophi-fashion/payment-return.html
       
       - key: PAYGATE_NOTIFY_URL
-        value: https://mellophi-fashion.onrender.com/api/paygate/notify
+        value: https://mellophi-fashion-api.onrender.com/api/paygate/notify
+
+      - key: PAYGATE_PASSPHRASE
+        sync: false
       
       # File Upload
       - key: MAX_FILE_SIZE

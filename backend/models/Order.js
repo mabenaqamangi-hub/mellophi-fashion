@@ -49,7 +49,7 @@ const Order = sequelize.define('Order', {
         allowNull: false
     },
     paymentMethod: {
-        type: DataTypes.ENUM('card', 'paypal', 'paygate', 'eft'),
+        type: DataTypes.ENUM('card', 'paypal', 'paygate', 'payfast', 'applepay', 'eft'),
         allowNull: false
     },
     paymentStatus: {
