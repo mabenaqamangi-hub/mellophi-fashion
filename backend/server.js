@@ -23,22 +23,42 @@ const app = express();
 
 // Middleware
 // CORS Configuration
+function normalizeOrigin(input) {
+    if (!input) return '';
+    const trimmed = String(input).trim();
+    if (!trimmed) return '';
+    if (trimmed === '*') return '*';
+    try {
+        return new URL(trimmed).origin;
+    } catch (error) {
+        return trimmed.replace(/\/$/, '');
+    }
+}
+
 const corsOptions = {
     origin: function (origin, callback) {
-        const allowedOrigins = process.env.FRONTEND_URL 
-            ? process.env.FRONTEND_URL.split(',').map(url => url.trim())
-            : ['http://localhost:5500', 'http://127.0.0.1:5500'];
+        const configuredOrigins = process.env.FRONTEND_URL
+            ? process.env.FRONTEND_URL.split(',').map(normalizeOrigin).filter(Boolean)
+            : [];
+        const allowedOrigins = [
+            'http://localhost:5500',
+            'http://127.0.0.1:5500',
+            ...configuredOrigins
+        ];
+        const normalizedRequestOrigin = normalizeOrigin(origin);
         
         // Allow requests with no origin (mobile apps, postman, etc.)
-        if (!origin || allowedOrigins.includes(origin) || allowedOrigins.includes('*')) {
+        if (!origin || allowedOrigins.includes('*') || allowedOrigins.includes(normalizedRequestOrigin)) {
             callback(null, true);
         } else {
+            console.warn(`CORS blocked request from origin: ${origin}`);
             callback(new Error('Not allowed by CORS'));
         }
     },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization']
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    optionsSuccessStatus: 200
 };
 
 app.use(cors(corsOptions));
@@ -71,11 +91,6 @@ async function initializeDatabase() {
         // Don't exit - let server run without database
     }
 }
-
-// Initialize database (will wait for connection from config/database.js)
-setTimeout(() => {
-    initializeDatabase();
-}, 3000); // Wait 3 seconds for connection to be established
 
 // API Routes
 app.use('/api/products', productRoutes);
@@ -139,10 +154,16 @@ app.use((req, res) => {
     });
 });
 
-// Start server
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-    console.log(`🚀 Server running on port ${PORT}`);
-    console.log(`📍 API URL: http://localhost:${PORT}/api`);
-    console.log(`🔧 Environment: ${process.env.NODE_ENV || 'development'}`);
-});
+// Start server after the database sync attempt completes.
+async function startServer() {
+    await initializeDatabase();
+
+    const PORT = process.env.PORT || 5000;
+    app.listen(PORT, () => {
+        console.log(`🚀 Server running on port ${PORT}`);
+        console.log(`📍 API URL: http://localhost:${PORT}/api`);
+        console.log(`🔧 Environment: ${process.env.NODE_ENV || 'development'}`);
+    });
+}
+
+startServer();

@@ -83,7 +83,7 @@ function loadBankDetailsFromSettings() {
 
 // === PAYMENT OPTIONS ===
 function initPaymentOptions() {
-    const paymentOptions = document.querySelectorAll('input[name="payment"]');
+    const paymentOptions = document.querySelectorAll('input[name="payment-method"]');
     const bankingDetails = document.getElementById('banking-details');
     const cardPaymentForm = document.getElementById('card-payment-form');
     
@@ -451,7 +451,7 @@ function initCheckoutForm() {
             province: document.getElementById('province').value,
             postalCode: document.getElementById('postal-code').value,
             shipping: document.querySelector('input[name="shipping"]:checked')?.value,
-            payment: document.querySelector('input[name="payment"]:checked')?.value
+            payment: document.querySelector('input[name="payment-method"]:checked')?.value
         };
         
         // Validate required fields
@@ -586,6 +586,7 @@ function getPaymentMethodName(method) {
     const names = {
         'payfast': 'PayGate (Card Payment)',
         'card': 'Credit/Debit Card via PayGate',
+        'applepay': 'Apple Pay via PayGate',
         'eft': 'Bank Transfer (EFT)'
     };
     return names[method] || method;
@@ -632,7 +633,7 @@ function processPayment(orderData) {
     const paymentMethod = orderData.customer.payment;
     
     // Handle PayGate payment
-    if (paymentMethod === 'card' || paymentMethod === 'payfast') {
+    if (paymentMethod === 'card' || paymentMethod === 'applepay' || paymentMethod === 'payfast') {
         processPayGatePayment(orderData, submitBtn, originalText);
     } else if (paymentMethod === 'eft') {
         // EFT - Show banking details and instructions

@@ -1383,34 +1383,7 @@
             const customerPhone = document.getElementById('phone').value;
             const shippingAddress = document.getElementById('address').value;
             
-            // Get card details
-            const cardholderName = document.getElementById('cardholder-name').value;
-            const cardNumber = document.getElementById('card-number').value.replace(/\s/g, '');
-            const expiryDate = document.getElementById('expiry-date').value;
-            const cvv = document.getElementById('cvv').value;
-
-            if (paymentMethod === 'card') {
-                // Validate card fields
-                if (!cardholderName || !cardNumber || !expiryDate || !cvv) {
-                    alert('❌ Please fill in all card details');
-                    return;
-                }
-
-                if (cardNumber.length < 13 || cardNumber.length > 19) {
-                    alert('❌ Please enter a valid card number');
-                    return;
-                }
-
-                if (expiryDate.length !== 5 || !expiryDate.includes('/')) {
-                    alert('❌ Please enter expiry date in MM/YY format');
-                    return;
-                }
-
-                if (cvv.length < 3 || cvv.length > 4) {
-                    alert('❌ Please enter a valid CVV');
-                    return;
-                }
-            }
+            // Card details are collected on the hosted gateway page, not locally.
             
             // Generate order reference
             const orderReference = 'MELL' + Date.now();
@@ -1445,12 +1418,6 @@
                         firstName: customerName.split(' ')[0],
                         lastName: customerName.split(' ').slice(1).join(' ') || customerName.split(' ')[0],
                         paymentMethod: paymentMethod,
-                        cardDetails: paymentMethod === 'card' ? {
-                            cardholderName: cardholderName,
-                            cardNumber: cardNumber,
-                            expiryDate: expiryDate,
-                            cvv: cvv
-                        } : undefined,
                         orderDetails: {
                             items: selectedProducts,
                             shippingAddress: shippingAddress,

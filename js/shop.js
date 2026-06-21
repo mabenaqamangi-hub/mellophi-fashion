@@ -347,14 +347,8 @@ function removeFallbackWarning() {
 
 // Load products from API
 async function loadProductsFromAPI() {
-    // Use admin dashboard products first so shop and dashboard stay in sync.
-    if (loadProductsFromLocalStorage()) {
-        console.log('✅ Loaded', products.length, 'products from localStorage');
-        return;
-    }
-
     try {
-        const response = await fetch(`${shopApiUrl}/products`);
+        const response = await fetch(`${shopApiUrl}/products`, { cache: 'no-store' });
         
         if (!response.ok) {
             throw new Error('API not responding');
@@ -406,15 +400,24 @@ async function loadProductsFromAPI() {
             }
         }
         
-        // If we get here, use fallback
-        console.log('⚠️ API returned no products, using local fallback products');
-        showFallbackWarning('API returned no products, using local fallback products');
+        // If API is reachable but empty, fall back to the last local cache.
+        if (loadProductsFromLocalStorage()) {
+            console.log('⚠️ API returned no products, using local cached products');
+            return;
+        }
+
+        console.log('⚠️ API returned no products, using bundled fallback products');
+        showFallbackWarning('API returned no products, using bundled fallback products');
         filteredProducts = [...products];
         
     } catch (error) {
-        console.log('⚠️ Using fallback products, API not available:', error.message);
-        showFallbackWarning('API not available, using local fallback products');
-        // Keep using hardcoded products as fallback
+        if (loadProductsFromLocalStorage()) {
+            console.log('⚠️ API unavailable, using local cached products:', error.message);
+            return;
+        }
+
+        console.log('⚠️ API unavailable, using bundled fallback products:', error.message);
+        showFallbackWarning('API not available, using bundled fallback products');
         filteredProducts = [...products];
     }
 }

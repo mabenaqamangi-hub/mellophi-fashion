@@ -244,12 +244,12 @@
 
             // Get URL parameters
             const urlParams = new URLSearchParams(window.location.search);
-            const payRequestId = urlParams.get('PAY_REQUEST_ID');
-            const reference = urlParams.get('REFERENCE');
-            const transactionStatus = urlParams.get('TRANSACTION_STATUS');
+            const payRequestId = urlParams.get('PAY_REQUEST_ID') || urlParams.get('pf_payment_id') || '';
+            const reference = urlParams.get('REFERENCE') || urlParams.get('m_payment_id');
+            const transactionStatus = urlParams.get('TRANSACTION_STATUS') || urlParams.get('payment_status');
 
-            // If returning from PayGate
-            if (payRequestId && reference) {
+            // If returning from a hosted payment redirect
+            if (reference) {
                 await processPaymentReturn(reference, transactionStatus);
             } else {
                 showError('Invalid payment response');
@@ -364,6 +364,7 @@
                 <p>You will receive a confirmation email shortly with your order details.</p>
 
                 <div class="btn-group">
+                    <a href="order-status.html?reference=${encodeURIComponent(reference)}" class="btn-secondary">View Order Status</a>
                     <a href="shop.html" class="btn-primary">Continue Shopping</a>
                     <a href="index.html" class="btn-secondary">Return Home</a>
                 </div>
@@ -391,6 +392,7 @@
                 <p>Please try again or contact our support team if the problem persists.</p>
 
                 <div class="btn-group">
+                    <a href="order-status.html?reference=${encodeURIComponent(reference)}" class="btn-secondary">Check Order Status</a>
                     <a href="checkout.html" class="btn-primary">Try Again</a>
                     <a href="contact.html" class="btn-secondary">Contact Support</a>
                 </div>
