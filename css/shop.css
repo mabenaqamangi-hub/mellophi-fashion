@@ -528,14 +528,6 @@
         font-size: 1.2rem !important;
     }
     
-    #qv-size-guide-content {
-        font-size: 0.8rem !important;
-    }
-    
-    #qv-size-guide-content th,
-    #qv-size-guide-content td {
-        padding: 6px !important;
-    }
 }
 
 @media (max-width: 480px) {

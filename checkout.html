@@ -833,12 +833,12 @@
                                         <label>Payment Method</label>
                                         <div class="payment-methods">
                                             <label class="payment-method-option">
-                                                <input type="radio" name="payment-method" value="applepay" checked onchange="togglePaymentFields()">
+                                                <input type="radio" name="payment-method" value="payfast" checked onchange="togglePaymentFields()">
                                                 <div class="payment-method-card">
-                                                    <div class="payment-icon"></div>
+                                                    <div class="payment-icon">🔒</div>
                                                     <div class="payment-info">
-                                                        <div class="payment-name">Apple Pay</div>
-                                                        <div class="payment-desc">Fast checkout with Apple Pay</div>
+                                                        <div class="payment-name">PayFast Secure Checkout</div>
+                                                        <div class="payment-desc">Hosted payment page for secure online card payments</div>
                                                     </div>
                                                 </div>
                                             </label>
@@ -1396,8 +1396,8 @@
             
             try {
                 // Only Apple Pay and Card checkout are supported here.
-                if (paymentMethod !== 'card' && paymentMethod !== 'applepay') {
-                    alert('Please select Apple Pay or Card payment to continue.');
+                if (paymentMethod !== 'card' && paymentMethod !== 'payfast') {
+                    alert('Please select PayFast or Card payment to continue.');
                     submitBtn.disabled = false;
                     submitBtn.innerHTML = originalBtnText;
                     return;

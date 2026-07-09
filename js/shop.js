@@ -165,8 +165,20 @@ updateCartCount();
 // ========================================
 
 // Get API_URL from config.js (loaded in HTML)
-// Falls back to localhost if config.js not loaded
-const shopApiUrl = window.API_URL || 'http://localhost:5000/api';
+// Falls back to the deployed API if config.js is not loaded.
+const defaultShopApiUrl = window.API_URL || 'https://mellophi-fashion-api.onrender.com/api';
+
+async function resolveShopApiUrl() {
+    if (window.getApiUrl) {
+        try {
+            return await window.getApiUrl();
+        } catch (error) {
+            console.warn('Falling back to default shop API URL:', error);
+        }
+    }
+
+    return window.API_URL || defaultShopApiUrl;
+}
 
 // MELLOPHI FASHION PRODUCTS (Fallback if API fails)
 let products = [
@@ -289,9 +301,26 @@ let filteredProducts = [...products];
 const initialVisibleProducts = Number.MAX_SAFE_INTEGER;
 let visibleProductsCount = initialVisibleProducts;
 
+function decodeImagePath(value) {
+    let decoded = String(value || '');
+
+    for (let attempts = 0; attempts < 3; attempts += 1) {
+        try {
+            const next = decodeURIComponent(decoded);
+            if (next === decoded) break;
+            decoded = next;
+        } catch (error) {
+            break;
+        }
+    }
+
+    return decoded;
+}
+
 function resolveShopImagePath(imagePath) {
     if (!imagePath) return encodeURI('images/PRODUCTS/A1 front.png');
     if (imagePath.startsWith('http') || imagePath.startsWith('data:')) return imagePath;
+    imagePath = decodeImagePath(imagePath);
     if (imagePath.startsWith('../')) imagePath = imagePath.substring(3);
     if (imagePath.startsWith('/')) imagePath = imagePath.substring(1);
 
@@ -348,6 +377,7 @@ function removeFallbackWarning() {
 // Load products from API
 async function loadProductsFromAPI() {
     try {
+        const shopApiUrl = await resolveShopApiUrl();
         const response = await fetch(`${shopApiUrl}/products`, { cache: 'no-store' });
         
         if (!response.ok) {
@@ -358,13 +388,6 @@ async function loadProductsFromAPI() {
         
         if (result.success && result.data && result.data.length > 0) {
             // Convert API products to shop format
-            // Strip timestamp prefix from filename and map to local images folder
-            function resolveImg(img) {
-                if (!img) return encodeURI('images/PRODUCTS/A1 front.png');
-                if (img.startsWith('http')) return img;
-                const filename = img.split('/').pop().replace(/^\d+-/, '');
-                return encodeURI('images/PRODUCTS/' + filename);
-            }
             const apiProducts = result.data.map(p => ({
                 id: p.productId || p.id,
                 title: p.name,
@@ -377,9 +400,9 @@ async function loadProductsFromAPI() {
                         : p.category + 's',
                 sub: 'casual',
                 images: p.images && p.images.length > 0 
-                    ? p.images.map(resolveImg)
+                    ? p.images.map(resolveShopImagePath)
                     : ['images/PRODUCTS/A1 front.png'],
-                image: p.images && p.images.length > 0 ? resolveImg(p.images[0]) : 'images/PRODUCTS/A1 front.png',
+                image: p.images && p.images.length > 0 ? resolveShopImagePath(p.images[0]) : 'images/PRODUCTS/A1 front.png',
                 sizes: p.sizes || ['S', 'M', 'L'],
                 colors: p.colors || [],
                 stock: p.stock !== undefined ? p.stock : 12,
@@ -575,7 +598,7 @@ function getColorSwatches(product) {
 
 // Initialize filters
 function initFilters() {
-    const filterInputs = document.querySelectorAll('.filter-option input, .color-option input, .size-option input');
+    const filterInputs = document.querySelectorAll('.filter-option input, .color-option input');
     
     filterInputs.forEach(input => {
         input.addEventListener('change', applyFilters);
@@ -635,7 +658,6 @@ function sortProducts(sortBy) {
 function applyFilters() {
     const categoryFilters = Array.from(document.querySelectorAll('input[name="category"]:checked')).map(el => el.value);
     const colorFilters = Array.from(document.querySelectorAll('input[name="color"]:checked')).map(el => el.value.toLowerCase());
-    const sizeFilters = Array.from(document.querySelectorAll('input[name="size"]:checked')).map(el => el.value.toUpperCase());
     const maxPrice = parseInt(document.getElementById('price-slider').value);
     
     filteredProducts = products.filter(function(product) {
@@ -654,13 +676,9 @@ function applyFilters() {
         } else if (colorFilters.length === 0) {
             colorMatch = true;
         }
-        // Size filter - check both 'size' and 'sizes' properties
-        var productSizes = product.sizes || product.size || [];
-        var sizeMatch = sizeFilters.length === 0 || 
-                         productSizes.some(function(size) { return sizeFilters.includes(size); });
         // Price filter
         var priceMatch = !isNaN(maxPrice) ? (parseFloat(product.price) <= maxPrice) : true;
-        return categoryMatch && colorMatch && sizeMatch && priceMatch;
+        return categoryMatch && colorMatch && priceMatch;
     });
 
     // Reset visible count after filter changes so load more works consistently.
@@ -679,8 +697,8 @@ function resetFilters() {
         input.checked = input.value === 'all';
     });
 
-    // Clear color and size selections
-    document.querySelectorAll('input[name="color"], input[name="size"]').forEach(function(input) {
+    // Clear color selections
+    document.querySelectorAll('input[name="color"]').forEach(function(input) {
         input.checked = false;
     });
 
@@ -783,11 +801,11 @@ function initMobileFilters() {
 // (currentQuickViewProduct, selectedQVSize, selectedQVColor)
 
 function openQuickView(productId) {
-    const apiUrl = window.API_URL || 'http://localhost:5000/api';
-    const backendUrl = apiUrl.replace('/api', '');
-    
-    // Fetch product from API first, fallback to local array
-    fetch(`${apiUrl}/products/${productId}`)
+    resolveShopApiUrl().then(apiUrl => {
+        const backendUrl = apiUrl.replace('/api', '');
+
+        // Fetch product from API first, fallback to local array
+        return fetch(`${apiUrl}/products/${productId}`)
         .then(response => response.json())
         .then(result => {
             if (result.success && result.data) {
@@ -808,6 +826,7 @@ function openQuickView(productId) {
                 showQuickViewModal(product, backendUrl);
             }
         });
+    });
 }
 
 function showQuickViewModal(product, backendUrl) {
@@ -855,117 +874,9 @@ function showQuickViewModal(product, backendUrl) {
         colorsSection.style.display = 'none';
     }
     
-    // Update sizes
-    const sizeOptions = document.getElementById('qv-size-options');
-    sizeOptions.innerHTML = '';
-    const sizes = product.sizes || ['S', 'M', 'L'];
-    
-    sizes.forEach(size => {
-        const btn = document.createElement('button');
-        btn.className = 'qv-size-btn';
-        btn.textContent = size;
-        btn.style.cssText = 'padding: 10px 20px; border: 2px solid #ddd; background: white; cursor: pointer; border-radius: 5px; font-weight: 500; transition: all 0.3s;';
-        btn.onclick = () => selectQVSize(size, btn);
-        sizeOptions.appendChild(btn);
-    });
-    
-    // Update size guide
-    updateQuickViewSizeGuide(product);
-    
     // Show modal
     modal.style.display = 'flex';
     document.body.style.overflow = 'hidden';
-}
-
-function updateQuickViewSizeGuide(product) {
-    const sizeGuideBtn = document.getElementById('qv-size-guide-btn');
-    const sizeGuideTable = document.getElementById('qv-size-guide-table');
-    
-    if (!sizeGuideBtn || !sizeGuideTable || !product.sizeGuide) {
-        if (sizeGuideBtn) sizeGuideBtn.style.display = 'none';
-        if (sizeGuideTable) sizeGuideTable.style.display = 'none';
-        return;
-    }
-    
-    sizeGuideBtn.style.display = 'block';
-    
-    let sizeGuideData = product.sizeGuide;
-    
-    // Parse if string
-    if (typeof sizeGuideData === 'string') {
-        try {
-            sizeGuideData = JSON.parse(sizeGuideData);
-        } catch (e) {
-            // Old format - just hide the size guide
-            sizeGuideBtn.style.display = 'none';
-            return;
-        }
-    }
-    
-    // Build size guide table
-    if (sizeGuideData.measurements && sizeGuideData.measurements.length > 0) {
-        const tableContent = document.getElementById('qv-size-guide-content');
-        let html = '<thead><tr style="background: var(--table-header-bg, #3d3020);">';
-        html += '<th style="padding: 12px 10px; text-align: left; border: 1px solid var(--table-header-border, #5a4a35); font-weight: 700; color: var(--table-header-text, #ffffff); letter-spacing: 0.5px; text-transform: uppercase; font-size: 0.85rem;">Size</th>';
-        html += '<th style="padding: 12px 10px; text-align: left; border: 1px solid var(--table-header-border, #5a4a35); font-weight: 700; color: var(--table-header-text, #ffffff); letter-spacing: 0.5px; text-transform: uppercase; font-size: 0.85rem;">Bust</th>';
-        html += '<th style="padding: 12px 10px; text-align: left; border: 1px solid var(--table-header-border, #5a4a35); font-weight: 700; color: var(--table-header-text, #ffffff); letter-spacing: 0.5px; text-transform: uppercase; font-size: 0.85rem;">Waist</th>';
-        html += '<th style="padding: 12px 10px; text-align: left; border: 1px solid var(--table-header-border, #5a4a35); font-weight: 700; color: var(--table-header-text, #ffffff); letter-spacing: 0.5px; text-transform: uppercase; font-size: 0.85rem;">Hips</th>';
-        html += '<th style="padding: 12px 10px; text-align: left; border: 1px solid var(--table-header-border, #5a4a35); font-weight: 700; color: var(--table-header-text, #ffffff); letter-spacing: 0.5px; text-transform: uppercase; font-size: 0.85rem;">Length</th>';
-        html += '</tr></thead><tbody>';
-        
-        sizeGuideData.measurements.forEach((m, index) => {
-            html += `<tr style="background: ${index % 2 === 0 ? 'white' : '#faf8f5'};">`;
-            html += `<td style="padding: 10px; border: 1px solid #d0c4b0; font-weight: 600;">${m.size}</td>`;
-            html += `<td style="padding: 10px; border: 1px solid #d0c4b0;">${m.bust || '-'}</td>`;
-            html += `<td style="padding: 10px; border: 1px solid #d0c4b0;">${m.waist || '-'}</td>`;
-            html += `<td style="padding: 10px; border: 1px solid #d0c4b0;">${m.hips || '-'}</td>`;
-            html += `<td style="padding: 10px; border: 1px solid #d0c4b0;">${m.length || '-'}</td>`;
-            html += '</tr>';
-        });
-        
-        html += '</tbody>';
-        tableContent.innerHTML = html;
-        
-        // Update notes
-        const notesEl = document.getElementById('qv-size-guide-notes');
-        if (sizeGuideData.notes) {
-            notesEl.textContent = `📌 ${sizeGuideData.notes} (All measurements in ${sizeGuideData.unit || 'cm'})`;
-            notesEl.style.display = 'block';
-        } else {
-            notesEl.textContent = `All measurements in ${sizeGuideData.unit || 'cm'}`;
-            notesEl.style.display = 'block';
-        }
-    }
-}
-
-function toggleSizeGuide() {
-    const table = document.getElementById('qv-size-guide-table');
-    const btn = document.getElementById('qv-size-guide-btn');
-    if (!table || !btn) return;
-    
-    if (table.style.display === 'none') {
-        table.style.display = 'block';
-        btn.textContent = '📏 Hide Size Guide';
-    } else {
-        table.style.display = 'none';
-        btn.textContent = '📏 View Size Guide';
-    }
-}
-
-function selectQVSize(size, btn) {
-    selectedQVSize = size;
-    
-    // Update button styles
-    const allBtns = document.querySelectorAll('.qv-size-btn');
-    allBtns.forEach(b => {
-        b.style.borderColor = '#ddd';
-        b.style.background = 'white';
-        b.style.color = '#333';
-    });
-    
-    btn.style.borderColor = '#d4a574';
-    btn.style.background = '#d4a574';
-    btn.style.color = 'white';
 }
 
 function selectQVColor(color, btn) {
@@ -1019,18 +930,16 @@ function increaseQty() {
 function addToCartFromQV() {
     if (!currentQuickViewProduct) return;
     
-    if (!selectedQVSize) {
-        alert('Please select a size');
-        return;
-    }
-    
     const quantity = parseInt(document.getElementById('qv-quantity').value) || 1;
+    const fallbackSize = Array.isArray(currentQuickViewProduct.sizes) && currentQuickViewProduct.sizes.length > 0
+        ? currentQuickViewProduct.sizes[0]
+        : '';
     
     const cartItem = {
         id: currentQuickViewProduct.id || currentQuickViewProduct.productId,
         name: currentQuickViewProduct.name || currentQuickViewProduct.title,
         price: parseFloat(currentQuickViewProduct.price) || 0,
-        size: selectedQVSize,
+        size: fallbackSize,
         color: selectedQVColor || 'Default',
         quantity: quantity,
         image: currentQuickViewProduct.image || resolveShopImagePath(currentQuickViewProduct.images && currentQuickViewProduct.images[0])
@@ -1057,7 +966,8 @@ function addToCartFromQV() {
     // Update cart count
     updateCartCount();
     
-    alert(`✅ Added ${quantity} × ${cartItem.name} (${cartItem.size}) to cart!`);
+        const sizeLabel = cartItem.size ? ` (${cartItem.size})` : '';
+        alert(`✅ Added ${quantity} × ${cartItem.name}${sizeLabel} to cart!`);
 }
 
 function viewFullProduct() {
@@ -1071,14 +981,7 @@ function closeQuickView() {
     modal.style.display = 'none';
     document.body.style.overflow = 'auto';
     
-    // Reset size guide visibility
-    const table = document.getElementById('qv-size-guide-table');
-    const btn = document.getElementById('qv-size-guide-btn');
-    table.style.display = 'none';
-    btn.textContent = '📏 View Size Guide';
-    
     currentQuickViewProduct = null;
-    selectedQVSize = null;
     selectedQVColor = null;
 }
 

@@ -21,22 +21,30 @@ const PRODUCTION_API_CANDIDATES = [
     'https://mellophi-fashion.onrender.com/api'
 ];
 
+const LOCAL_API_URL = 'http://localhost:5000/api';
 const PRODUCTION_API_URL = PRODUCTION_API_CANDIDATES[0];
+const apiParams = new URLSearchParams(window.location.search);
 
 // Automatically detect environment
-const isDevelopment = window.location.hostname === 'localhost' || 
-                     window.location.hostname === '127.0.0.1' ||
-                     window.location.hostname === '' ||
-                     window.location.protocol === 'file:';
+const isLocalDevelopment = window.location.hostname === 'localhost' || 
+                           window.location.hostname === '127.0.0.1';
+const isStaticFilePreview = window.location.protocol === 'file:';
+const isHttpPreview = window.location.protocol === 'http:';
+const shouldUseLocalApi = isLocalDevelopment && (
+    apiParams.get('api') === 'local' || window.localStorage.getItem('mellophiApiMode') === 'local'
+);
+const isDevelopment = shouldUseLocalApi;
+const shouldForceHttps = !isStaticFilePreview && !isLocalDevelopment && isHttpPreview;
 
 // Export the API URL
-const API_URL = isDevelopment
-    ? 'http://localhost:5000/api'
-    : PRODUCTION_API_URL;
+const API_URL = shouldUseLocalApi ? LOCAL_API_URL : PRODUCTION_API_URL;
 
 // Log current environment only in development
 if (isDevelopment) {
-    console.log('🌐 Environment: Development');
+    console.log('🌐 Environment: Development (local API)');
+    console.log('🔗 API URL:', API_URL);
+} else if (isStaticFilePreview || isLocalDevelopment) {
+    console.log(`🌐 Environment: ${isStaticFilePreview ? 'Static preview' : 'Local preview'}`);
     console.log('🔗 API URL:', API_URL);
 }
 
@@ -67,8 +75,10 @@ async function isApiHealthy(apiBase) {
 
 // Public async resolver for pages that perform critical requests (checkout/payment).
 window.getApiUrl = async function getApiUrl() {
-    if (isDevelopment) {
-        return 'http://localhost:5000/api';
+    if (shouldUseLocalApi && await isApiHealthy(LOCAL_API_URL)) {
+        resolvedApiUrl = LOCAL_API_URL;
+        window.API_URL = LOCAL_API_URL;
+        return LOCAL_API_URL;
     }
 
     // If already resolved to a healthy API, reuse it.
@@ -91,14 +101,14 @@ window.getApiUrl = async function getApiUrl() {
 };
 
 // Warm up API resolution in background after initial load.
-if (!isDevelopment) {
+if (!shouldUseLocalApi) {
     window.getApiUrl().catch(() => {
         // Keep default API_URL on failure.
     });
 }
 
 // HTTPS enforcement for production
-if (!isDevelopment && window.location.protocol !== 'https:') {
+if (shouldForceHttps) {
     console.warn('⚠️ Redirecting to HTTPS...');
     window.location.href = 'https:' + window.location.href.substring(window.location.protocol.length);
 }
