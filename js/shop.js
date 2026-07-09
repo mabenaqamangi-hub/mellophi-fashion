@@ -376,9 +376,15 @@ function removeFallbackWarning() {
 
 // Load products from API
 async function loadProductsFromAPI() {
+    let timeoutId;
     try {
         const shopApiUrl = await resolveShopApiUrl();
-        const response = await fetch(`${shopApiUrl}/products`, { cache: 'no-store' });
+        const controller = new AbortController();
+        timeoutId = setTimeout(() => controller.abort(), 5000);
+        const response = await fetch(`${shopApiUrl}/products`, {
+            cache: 'no-store',
+            signal: controller.signal
+        });
         
         if (!response.ok) {
             throw new Error('API not responding');
@@ -442,18 +448,22 @@ async function loadProductsFromAPI() {
         console.log('⚠️ API unavailable, using bundled fallback products:', error.message);
         showFallbackWarning('API not available, using bundled fallback products');
         filteredProducts = [...products];
+    } finally {
+        if (timeoutId) clearTimeout(timeoutId);
     }
 }
 
 // Initialize shop page
 document.addEventListener('DOMContentLoaded', function() {
+    // Render immediately with bundled/local products so the page never appears empty.
+    initShop();
+
+    // Refresh with API data when available.
     loadProductsFromAPI().then(() => {
-        initShop();
+        applyFilters();
     }).catch(() => {
-        // Even if API fails, initialize with fallback products
         filteredProducts = [...products];
-        showFallbackWarning('API not available, using local fallback products');
-        initShop();
+        renderProducts();
     });
 });
 

@@ -3,6 +3,13 @@
 
 services:
   - type: web
+    name: mellophi-fashion-frontend
+    env: static
+    staticPublishPath: .
+    region: oregon
+    plan: free
+    autoDeploy: true
+  - type: web
     name: mellophi-fashion-api
     env: node
     rootDir: backend

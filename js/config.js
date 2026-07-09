@@ -30,9 +30,8 @@ const isLocalDevelopment = window.location.hostname === 'localhost' ||
                            window.location.hostname === '127.0.0.1';
 const isStaticFilePreview = window.location.protocol === 'file:';
 const isHttpPreview = window.location.protocol === 'http:';
-const shouldUseLocalApi = isLocalDevelopment && (
-    apiParams.get('api') === 'local' || window.localStorage.getItem('mellophiApiMode') === 'local'
-);
+const requestedApiMode = apiParams.get('api') || '';
+const shouldUseLocalApi = isLocalDevelopment && requestedApiMode !== 'prod';
 const isDevelopment = shouldUseLocalApi;
 const shouldForceHttps = !isStaticFilePreview && !isLocalDevelopment && isHttpPreview;
 

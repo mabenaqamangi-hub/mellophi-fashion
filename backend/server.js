@@ -35,6 +35,15 @@ function normalizeOrigin(input) {
     }
 }
 
+function isLocalDevOrigin(input) {
+    try {
+        const parsed = new URL(String(input));
+        return ['localhost', '127.0.0.1'].includes(parsed.hostname);
+    } catch (error) {
+        return false;
+    }
+}
+
 const corsOptions = {
     origin: function (origin, callback) {
         const configuredOrigins = process.env.FRONTEND_URL
@@ -48,7 +57,7 @@ const corsOptions = {
         const normalizedRequestOrigin = normalizeOrigin(origin);
         
         // Allow requests with no origin (mobile apps, postman, etc.)
-        if (!origin || allowedOrigins.includes('*') || allowedOrigins.includes(normalizedRequestOrigin)) {
+        if (!origin || isLocalDevOrigin(origin) || allowedOrigins.includes('*') || allowedOrigins.includes(normalizedRequestOrigin)) {
             callback(null, true);
         } else {
             console.warn(`CORS blocked request from origin: ${origin}`);
