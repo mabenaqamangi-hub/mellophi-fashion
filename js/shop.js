@@ -608,7 +608,7 @@ function getColorSwatches(product) {
 
 // Initialize filters
 function initFilters() {
-    const filterInputs = document.querySelectorAll('.filter-option input, .color-option input');
+    const filterInputs = document.querySelectorAll('.filter-option input');
     
     filterInputs.forEach(input => {
         input.addEventListener('change', applyFilters);
@@ -667,7 +667,6 @@ function sortProducts(sortBy) {
 
 function applyFilters() {
     const categoryFilters = Array.from(document.querySelectorAll('input[name="category"]:checked')).map(el => el.value);
-    const colorFilters = Array.from(document.querySelectorAll('input[name="color"]:checked')).map(el => el.value.toLowerCase());
     const maxPrice = parseInt(document.getElementById('price-slider').value);
     
     filteredProducts = products.filter(function(product) {
@@ -675,20 +674,9 @@ function applyFilters() {
         var categoryMatch = categoryFilters.length === 0 || 
                              categoryFilters.includes('all') || 
                              categoryFilters.includes(product.category);
-        // Color filter - check both old format (color string) and new format (colors array)
-        var colorMatch = colorFilters.length === 0;
-        if (!colorMatch && product.colors && product.colors.length > 0) {
-            colorMatch = product.colors.some(function(color) {
-                return colorFilters.includes(color.name.toLowerCase());
-            });
-        } else if (!colorMatch && product.color) {
-            colorMatch = colorFilters.includes(product.color.toLowerCase());
-        } else if (colorFilters.length === 0) {
-            colorMatch = true;
-        }
         // Price filter
         var priceMatch = !isNaN(maxPrice) ? (parseFloat(product.price) <= maxPrice) : true;
-        return categoryMatch && colorMatch && priceMatch;
+        return categoryMatch && priceMatch;
     });
 
     // Reset visible count after filter changes so load more works consistently.
@@ -708,10 +696,6 @@ function resetFilters() {
     });
 
     // Clear color selections
-    document.querySelectorAll('input[name="color"]').forEach(function(input) {
-        input.checked = false;
-    });
-
     // Reset price slider display
     const priceSlider = document.getElementById('price-slider');
     const maxPriceDisplay = document.getElementById('max-price');
