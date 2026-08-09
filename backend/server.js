@@ -104,11 +104,14 @@ app.use('/api/paygate', paygateRoutes);
 // Health check endpoint
 app.get('/api/health', async (req, res) => {
     let dbStatus = 'unknown';
+    let dbError = null;
+
     try {
         await sequelize.authenticate();
         dbStatus = 'connected';
     } catch (err) {
         dbStatus = 'disconnected';
+        dbError = err.message;
     }
     
     res.json({ 
@@ -116,6 +119,7 @@ app.get('/api/health', async (req, res) => {
         message: 'Mellophi Fashion API is running',
         timestamp: new Date().toISOString(),
         database: dbStatus,
+        dbError,
         environment: process.env.NODE_ENV || 'development',
         hasDatabaseUrl: !!process.env.DATABASE_URL
     });

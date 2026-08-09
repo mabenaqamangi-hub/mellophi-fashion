@@ -13,26 +13,44 @@ console.log('   DATABASE_URL starts with:', process.env.DATABASE_URL ? process.e
 
 // Check if DATABASE_URL is provided (common in Heroku/Render)
 if (process.env.DATABASE_URL) {
+    const dbUrl = process.env.DATABASE_URL.trim();
     console.log('📊 Using DATABASE_URL for connection');
-    // Detect dialect from URL (postgres://, mysql://, sqlite:)
+
+    const parsedUrl = (() => {
+        try {
+            return new URL(dbUrl);
+        } catch (error) {
+            console.error('❌ Invalid DATABASE_URL format:', error.message);
+            return null;
+        }
+    })();
+
+    const protocol = parsedUrl ? parsedUrl.protocol.replace(':', '') : '';
     let dialect = 'mysql';
-    if (process.env.DATABASE_URL.startsWith('postgres')) {
+    if (protocol === 'postgres' || protocol === 'postgresql') {
         dialect = 'postgres';
-    } else if (process.env.DATABASE_URL.startsWith('sqlite:')) {
+    } else if (protocol === 'sqlite') {
         dialect = 'sqlite';
     }
+
+    console.log('   Detected protocol:', protocol);
     console.log('   Detected dialect:', dialect);
+    if (parsedUrl) {
+        console.log('   Database host:', parsedUrl.hostname);
+        console.log('   Database port:', parsedUrl.port || '(default)');
+    }
 
     if (dialect === 'sqlite') {
-        const sqliteStorage = process.env.DATABASE_URL.replace(/^sqlite:/, '') || './mellophi-dev.sqlite';
+        const sqliteStorage = dbUrl.replace(/^sqlite:/, '') || './mellophi-dev.sqlite';
         sequelize = new Sequelize({
             dialect: 'sqlite',
             storage: sqliteStorage,
             logging: false
         });
     } else {
-        sequelize = new Sequelize(process.env.DATABASE_URL, {
+        sequelize = new Sequelize(dbUrl, {
             dialect: dialect,
+            dialectModule: dialect === 'postgres' ? require('pg') : undefined,
             logging: false, // Disable query logging in production
             pool: {
                 max: 5,
