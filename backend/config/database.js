@@ -6,6 +6,67 @@ dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 let sequelize;
 
+const buildSequelizeFromEnv = () => {
+    const envDialect = process.env.DB_DIALECT ? process.env.DB_DIALECT.trim() : 'mysql';
+    return new Sequelize(
+        process.env.DB_NAME || 'mellophi_fashion',
+        process.env.DB_USER || 'root',
+        process.env.DB_PASSWORD || '',
+        {
+            host: process.env.DB_HOST || 'localhost',
+            port: process.env.DB_PORT || 3306,
+            dialect: envDialect,
+            logging: process.env.NODE_ENV === 'development' ? console.log : false,
+            pool: {
+                max: 5,
+                min: 0,
+                acquire: 30000,
+                idle: 10000
+            }
+        }
+    );
+};
+
+const buildSequelizeFromUrl = (connectionString, dialect) => {
+    const dialectOptions = {
+        connectTimeout: 60000
+    };
+
+    if (process.env.NODE_ENV === 'production') {
+        if (dialect === 'postgres') {
+            dialectOptions.ssl = {
+                require: true,
+                rejectUnauthorized: false
+            };
+        } else if (dialect === 'mysql' || dialect === 'mariadb') {
+            dialectOptions.ssl = {
+                rejectUnauthorized: false
+            };
+        }
+    }
+
+    return new Sequelize(connectionString, {
+        dialect,
+        dialectModule: dialect === 'postgres' ? require('pg') : undefined,
+        logging: false,
+        pool: {
+            max: 5,
+            min: 0,
+            acquire: 60000,
+            idle: 10000
+        },
+        dialectOptions,
+        retry: {
+            max: 5,
+            match: [
+                /ECONNREFUSED/,
+                /ETIMEDOUT/,
+                /EHOSTUNREACH/
+            ]
+        }
+    });
+};
+
 console.log('🔍 Database Configuration Check:');
 console.log('   NODE_ENV:', process.env.NODE_ENV);
 console.log('   DATABASE_URL exists:', !!process.env.DATABASE_URL);
@@ -82,68 +143,23 @@ if (process.env.DATABASE_URL) {
             logging: false
         });
     } else {
-        const dialectOptions = {
-            connectTimeout: 60000
-        };
-
-        if (process.env.NODE_ENV === 'production') {
-            if (dialect === 'postgres') {
-                dialectOptions.ssl = {
-                    require: true,
-                    rejectUnauthorized: false
-                };
-            } else if (dialect === 'mysql' || dialect === 'mariadb') {
-                dialectOptions.ssl = {
-                    rejectUnauthorized: false
-                };
-            }
-        }
-
-        sequelize = new Sequelize(correctedDbUrl, {
-            dialect,
-            dialectModule: dialect === 'postgres' ? require('pg') : undefined,
-            logging: false,
-            pool: {
-                max: 5,
-                min: 0,
-                acquire: 60000,
-                idle: 10000
-            },
-            dialectOptions,
-            retry: {
-                max: 5,
-                match: [
-                    /ECONNREFUSED/,
-                    /ETIMEDOUT/,
-                    /EHOSTUNREACH/,
-                ]
-            }
-        });
+        sequelize = buildSequelizeFromUrl(correctedDbUrl, dialect);
     }
 } else {
-    // Use individual environment variables
     console.log('📊 Using individual DB credentials');
-    sequelize = new Sequelize(
-        process.env.DB_NAME || 'mellophi_fashion',
-        process.env.DB_USER || 'root',
-        process.env.DB_PASSWORD || '',
-        {
-            host: process.env.DB_HOST || 'localhost',
-            port: process.env.DB_PORT || 3306,
-            dialect: 'mysql',
-            logging: process.env.NODE_ENV === 'development' ? console.log : false,
-            pool: {
-                max: 5,
-                min: 0,
-                acquire: 30000,
-                idle: 10000
-            }
-        }
-    );
+    sequelize = buildSequelizeFromEnv();
 }
 
-// Test connection with retry logic
-async function testConnection(retries = 3) {
+async function initializeDatabaseConnection() {
+    const connected = await testConnection();
+    if (!connected && process.env.DATABASE_URL && process.env.DB_HOST) {
+        console.warn('⚠️ DATABASE_URL connection failed; falling back to individual DB environment variables.');
+        sequelize = buildSequelizeFromEnv();
+        await testConnection();
+    }
+}
+
+initializeDatabaseConnection();
     for (let i = 0; i < retries; i++) {
         try {
             await sequelize.authenticate();
