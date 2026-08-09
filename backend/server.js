@@ -126,7 +126,18 @@ app.get('/api/health', async (req, res) => {
 });
 
 // Diagnostic endpoint
-app.get('/api/diagnostic', (req, res) => {
+app.get('/api/diagnostic', async (req, res) => {
+    let dbStatus = 'unknown';
+    let dbError = null;
+
+    try {
+        await sequelize.authenticate();
+        dbStatus = 'connected';
+    } catch (err) {
+        dbStatus = 'disconnected';
+        dbError = err.message;
+    }
+
     res.json({
         server: 'running',
         nodeVersion: process.version,
@@ -134,8 +145,11 @@ app.get('/api/diagnostic', (req, res) => {
             NODE_ENV: process.env.NODE_ENV,
             hasDatabaseUrl: !!process.env.DATABASE_URL,
             databaseUrlPrefix: process.env.DATABASE_URL ? process.env.DATABASE_URL.substring(0, 15) + '...' : 'not set',
-            port: process.env.PORT || 5000
+            port: process.env.PORT || 5000,
+            dbDialect: process.env.DB_DIALECT || null
         },
+        database: dbStatus,
+        dbError,
         timestamp: new Date().toISOString()
     });
 });

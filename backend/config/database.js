@@ -26,11 +26,15 @@ if (process.env.DATABASE_URL) {
     })();
 
     const protocol = parsedUrl ? parsedUrl.protocol.replace(':', '') : '';
-    let dialect = 'mysql';
+    let dialect = process.env.DB_DIALECT ? process.env.DB_DIALECT.trim() : 'mysql';
     if (protocol === 'postgres' || protocol === 'postgresql') {
         dialect = 'postgres';
     } else if (protocol === 'sqlite') {
         dialect = 'sqlite';
+    } else if (protocol === 'mysql2') {
+        dialect = 'mysql';
+    } else if (protocol === 'mariadb') {
+        dialect = 'mariadb';
     }
 
     console.log('   Detected protocol:', protocol);
@@ -38,6 +42,7 @@ if (process.env.DATABASE_URL) {
     if (parsedUrl) {
         console.log('   Database host:', parsedUrl.hostname);
         console.log('   Database port:', parsedUrl.port || '(default)');
+        console.log('   Database username:', parsedUrl.username ? '***' : '(none)');
     }
 
     if (dialect === 'sqlite') {
@@ -48,23 +53,34 @@ if (process.env.DATABASE_URL) {
             logging: false
         });
     } else {
+        const dialectOptions = {
+            connectTimeout: 60000
+        };
+
+        if (process.env.NODE_ENV === 'production') {
+            if (dialect === 'postgres') {
+                dialectOptions.ssl = {
+                    require: true,
+                    rejectUnauthorized: false
+                };
+            } else if (dialect === 'mysql' || dialect === 'mariadb') {
+                dialectOptions.ssl = {
+                    rejectUnauthorized: false
+                };
+            }
+        }
+
         sequelize = new Sequelize(dbUrl, {
-            dialect: dialect,
+            dialect,
             dialectModule: dialect === 'postgres' ? require('pg') : undefined,
-            logging: false, // Disable query logging in production
+            logging: false,
             pool: {
                 max: 5,
                 min: 0,
-                acquire: 60000, // Increased timeout
+                acquire: 60000,
                 idle: 10000
             },
-            dialectOptions: {
-                ssl: process.env.NODE_ENV === 'production' ? {
-                    require: true,
-                    rejectUnauthorized: false // For cloud databases
-                } : false,
-                connectTimeout: 60000 // 60 seconds
-            },
+            dialectOptions,
             retry: {
                 max: 5,
                 match: [
