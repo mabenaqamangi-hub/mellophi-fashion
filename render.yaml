@@ -25,6 +25,9 @@ services:
           name: mellophi-database
           property: connectionString
 
+      - key: DB_DIALECT
+        value: postgres
+
       - key: FRONTEND_URL
         value: https://mabenaqamangi-hub.github.io
 

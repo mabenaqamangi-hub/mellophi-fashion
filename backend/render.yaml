@@ -28,6 +28,9 @@ services:
         fromDatabase:
           name: mellophi-database
           property: connectionString
+
+      - key: DB_DIALECT
+        value: postgres
       
       # Frontend URL - Update with your actual domain
       - key: FRONTEND_URL

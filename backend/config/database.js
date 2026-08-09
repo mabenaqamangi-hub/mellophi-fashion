@@ -38,17 +38,37 @@ if (process.env.DATABASE_URL) {
     }
 
     let correctedDbUrl = dbUrl;
-    if (parsedUrl && dialect === 'postgres' && parsedUrl.hostname && !parsedUrl.hostname.includes('.') && parsedUrl.hostname.startsWith('dpg-')) {
-        const fixedHost = `${parsedUrl.hostname}.postgres.render.com`;
-        console.warn('⚠️ Correcting Render Postgres host to full domain:', fixedHost);
-        parsedUrl.hostname = fixedHost;
-        correctedDbUrl = parsedUrl.toString();
+    let selectedHost = parsedUrl && parsedUrl.hostname ? parsedUrl.hostname : null;
+
+    if (parsedUrl && dialect === 'postgres' && parsedUrl.hostname && parsedUrl.hostname.startsWith('dpg-')) {
+        const hostBase = parsedUrl.hostname.replace(/\.postgres\.render\.com$|\.render\.com$|\.internal$|\.internal\.render\.com$/i, '');
+        const candidateHosts = [
+            `${hostBase}.postgres.render.com`,
+            `${hostBase}.oregon.postgres.render.com`,
+            `${hostBase}.render.com`,
+            `${hostBase}.oregon.render.com`,
+            `${hostBase}.internal`,
+            `${hostBase}.internal.render.com`
+        ];
+
+        for (const candidateHost of [...new Set(candidateHosts)]) {
+            try {
+                const candidateUrl = new URL(dbUrl);
+                candidateUrl.hostname = candidateHost;
+                correctedDbUrl = candidateUrl.toString();
+                selectedHost = candidateHost;
+                console.warn('⚠️ Applying Render Postgres host candidate:', candidateHost);
+                break;
+            } catch (err) {
+                console.warn('⚠️ Host candidate failed to apply:', candidateHost, err.message);
+            }
+        }
     }
 
     console.log('   Detected protocol:', protocol);
     console.log('   Detected dialect:', dialect);
     if (parsedUrl) {
-        console.log('   Database host:', parsedUrl.hostname);
+        console.log('   Database host:', selectedHost);
         console.log('   Database port:', parsedUrl.port || '(default)');
         console.log('   Database username:', parsedUrl.username ? '***' : '(none)');
     }
