@@ -78,7 +78,7 @@ if (process.env.DATABASE_URL) {
             }
         }
 
-        sequelize = new Sequelize(dbUrl, {
+        sequelize = new Sequelize(correctedDbUrl, {
             dialect,
             dialectModule: dialect === 'postgres' ? require('pg') : undefined,
             logging: false,
