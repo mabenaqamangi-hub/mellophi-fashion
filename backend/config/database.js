@@ -40,13 +40,14 @@ if (process.env.DATABASE_URL) {
     let correctedDbUrl = dbUrl;
     let selectedHost = parsedUrl && parsedUrl.hostname ? parsedUrl.hostname : null;
 
-    if (parsedUrl && dialect === 'postgres' && parsedUrl.hostname && parsedUrl.hostname.startsWith('dpg-')) {
+    const isBareRenderHost = parsedUrl && parsedUrl.hostname && parsedUrl.hostname.startsWith('dpg-') && !parsedUrl.hostname.includes('.');
+    if (parsedUrl && dialect === 'postgres' && isBareRenderHost) {
         const hostBase = parsedUrl.hostname.replace(/\.postgres\.render\.com$|\.render\.com$|\.internal$|\.internal\.render\.com$/i, '');
         const candidateHosts = [
-            `${hostBase}.postgres.render.com`,
             `${hostBase}.oregon.postgres.render.com`,
-            `${hostBase}.render.com`,
+            `${hostBase}.postgres.render.com`,
             `${hostBase}.oregon.render.com`,
+            `${hostBase}.render.com`,
             `${hostBase}.internal`,
             `${hostBase}.internal.render.com`
         ];
