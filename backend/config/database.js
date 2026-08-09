@@ -37,6 +37,14 @@ if (process.env.DATABASE_URL) {
         dialect = 'mariadb';
     }
 
+    let correctedDbUrl = dbUrl;
+    if (parsedUrl && dialect === 'postgres' && parsedUrl.hostname && !parsedUrl.hostname.includes('.') && parsedUrl.hostname.startsWith('dpg-')) {
+        const fixedHost = `${parsedUrl.hostname}.postgres.render.com`;
+        console.warn('⚠️ Correcting Render Postgres host to full domain:', fixedHost);
+        parsedUrl.hostname = fixedHost;
+        correctedDbUrl = parsedUrl.toString();
+    }
+
     console.log('   Detected protocol:', protocol);
     console.log('   Detected dialect:', dialect);
     if (parsedUrl) {
